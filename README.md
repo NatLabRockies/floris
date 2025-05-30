@@ -11,7 +11,7 @@ is highly encouraged. If you are interested in using FLORIS to conduct studies
 of a wind farm or extending FLORIS to include your own wake model, please join
 the conversation in [GitHub Discussions](https://github.com/NREL/floris/discussions/)!
 
-## Part of the WETO Stack
+## WETO software
 
 FLORIS is primarily developed with the support from the U.S. Department of Energy and
 is part of the `WETO Software Stack <https://nrel.github.io/WETOStack>`_.

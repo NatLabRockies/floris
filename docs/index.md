@@ -13,7 +13,7 @@ Support for python version 3.8 was dropped in FLORIS v4.3, and support for pytho
 See {ref}`installation` for details. FLORIS v4.3 also made the move to requiring `numpy` version 2. See the [numpy documentation for details](https://numpy.org/doc/stable/numpy_2_0_migration_guide.html).
 ```
 
-## Part of the WETO Stack
+## WETO software
 
 FLORIS is primarily developed with the support from the U.S. Department of Energy and
 is part of the `WETO Software Stack <https://nrel.github.io/WETOStack>`_.

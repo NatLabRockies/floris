@@ -862,12 +862,14 @@ class FlorisInterface(LoggerBase):
                 }
 
             mean_farm_power = 0.0
-            wd_orig = self.floris.farm.wind_map.input_direction[0]
+            wd_orig = self.floris.farm.wind_map.input_direction
 
             yaw_angles = self.get_yaw_angles()
 
             for i_wd, delta_wd in enumerate(unc_pmfs["wd_unc"]):
-                self.reinitialize_flow_field(wind_direction=wd_orig + delta_wd)
+                self.reinitialize_flow_field(
+                    wind_direction=[wd + delta_wd for wd in wd_orig]
+                )
 
                 for i_yaw, delta_yaw in enumerate(unc_pmfs["yaw_unc"]):
                     mean_farm_power = mean_farm_power + unc_pmfs["wd_unc_pmf"][
@@ -1041,12 +1043,14 @@ class FlorisInterface(LoggerBase):
                 }
 
             mean_farm_power = np.zeros(len(self.floris.farm.turbines))
-            wd_orig = self.floris.farm.wind_map.input_direction[0]
+            wd_orig = self.floris.farm.wind_map.input_direction
 
             yaw_angles = self.get_yaw_angles()
 
             for i_wd, delta_wd in enumerate(unc_pmfs["wd_unc"]):
-                self.reinitialize_flow_field(wind_direction=wd_orig + delta_wd)
+                self.reinitialize_flow_field(
+                    wind_direction=[wd + delta_wd for wd in wd_orig]
+                )
 
                 for i_yaw, delta_yaw in enumerate(unc_pmfs["yaw_unc"]):
                     self.calculate_wake(

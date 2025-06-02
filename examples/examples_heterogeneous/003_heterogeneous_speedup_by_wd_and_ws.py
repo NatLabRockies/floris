@@ -42,6 +42,7 @@ heterogeneous_map = HeterogeneousMap(
     ),
     wind_directions=np.array([270.0, 270.0, 90.0, 90.0]),
     wind_speeds=np.array([5.0, 10.0, 5.0, 10.0]),
+    interp_method="nearest"
 )
 
 # Use the HeterogeneousMap object to plot the speedup map for 3 wd/ws combinations

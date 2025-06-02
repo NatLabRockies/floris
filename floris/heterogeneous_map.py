@@ -171,12 +171,11 @@ class HeterogeneousMap(LoggingManager):
         )
 
         return (
-            f"HeterogeneousMap with {num_dim} dimensions\n"
-            f"Speeds-up defined for {len(self.x)} points and\n"
-            f"{self.speed_multipliers.shape[0]} wind conditions"
-
+            f"HeterogeneousMap with {num_dim} dimensions "
+            f"using interpolation method \"{self.interp_method}\".\n"
+            f"Speed multipliers are defined for {len(self.x)} points and "
+            f"{self.speed_multipliers.shape[0]} wind conditions."
             f"\n\n{df}"
-
         )
 
     def get_heterogeneous_inflow_config(

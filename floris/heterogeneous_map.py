@@ -470,29 +470,22 @@ class HeterogeneousMap(LoggingManager):
             np.linspace(plot_min_y, plot_max_y, 100),
             indexing="ij",
         )
-        x_plot = x_plot.flatten()
-        y_plot = y_plot.flatten()
 
         try:
-            lin_interpolant = FlowField.interpolate_multiplier_xy(x, y, speed_multiplier_row)
+            interpolant = FlowField.interpolate_multiplier_xy(
+                x,
+                y,
+                speed_multiplier_row,
+                fill_value=1.0,
+                interp_method=self.interp_method
+            )
 
-            lin_values = lin_interpolant(x, y)
+            het_map_mesh = interpolant(x_plot.flatten(), y_plot.flatten()).reshape(x_plot.shape)
         except scipy.spatial._qhull.QhullError:
             self.logger.warning(
-                "QhullError occurred in computing visualize. Falling back to nearest neighbor. "
-                "Note this may not represent the exact speed multipliers used within FLORIS."
+                "QhullError occurred in computing visualize. Creating null visualization."
             )
-            lin_values = np.nan * np.ones_like(x)
-
-        nearest_interpolant = NearestNDInterpolator(
-            x=np.vstack([x, y]).T,
-            y=speed_multiplier_row,
-        )
-        nn_values = nearest_interpolant(x, y)
-        ids_isnan = np.isnan(lin_values)
-
-        het_map_mesh = np.array(lin_values, copy=True)
-        het_map_mesh[ids_isnan] = nn_values[ids_isnan]
+            het_map_mesh = np.nan * np.ones_like(x_plot)
 
         # If vmin is not provided, use a value rounded to the nearest 0.01 below the minimum
         if vmin is None:
@@ -503,9 +496,9 @@ class HeterogeneousMap(LoggingManager):
             vmax = np.ceil(het_map_mesh.max() * 100) / 100
 
         # Produce color plot of the speed multipliers
-        im = ax.tricontourf(
-            x,
-            y,
+        im = ax.contourf(
+            x_plot,
+            y_plot,
             het_map_mesh,
             cmap=cmap,
             vmin=vmin,

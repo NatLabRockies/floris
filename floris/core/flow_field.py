@@ -118,6 +118,10 @@ class FlowField(BaseClass):
             # If only a 2D case, add "None" for the z locations
             value["z"] = None
 
+        if "interp_method" not in value:
+            # If no interpolation method is specified, default to linear
+            value["interp_method"] = "linear"
+
     @het_map.validator
     def het_map_validator(self, instance: attrs.Attribute, value: list | None) -> None:
         """Using this validator to make sure that the het_map has an interpolant defined for

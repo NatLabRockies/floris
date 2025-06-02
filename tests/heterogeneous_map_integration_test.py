@@ -497,10 +497,10 @@ def test_run_2d_het_map_nearest_neighbor(caplog):
         wind_shear=0.0,
     )
 
-    # Run the model. Should raise warning due to turbine outside of bounds with linear interpolation
+    # Run the model. No turbine outside of bounds warning raised for nearest neighbor interpolation
     with caplog.at_level(logging.WARNING):
         fmodel.run()
-    assert caplog.text != "" # Checking not empty
+    assert caplog.text == "" # Checking empty
 
     # Get the turbine powers
     powers = fmodel.get_turbine_powers()

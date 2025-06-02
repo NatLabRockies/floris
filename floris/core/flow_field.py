@@ -166,28 +166,34 @@ class FlowField(BaseClass):
         # If heterogeneous flow data is given, the speed ups at the defined
         # grid locations are determined in either 2 or 3 dimensions.
         else:
-            bounds = np.array(list(zip(
-                self.heterogeneous_inflow_config['x'],
-                self.heterogeneous_inflow_config['y']
-            )))
-            hull = ConvexHull(bounds)
-            polygon = Polygon(bounds[hull.vertices])
-            path = mpltPath.Path(polygon.boundary.coords)
             points = np.column_stack(
                 (
                     grid.x_sorted_inertial_frame.flatten(),
                     grid.y_sorted_inertial_frame.flatten(),
                 )
             )
-            inside = path.contains_points(points)
-            if not np.all(inside):
-                self.logger.warning(
-                    "The calculated flow field contains points outside of the the user-defined "
-                    "heterogeneous inflow bounds. For these points, the interpolated value has "
-                    "been filled with the freestream wind speed. If this is not the desired "
-                    "behavior, the user will need to expand the heterogeneous inflow bounds to "
-                    "fully cover the calculated flow field area."
-                )
+            if isinstance(self.het_map[0], NearestNDInterpolator):
+                # Do not check for being inside of bounds for nearest neighbor interpolation.
+                pass
+            else:
+                # Create a convex hull around the user-defined heterogeneous inflow bounds
+                # to check if the calculated flow field is within the bounds.
+                bounds = np.array(list(zip(
+                    self.heterogeneous_inflow_config['x'],
+                    self.heterogeneous_inflow_config['y']
+                )))
+                hull = ConvexHull(bounds)
+                polygon = Polygon(bounds[hull.vertices])
+                path = mpltPath.Path(polygon.boundary.coords)
+                inside = path.contains_points(points)
+                if not np.all(inside):
+                    self.logger.warning(
+                        "The calculated flow field contains points outside of the the user-defined "
+                        "heterogeneous inflow bounds. For these points, the interpolated value has "
+                        "been filled with the freestream wind speed. If this is not the desired "
+                        "behavior, the user will need to expand the heterogeneous inflow bounds to "
+                        "fully cover the calculated flow field area."
+                    )
 
             if len(self.het_map[0].points[0]) == 2:
                 speed_ups = self.calculate_speed_ups(

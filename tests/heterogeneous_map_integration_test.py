@@ -1,9 +1,10 @@
+import logging
 from pathlib import Path
 
 import numpy as np
 import pytest
 
-from floris import FlorisModel
+from floris import FlorisModel, TimeSeries
 from floris.heterogeneous_map import HeterogeneousMap
 
 
@@ -396,7 +397,7 @@ def test_3d_het_and_shear():
         )
 
 
-def test_run_2d_het_map():
+def test_run_2d_het_map(caplog):
     # Define a 2D het map and confirm the results are as expected
     # when applied to FLORIS
 
@@ -417,8 +418,6 @@ def test_run_2d_het_map():
     # Get the FLORIS model
     fmodel = FlorisModel(configuration=YAML_INPUT)
 
-    from floris import TimeSeries
-
     time_series = TimeSeries(
         wind_directions=np.array([270.0, 90.0]),
         wind_speeds=8.0,
@@ -426,17 +425,20 @@ def test_run_2d_het_map():
         heterogeneous_map=het_map,
     )
 
-    # Set the model to a turbines perpinducluar to
-    # east/west flow with 0 turbine closer to bottom and
-    # turbine 1 closer to top
+    # Set the model to a turbines perpendicular to east/west flow with 0 turbine closer to bottom
+    # and turbine 1 closer to top, while turbine 2 is outside of heterogenous specification.
     fmodel.set(
         wind_data=time_series,
-        layout_x=[250.0, 250.0],
-        layout_y=[100.0, 400.0],
+        layout_x=[250.0, 250.0, 250.0],
+        layout_y=[100.0, 400.0, 700.0],
+        wind_shear=0.0,
     )
 
-    # Run the model
-    fmodel.run()
+
+    # Run the model. Should raise warning due to turbine outside of bounds with linear interpolation
+    with caplog.at_level(logging.WARNING):
+        fmodel.run()
+    assert caplog.text != "" # Checking not empty
 
     # Get the turbine powers
     powers = fmodel.get_turbine_powers()
@@ -451,8 +453,12 @@ def test_run_2d_het_map():
     # equals the power of turbine 0 in the second condition
     assert powers[0, 1] == powers[1, 0]
 
+    # Check that turbine 2 is simply seeing the freestream wind speed
+    velocities = fmodel.turbine_average_velocities
+    assert np.allclose(velocities[:, 2], 8.0)
 
-def test_run_2d_het_map_nearest_neighbor():
+
+def test_run_2d_het_map_nearest_neighbor(caplog):
     # Define a 2D het map and confirm the results are as expected
     # when applied to FLORIS
 
@@ -474,8 +480,6 @@ def test_run_2d_het_map_nearest_neighbor():
     # Get the FLORIS model
     fmodel = FlorisModel(configuration=YAML_INPUT)
 
-    from floris import TimeSeries
-
     time_series = TimeSeries(
         wind_directions=np.array([270.0, 90.0]),
         wind_speeds=8.0,
@@ -483,17 +487,20 @@ def test_run_2d_het_map_nearest_neighbor():
         heterogeneous_map=het_map,
     )
 
-    # Set the model to a turbines perpinducluar to
-    # east/west flow with 0 turbine closer to bottom and
-    # turbine 1 closer to top
+    # Set the model to a turbines perpendicular to east/west flow with 0 turbine closer to bottom
+    # and turbine 1 closer to top, while turbine 2 is outside of heterogenous specification
+    # (but will still take on the nearest neighbor value).
     fmodel.set(
         wind_data=time_series,
-        layout_x=[250.0, 250.0],
-        layout_y=[100.0, 400.0],
+        layout_x=[250.0, 250.0, 250.0],
+        layout_y=[100.0, 400.0, 700.0],
+        wind_shear=0.0,
     )
 
-    # Run the model
-    fmodel.run()
+    # Run the model. Should raise warning due to turbine outside of bounds with linear interpolation
+    with caplog.at_level(logging.WARNING):
+        fmodel.run()
+    assert caplog.text != "" # Checking not empty
 
     # Get the turbine powers
     powers = fmodel.get_turbine_powers()
@@ -507,6 +514,11 @@ def test_run_2d_het_map_nearest_neighbor():
     # Assert that the power of turbine 1 equals in the first condition
     # equals the power of turbine 0 in the second condition
     assert powers[0, 1] == powers[1, 0]
+
+    # Check that turbine 2 is takes the value of the top row.
+    velocities = fmodel.turbine_average_velocities
+    assert np.allclose(velocities[:, 2], 8.0*np.array([2.0, 1.0]))
+
 
 def test_het_config():
 

@@ -426,7 +426,7 @@ def test_run_2d_het_map(caplog):
     )
 
     # Set the model to a turbines perpendicular to east/west flow with 0 turbine closer to bottom
-    # and turbine 1 closer to top, while turbine 2 is outside of heterogenous specification.
+    # and turbine 1 closer to top, while turbine 2 is outside of heterogeneous specification.
     fmodel.set(
         wind_data=time_series,
         layout_x=[250.0, 250.0, 250.0],
@@ -488,7 +488,7 @@ def test_run_2d_het_map_nearest_neighbor(caplog):
     )
 
     # Set the model to a turbines perpendicular to east/west flow with 0 turbine closer to bottom
-    # and turbine 1 closer to top, while turbine 2 is outside of heterogenous specification
+    # and turbine 1 closer to top, while turbine 2 is outside of heterogeneous specification
     # (but will still take on the nearest neighbor value).
     fmodel.set(
         wind_data=time_series,

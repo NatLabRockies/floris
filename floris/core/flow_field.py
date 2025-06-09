@@ -324,12 +324,10 @@ class FlowField(BaseClass):
                 fill_value=1.0,
                 interp_method=interp_method,
             )
+            interp_shape = interp_3d.values.shape
             # Copy the interpolant for each findex and overwrite the values
             for findex in range(self.n_findex):
-                if interp_method == "linear":
-                    interp_3d.values = speed_multipliers[findex, :].reshape(-1, 1)
-                else:
-                    interp_3d.values = speed_multipliers[findex, :]
+                interp_3d.values = speed_multipliers[findex, :].reshape(interp_shape)
                 interps_f[findex] = copy.deepcopy(interp_3d)
 
         else:

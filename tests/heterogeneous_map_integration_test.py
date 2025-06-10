@@ -457,6 +457,16 @@ def test_run_2d_het_map(caplog):
     velocities = fmodel.turbine_average_velocities
     assert np.allclose(velocities[:, 2], 8.0)
 
+    # Check that sample_flow_at_points runs
+    # Middle of bottom, middle of left
+    v = fmodel.sample_flow_at_points(
+        np.array([250, 0]),
+        np.array([0, 250]),
+        np.array([90, 90])
+    )
+    assert np.allclose(v[:,0], np.array([8.0, 16.0])) # Not waked
+    assert np.allclose(v[0,1], 12.0) # Not waked
+    assert v[1,1] < 12.0 # Slightly waked
 
 def test_run_2d_het_map_nearest_neighbor(caplog):
     # Define a 2D het map and confirm the results are as expected
@@ -519,6 +529,16 @@ def test_run_2d_het_map_nearest_neighbor(caplog):
     velocities = fmodel.turbine_average_velocities
     assert np.allclose(velocities[:, 2], 8.0*np.array([2.0, 1.0]))
 
+    # Check that sample_flow_at_points runs
+    # Middle of bottom, middle of left (slightly up)
+    v = fmodel.sample_flow_at_points(
+        np.array([250.0, 0]),
+        np.array([0, 251]),
+        np.array([90, 90])
+    )
+    assert np.allclose(v[:,0], np.array([8.0, 16.0])) # Not waked
+    assert np.allclose(v[0,1], 16.0) # Not waked
+    assert v[1,1] < 8.0 # Slightly waked
 
 def test_het_config():
 

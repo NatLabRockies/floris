@@ -1058,6 +1058,7 @@ class FlorisModel(LoggingManager):
                 'y': self.core.flow_field.heterogeneous_inflow_config['y'],
                 'speed_multipliers':
                     self.core.flow_field.heterogeneous_inflow_config['speed_multipliers'][findex:findex+1],
+                'interp_method': self.core.flow_field.heterogeneous_inflow_config['interp_method'],
             }
             if 'z' in self.core.flow_field.heterogeneous_inflow_config:
                 heterogeneous_inflow_config['z'] = (
@@ -1167,7 +1168,7 @@ class FlorisModel(LoggingManager):
                 Defaults to None.
             y_bounds (tuple, optional): Limits of output array (in m).
                 Defaults to None.
-            finder_for_viz (int, optional): Index of the condition to visualize.
+            findex_for_viz (int, optional): Index of the condition to visualize.
 
         Returns:
             :py:class:`~.tools.cut_plane.CutPlane`: containing values

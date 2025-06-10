@@ -1,9 +1,10 @@
+import logging
 from pathlib import Path
 
 import numpy as np
 import pytest
 
-from floris import FlorisModel
+from floris import FlorisModel, TimeSeries
 from floris.heterogeneous_map import HeterogeneousMap
 
 
@@ -396,7 +397,7 @@ def test_3d_het_and_shear():
         )
 
 
-def test_run_2d_het_map():
+def test_run_2d_het_map(caplog):
     # Define a 2D het map and confirm the results are as expected
     # when applied to FLORIS
 
@@ -417,8 +418,6 @@ def test_run_2d_het_map():
     # Get the FLORIS model
     fmodel = FlorisModel(configuration=YAML_INPUT)
 
-    from floris import TimeSeries
-
     time_series = TimeSeries(
         wind_directions=np.array([270.0, 90.0]),
         wind_speeds=8.0,
@@ -426,17 +425,20 @@ def test_run_2d_het_map():
         heterogeneous_map=het_map,
     )
 
-    # Set the model to a turbines perpinducluar to
-    # east/west flow with 0 turbine closer to bottom and
-    # turbine 1 closer to top
+    # Set the model to a turbines perpendicular to east/west flow with 0 turbine closer to bottom
+    # and turbine 1 closer to top, while turbine 2 is outside of heterogeneous specification.
     fmodel.set(
         wind_data=time_series,
-        layout_x=[250.0, 250.0],
-        layout_y=[100.0, 400.0],
+        layout_x=[250.0, 250.0, 250.0],
+        layout_y=[100.0, 400.0, 700.0],
+        wind_shear=0.0,
     )
 
-    # Run the model
-    fmodel.run()
+
+    # Run the model. Should raise warning due to turbine outside of bounds with linear interpolation
+    with caplog.at_level(logging.WARNING):
+        fmodel.run()
+    assert caplog.text != "" # Checking not empty
 
     # Get the turbine powers
     powers = fmodel.get_turbine_powers()
@@ -450,6 +452,72 @@ def test_run_2d_het_map():
     # Assert that the power of turbine 1 equals in the first condition
     # equals the power of turbine 0 in the second condition
     assert powers[0, 1] == powers[1, 0]
+
+    # Check that turbine 2 is simply seeing the freestream wind speed
+    velocities = fmodel.turbine_average_velocities
+    assert np.allclose(velocities[:, 2], 8.0)
+
+
+def test_run_2d_het_map_nearest_neighbor(caplog):
+    # Define a 2D het map and confirm the results are as expected
+    # when applied to FLORIS
+
+    # The side of the flow which is accelerated reverses for east versus west
+    het_map = HeterogeneousMap(
+        x=np.array([0.0, 0.0, 500.0, 500.0]),
+        y=np.array([0.0, 500.0, 0.0, 500.0]),
+        speed_multipliers=np.array(
+            [
+                [1.0, 2.0, 1.0, 2.0],  # Top accelerated
+                [2.0, 1.0, 2.0, 1.0],  # Bottom accelerated
+            ]
+        ),
+        wind_directions=np.array([270.0, 90.0]),
+        wind_speeds=np.array([8.0, 8.0]),
+        interp_method='nearest',
+    )
+
+    # Get the FLORIS model
+    fmodel = FlorisModel(configuration=YAML_INPUT)
+
+    time_series = TimeSeries(
+        wind_directions=np.array([270.0, 90.0]),
+        wind_speeds=8.0,
+        turbulence_intensities=0.06,
+        heterogeneous_map=het_map,
+    )
+
+    # Set the model to a turbines perpendicular to east/west flow with 0 turbine closer to bottom
+    # and turbine 1 closer to top, while turbine 2 is outside of heterogeneous specification
+    # (but will still take on the nearest neighbor value).
+    fmodel.set(
+        wind_data=time_series,
+        layout_x=[250.0, 250.0, 250.0],
+        layout_y=[100.0, 400.0, 700.0],
+        wind_shear=0.0,
+    )
+
+    # Run the model. No turbine outside of bounds warning raised for nearest neighbor interpolation
+    with caplog.at_level(logging.WARNING):
+        fmodel.run()
+    assert caplog.text == "" # Checking empty
+
+    # Get the turbine powers
+    powers = fmodel.get_turbine_powers()
+
+    # Assert that in the first condition, turbine 1 has higher power
+    assert powers[0, 1] > powers[0, 0]
+
+    # Assert that in the second condition, turbine 0 has higher power
+    assert powers[1, 0] > powers[1, 1]
+
+    # Assert that the power of turbine 1 equals in the first condition
+    # equals the power of turbine 0 in the second condition
+    assert powers[0, 1] == powers[1, 0]
+
+    # Check that turbine 2 is takes the value of the top row.
+    velocities = fmodel.turbine_average_velocities
+    assert np.allclose(velocities[:, 2], 8.0*np.array([2.0, 1.0]))
 
 
 def test_het_config():

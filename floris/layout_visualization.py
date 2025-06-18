@@ -235,7 +235,7 @@ def plot_turbine_rotors(
     yaw_rad = np.deg2rad(yaw_angles)
     sin_yaw_R = np.sin(yaw_rad) * rotor_radius
     cos_yaw_R = np.cos(yaw_rad) * rotor_radius
-    for i in range(fmodel.layout_x.size):        
+    for i in range(fmodel.layout_x.size):
         x_0 = fmodel.layout_x[i] + sin_yaw_R[i]
         x_1 = fmodel.layout_x[i] - sin_yaw_R[i]
         y_0 = fmodel.layout_y[i] - cos_yaw_R[i]

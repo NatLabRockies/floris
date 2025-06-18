@@ -79,12 +79,9 @@ def sequential_solver(
     for i in range(grid.n_turbines):
 
         # Get the current turbine quantities
-        x_i = np.mean(grid.x_sorted[:, i:i+1], axis=(2, 3))
-        x_i = x_i[:, :, None, None]
-        y_i = np.mean(grid.y_sorted[:, i:i+1], axis=(2, 3))
-        y_i = y_i[:, :, None, None]
-        z_i = np.mean(grid.z_sorted[:, i:i+1], axis=(2, 3))
-        z_i = z_i[:, :, None, None]
+        x_i = np.mean(grid.x_sorted[:, i:i+1], axis=(2, 3), keepdims=True)
+        y_i = np.mean(grid.y_sorted[:, i:i+1], axis=(2, 3), keepdims=True)
+        z_i = np.mean(grid.z_sorted[:, i:i+1], axis=(2, 3), keepdims=True)
 
         u_i = flow_field.u_sorted[:, i:i+1]
         v_i = flow_field.v_sorted[:, i:i+1]
@@ -317,12 +314,9 @@ def full_flow_sequential_solver(
     for i in range(flow_field_grid.n_turbines):
 
         # Get the current turbine quantities
-        x_i = np.mean(turbine_grid.x_sorted[:, i:i+1], axis=(2, 3))
-        x_i = x_i[:, :, None, None]
-        y_i = np.mean(turbine_grid.y_sorted[:, i:i+1], axis=(2, 3))
-        y_i = y_i[:, :, None, None]
-        z_i = np.mean(turbine_grid.z_sorted[:, i:i+1], axis=(2, 3))
-        z_i = z_i[:, :, None, None]
+        x_i = np.mean(turbine_grid.x_sorted[:, i:i+1], axis=(2, 3), keepdims=True)
+        y_i = np.mean(turbine_grid.y_sorted[:, i:i+1], axis=(2, 3), keepdims=True)
+        z_i = np.mean(turbine_grid.z_sorted[:, i:i+1], axis=(2, 3), keepdims=True)
 
         u_i = turbine_grid_flow_field.u_sorted[:, i:i+1]
         v_i = turbine_grid_flow_field.v_sorted[:, i:i+1]
@@ -487,12 +481,9 @@ def cc_solver(
     for i in range(grid.n_turbines):
 
         # Get the current turbine quantities
-        x_i = np.mean(grid.x_sorted[:, i:i+1], axis=(2, 3))
-        x_i = x_i[:, :, None, None]
-        y_i = np.mean(grid.y_sorted[:, i:i+1], axis=(2, 3))
-        y_i = y_i[:, :, None, None]
-        z_i = np.mean(grid.z_sorted[:, i:i+1], axis=(2, 3))
-        z_i = z_i[:, :, None, None]
+        x_i = np.mean(grid.x_sorted[:, i:i+1], axis=(2, 3), keepdims=True)
+        y_i = np.mean(grid.y_sorted[:, i:i+1], axis=(2, 3), keepdims=True)
+        z_i = np.mean(grid.z_sorted[:, i:i+1], axis=(2, 3), keepdims=True)
 
         rotor_diameter_i = farm.rotor_diameters_sorted[:, i:i+1, None, None]
 
@@ -756,12 +747,9 @@ def full_flow_cc_solver(
     for i in range(flow_field_grid.n_turbines):
 
         # Get the current turbine quantities
-        x_i = np.mean(turbine_grid.x_sorted[:, i:i+1], axis=(2, 3))
-        x_i = x_i[:, :, None, None]
-        y_i = np.mean(turbine_grid.y_sorted[:, i:i+1], axis=(2, 3))
-        y_i = y_i[:, :, None, None]
-        z_i = np.mean(turbine_grid.z_sorted[:, i:i+1], axis=(2, 3))
-        z_i = z_i[:, :, None, None]
+        x_i = np.mean(turbine_grid.x_sorted[:, i:i+1], axis=(2, 3), keepdims=True)
+        y_i = np.mean(turbine_grid.y_sorted[:, i:i+1], axis=(2, 3), keepdims=True)
+        z_i = np.mean(turbine_grid.z_sorted[:, i:i+1], axis=(2, 3), keepdims=True)
 
         u_i = turbine_grid_flow_field.u_sorted[:, i:i+1]
         v_i = turbine_grid_flow_field.v_sorted[:, i:i+1]
@@ -923,12 +911,9 @@ def turbopark_solver(
     # Calculate the velocity deficit sequentially from upstream to downstream turbines
     for i in range(grid.n_turbines):
         # Get the current turbine quantities
-        x_i = np.mean(grid.x_sorted[:, i:i+1], axis=(2, 3))
-        x_i = x_i[:, :, None, None]
-        y_i = np.mean(grid.y_sorted[:, i:i+1], axis=(2, 3))
-        y_i = y_i[:, :, None, None]
-        z_i = np.mean(grid.z_sorted[:, i:i+1], axis=(2, 3))
-        z_i = z_i[:, :, None, None]
+        x_i = np.mean(grid.x_sorted[:, i:i+1], axis=(2, 3), keepdims=True)
+        y_i = np.mean(grid.y_sorted[:, i:i+1], axis=(2, 3), keepdims=True)
+        z_i = np.mean(grid.z_sorted[:, i:i+1], axis=(2, 3), keepdims=True)
 
         Cts = thrust_coefficient(
             velocities=flow_field.u_sorted,
@@ -1191,12 +1176,9 @@ def empirical_gauss_solver(
     for i in range(grid.n_turbines):
 
         # Get the current turbine quantities
-        x_i = np.mean(grid.x_sorted[:, i:i+1], axis=(2, 3))
-        x_i = x_i[:, :, None, None]
-        y_i = np.mean(grid.y_sorted[:, i:i+1], axis=(2, 3))
-        y_i = y_i[:, :, None, None]
-        z_i = np.mean(grid.z_sorted[:, i:i+1], axis=(2, 3))
-        z_i = z_i[:, :, None, None]
+        x_i = np.mean(grid.x_sorted[:, i:i+1], axis=(2, 3), keepdims=True)
+        y_i = np.mean(grid.y_sorted[:, i:i+1], axis=(2, 3), keepdims=True)
+        z_i = np.mean(grid.z_sorted[:, i:i+1], axis=(2, 3), keepdims=True)
 
         ct_i = thrust_coefficient(
             velocities=flow_field.u_sorted,
@@ -1414,12 +1396,9 @@ def full_flow_empirical_gauss_solver(
     for i in range(flow_field_grid.n_turbines):
 
         # Get the current turbine quantities
-        x_i = np.mean(turbine_grid.x_sorted[:, i:i+1], axis=(2,3))
-        x_i = x_i[:, :, None, None]
-        y_i = np.mean(turbine_grid.y_sorted[:, i:i+1], axis=(2,3))
-        y_i = y_i[:, :, None, None]
-        z_i = np.mean(turbine_grid.z_sorted[:, i:i+1], axis=(2,3))
-        z_i = z_i[:, :, None, None]
+        x_i = np.mean(turbine_grid.x_sorted[:, i:i+1], axis=(2,3), keepdims=True)
+        y_i = np.mean(turbine_grid.y_sorted[:, i:i+1], axis=(2,3), keepdims=True)
+        z_i = np.mean(turbine_grid.z_sorted[:, i:i+1], axis=(2,3), keepdims=True)
 
         ct_i = thrust_coefficient(
             velocities=turbine_grid_flow_field.u_sorted,

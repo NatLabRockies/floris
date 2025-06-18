@@ -100,22 +100,17 @@ class CumulativeGaussCurlVelocityDeficit(BaseModel):
             self.c_s2,
         )
 
-        x_i_loc = np.mean(x_i, axis=(2, 3))
-        x_i_loc = x_i_loc[:, :, None, None]
+        x_i_loc = np.mean(x_i, axis=(2, 3), keepdims=True)
+        y_i_loc = np.mean(y_i, axis=(2, 3), keepdims=True)
+        z_i_loc = np.mean(z_i, axis=(2, 3), keepdims=True)
 
-        y_i_loc = np.mean(y_i, axis=(2, 3))
-        y_i_loc = y_i_loc[:, :, None, None]
-
-        z_i_loc = np.mean(z_i, axis=(2, 3))
-        z_i_loc = z_i_loc[:, :, None, None]
-
-        x_coord = np.mean(x, axis=(2, 3))[:, :, None, None]
+        x_coord = np.mean(x, axis=(2, 3), keepdims=True)
 
         y_loc = y
-        y_coord = np.mean(y, axis=(2, 3))[:, :, None, None]
+        y_coord = np.mean(y, axis=(2, 3), keepdims=True)
 
         z_loc = z  # np.mean(z, axis=(3,4))
-        z_coord = np.mean(z, axis=(2, 3))[:, :, None, None]
+        z_coord = np.mean(z, axis=(2, 3), keepdims=True)
 
         sum_lbda = np.zeros_like(u_initial)
 

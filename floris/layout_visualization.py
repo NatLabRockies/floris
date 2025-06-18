@@ -238,8 +238,8 @@ def plot_turbine_rotors(
     for i in range(fmodel.layout_x.size):        
         x_0 = fmodel.layout_x[i] + sin_yaw_R[i]
         x_1 = fmodel.layout_x[i] - sin_yaw_R[i]
-        y_0 = fmodel.layout_y[i] - cos_yaw_R
-        y_1 = fmodel.layout_y[i] + cos_yaw_R
+        y_0 = fmodel.layout_y[i] - cos_yaw_R[i]
+        y_1 = fmodel.layout_y[i] + cos_yaw_R[i]
         ax.plot([x_0, x_1], [y_0, y_1], color=color)
 
     return ax

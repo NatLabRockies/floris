@@ -99,7 +99,6 @@ class CumulativeGaussCurlVelocityDeficit(BaseModel):
             self.c_s2,
         )
 
-        x_i_loc = np.mean(x_i, axis=(2, 3), keepdims=True)
         y_i_loc = np.mean(y_i, axis=(2, 3), keepdims=True)
         z_i_loc = np.mean(z_i, axis=(2, 3), keepdims=True)
 

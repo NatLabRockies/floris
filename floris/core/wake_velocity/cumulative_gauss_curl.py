@@ -84,8 +84,7 @@ class CumulativeGaussCurlVelocityDeficit(BaseModel):
         turbine_yaw = yaw_i
 
         # TODO Should this be cbrt? This is done to match v2
-        turb_avg_vels = np.cbrt(np.mean(u_i ** 3, axis=(2, 3)))
-        turb_avg_vels = turb_avg_vels[:, :, None, None]
+        turb_avg_vels = np.cbrt(np.mean(u_i ** 3, axis=(2, 3), keepdims=True))
 
         delta_x = x - x_i
 

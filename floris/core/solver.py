@@ -253,8 +253,9 @@ def sequential_solver(
     flow_field.turbulence_intensity_field_sorted = turbine_turbulence_intensity
     flow_field.turbulence_intensity_field_sorted_avg = np.mean(
         turbine_turbulence_intensity,
-        axis=(2,3)
-    )[:, :, None, None]
+        axis=(2,3),
+        keepdims=True
+    )
 
 
 def full_flow_sequential_solver(
@@ -657,10 +658,9 @@ def cc_solver(
 
         # Calculate wake overlap for wake-added turbulence (WAT)
         area_overlap = 1 - (
-            np.sum(turb_u_wake <= 0.05, axis=(2, 3))
+            np.sum(turb_u_wake <= 0.05, axis=(2, 3), keepdims=True)
             / (grid.grid_resolution * grid.grid_resolution)
         )
-        area_overlap = area_overlap[:, :, None, None]
 
         # Modify wake added turbulence by wake area overlap
         downstream_influence_length = 15 * rotor_diameter_i
@@ -684,8 +684,9 @@ def cc_solver(
     flow_field.turbulence_intensity_field_sorted = turbine_turbulence_intensity
     flow_field.turbulence_intensity_field_sorted_avg = np.mean(
         turbine_turbulence_intensity,
-        axis=(2,3)
-    )[:, :, None, None]
+        axis=(2,3),
+        keepdims=True
+    )
 
 
 def full_flow_cc_solver(
@@ -998,10 +999,8 @@ def turbopark_solver(
                 "and perform a thorough examination of the results."
             )
             for ii in range(i):
-                x_ii = np.mean(grid.x_sorted[:, ii:ii+1], axis=(2, 3))
-                x_ii = x_ii[:, :, None, None]
-                y_ii = np.mean(grid.y_sorted[:, ii:ii+1], axis=(2, 3))
-                y_ii = y_ii[:, :, None, None]
+                x_ii = np.mean(grid.x_sorted[:, ii:ii+1], axis=(2, 3), keepdims=True)
+                y_ii = np.mean(grid.y_sorted[:, ii:ii+1], axis=(2, 3), keepdims=True)
 
                 yaw_ii = farm.yaw_angles_sorted[:, ii:ii+1, None, None]
                 turbulence_intensity_ii = turbine_turbulence_intensity[:, ii:ii+1]
@@ -1079,10 +1078,13 @@ def turbopark_solver(
         # turbines; could use WAT_upstream
         # Calculate wake overlap for wake-added turbulence (WAT)
         area_overlap = (
-            np.sum(velocity_deficit * flow_field.u_initial_sorted > 0.05, axis=(2, 3))
+            np.sum(
+                velocity_deficit * flow_field.u_initial_sorted > 0.05,
+                axis=(2, 3),
+                keepdims=True
+            )
             / (grid.grid_resolution * grid.grid_resolution)
         )
-        area_overlap = area_overlap[:, :, None, None]
 
         # Modify wake added turbulence by wake area overlap
         downstream_influence_length = 15 * rotor_diameter_i
@@ -1106,8 +1108,9 @@ def turbopark_solver(
     flow_field.turbulence_intensity_field_sorted = turbine_turbulence_intensity
     flow_field.turbulence_intensity_field_sorted_avg = np.mean(
         turbine_turbulence_intensity,
-        axis=(2, 3)
-    )[:, :, None, None]
+        axis=(2, 3),
+        keepdims=True
+    )
 
 
 def full_flow_turbopark_solver(

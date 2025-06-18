@@ -520,6 +520,7 @@ class ControllerDependentTurbine(BaseOperationModel):
 
             # Yawed case
             mu = np.arccos(cosd(gamma) * cosd(tilt))
+            pitch_in_plus_beta = np.deg2rad(pitch_in + beta)
             data = (
                 sigma,
                 cd,
@@ -530,7 +531,7 @@ class ControllerDependentTurbine(BaseOperationModel):
                 np.cos(mu),
                 np.sin(mu),
                 x,
-                np.deg2rad(pitch_in) + np.deg2rad(beta),
+                pitch_in_plus_beta,
                 mu,
             )
             x0 = 0.1
@@ -547,7 +548,7 @@ class ControllerDependentTurbine(BaseOperationModel):
                 np.cos(mu),
                 np.sin(mu),
                 x,
-                np.deg2rad(pitch_in) + np.deg2rad(beta),
+                pitch_in_plus_beta,
                 mu,
                 ct,
             )
@@ -564,7 +565,7 @@ class ControllerDependentTurbine(BaseOperationModel):
                 np.cos(mu),
                 np.sin(mu),
                 x,
-                np.deg2rad(pitch_in) + np.deg2rad(beta),
+                pitch_in_plus_beta,
                 mu,
             )
             x0 = 0.1
@@ -581,7 +582,7 @@ class ControllerDependentTurbine(BaseOperationModel):
                 np.cos(mu),
                 np.sin(mu),
                 x,
-                np.deg2rad(pitch_in) + np.deg2rad(beta),
+                pitch_in_plus_beta,
                 mu,
                 ct,
             )
@@ -628,7 +629,7 @@ class ControllerDependentTurbine(BaseOperationModel):
             omega_rpm = omega_rated * 30 / np.pi
             tsr = omega_rated * R / (u)
 
-            pitch_in = np.deg2rad(x)
+            pitch_in_plus_beta = np.deg2rad(x + beta)
             torque_nm = np.interp(
                 omega_rpm, omega_lut_torque * 30 / np.pi, torque_lut_omega
             )
@@ -645,7 +646,7 @@ class ControllerDependentTurbine(BaseOperationModel):
                 np.cos(mu),
                 np.sin(mu),
                 tsr,
-                (pitch_in) + np.deg2rad(beta),
+                pitch_in_plus_beta,
                 mu,
             )
             x0 = 0.1
@@ -662,7 +663,7 @@ class ControllerDependentTurbine(BaseOperationModel):
                 np.cos(mu),
                 np.sin(mu),
                 tsr,
-                (pitch_in) + np.deg2rad(beta),
+                pitch_in_plus_beta,
                 mu,
                 ct,
             )
@@ -679,7 +680,7 @@ class ControllerDependentTurbine(BaseOperationModel):
                 np.cos(mu),
                 np.sin(mu),
                 tsr,
-                (pitch_in) + np.deg2rad(beta),
+                pitch_in_plus_beta,
                 mu,
             )
             x0 = 0.1
@@ -696,7 +697,7 @@ class ControllerDependentTurbine(BaseOperationModel):
                 np.cos(mu),
                 np.sin(mu),
                 tsr,
-                (pitch_in) + np.deg2rad(beta),
+                pitch_in_plus_beta,
                 mu,
                 ct,
             )

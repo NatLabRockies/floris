@@ -232,12 +232,15 @@ def plot_turbine_rotors(
         yaw_angles = yaw_angles[0, :]
 
     rotor_diameters = fmodel.core.farm.rotor_diameters.flatten()
+    yaw_rad = np.deg2rad(yaw)
+    sin_yaw_R = np.sin(yaw_rad) * R
+    cos_yaw_R = np.cos(yaw_rad) * R
     for x, y, yaw, d in zip(fmodel.layout_x, fmodel.layout_y, yaw_angles, rotor_diameters):
         R = d / 2.0
-        x_0 = x + np.sin(np.deg2rad(yaw)) * R
-        x_1 = x - np.sin(np.deg2rad(yaw)) * R
-        y_0 = y - np.cos(np.deg2rad(yaw)) * R
-        y_1 = y + np.cos(np.deg2rad(yaw)) * R
+        x_0 = x + sin_yaw_R
+        x_1 = x - sin_yaw_R
+        y_0 = y - cos_yaw_R
+        y_1 = y + cos_yaw_R
         ax.plot([x_0, x_1], [y_0, y_1], color=color)
 
     return ax

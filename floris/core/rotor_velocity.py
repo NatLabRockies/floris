@@ -47,11 +47,11 @@ def rotor_velocity_tilt_cosine_correction(
     tilt_angles = np.where(correct_cp_ct_for_tilt, tilt_angles, old_tilt_angle)
 
     # Compute the rotor effective velocity adjusting for tilt
-    relative_tilt = tilt_angles - ref_tilt
     rotor_effective_velocities = (
         rotor_effective_velocities
-        * cosd(relative_tilt) ** (cosine_loss_exponent_tilt / 3.0)
+        * (cosd(tilt_angles) / cosd(ref_tilt)) ** (cosine_loss_exponent_tilt / 3.0)
     )
+
     return rotor_effective_velocities
 
 def simple_mean(array, axis=0):

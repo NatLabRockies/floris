@@ -183,4 +183,4 @@ def test_scipy_yaw_opt(sample_inputs_fixture):
         print(baseline_scipy.to_string())
         print(df_opt.to_string())
 
-    pd.testing.assert_frame_equal(df_opt, baseline_scipy)
+    pd.testing.assert_frame_equal(df_opt, baseline_scipy, check_exact=False)

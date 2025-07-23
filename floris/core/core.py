@@ -12,6 +12,7 @@ from floris import logging_manager
 from floris.core import (
     BaseClass,
     cc_solver,
+    curled_wake_solver,
     empirical_gauss_solver,
     Farm,
     FlowField,
@@ -193,6 +194,13 @@ class Core(BaseClass):
             )
         elif vel_model=="empirical_gauss":
             empirical_gauss_solver(
+                self.farm,
+                self.flow_field,
+                self.grid,
+                self.wake
+            )
+        elif vel_model=="cwm":
+            curled_wake_solver(
                 self.farm,
                 self.flow_field,
                 self.grid,

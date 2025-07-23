@@ -1,0 +1,65 @@
+
+name: CWM
+description: Three turbines using Curled Wake Model
+floris_version: v4
+
+logging:
+  console:
+    enable: true
+    level: WARNING
+  file:
+    enable: false
+    level: WARNING
+
+# TODO: Likely will need to overwrite this.
+solver:
+  type: turbine_grid
+  turbine_grid_points: 3
+
+farm:
+  layout_x:
+  - 0.0
+  - 630.0
+  - 1260.0
+  layout_y:
+  - 0.0
+  - 0.0
+  - 0.0
+  turbine_type:
+  - nrel_5MW
+
+flow_field:
+  air_density: 1.225
+  reference_wind_height: -1 # -1 is code for use the hub height
+  turbulence_intensities:
+  - 0.06
+  wind_directions:
+  - 270.0
+  wind_shear: 0.12
+  wind_speeds:
+  - 8.0
+  wind_veer: 0.0
+
+wake:
+  model_strings:
+    combination_model: none
+    deflection_model: none
+    turbulence_model: none
+    velocity_model: cwm
+
+  enable_secondary_steering: false
+  enable_yaw_added_recovery: false
+  enable_transverse_velocities: false
+  enable_active_wake_mixing: false
+
+  wake_deflection_parameters:
+    None: {}
+
+  wake_velocity_parameters:
+    cwm:
+      a: 0.0
+      b: 0.0
+      dx_D: 0.1
+
+  wake_turbulence_parameters:
+    None: {}

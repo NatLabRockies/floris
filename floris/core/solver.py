@@ -1508,3 +1508,14 @@ def full_flow_empirical_gauss_solver(
         flow_field.u_sorted = flow_field.u_initial_sorted - wake_field
         flow_field.v_sorted += v_wake
         flow_field.w_sorted += w_wake
+
+def curled_wake_solver(
+    farm: Farm,
+    flow_field: FlowField,
+    grid: TurbineGrid,
+    model_manager: WakeModelManager
+) -> NDArrayFloat:
+    raise NotImplementedError("Not yet pencilled in")
+
+
+    # Result: flow_field.u_sorted.

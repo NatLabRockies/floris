@@ -24,7 +24,10 @@ from floris.core.wake_deflection.gauss import (
     yaw_added_turbulence_mixing,
 )
 from floris.core.wake_velocity.empirical_gauss import awc_added_wake_mixing
-from floris.type_dec import NDArrayFloat
+from floris.type_dec import (
+    floris_float_type,
+    NDArrayFloat,
+)
 from floris.utilities import cosd
 
 
@@ -1515,7 +1518,92 @@ def curled_wake_solver(
     grid: TurbineGrid,
     model_manager: WakeModelManager
 ) -> NDArrayFloat:
-    raise NotImplementedError("Not yet pencilled in")
+    # In the normal paradigm, flow_field contains quantities over the turbine
+    # rotors (perhaps not the best name, but that's how it is).
 
+    # I propose that we start by keeping it that way; i.e., flow_field.u_sorted
+    # is the "final" output of the solve, with dimensions (n_findex, n_turbines, n_grid, n_grid),
+    # with n_grid being a number of grid points used for averaging
+    # (potentially urelated to the CWM grid).
+
+    # I'm generating the data matrices for the CWM with an empty first dimension,
+    # as a placeholder for a final implementation with an n_findex dimension.
+    n_findex = 1
+    n_x_points = 1000 # Temporarily hardcoded
+    n_z_points = 300 # Temporarily hardcoded
+
+    # Establish grid (Temporary---update to use information from grid object and model_manager)
+    x_1d = np.linspace(0, 1000, n_x_points, dtype=floris_float_type) # x coordinates
+    y_1d = np.linspace(0, 1000, n_x_points, dtype=floris_float_type) # y coordinates
+    z_1d = np.linspace(0, 1000, n_z_points, dtype=floris_float_type) # z coordinates
+    u_sheared = (z_1d / flow_field.reference_wind_height) ** flow_field.wind_shear * flow_field.wind_speeds
+
+    # Create large arrays (memory intensive!)
+    x, y, z = np.meshgrid(x_1d, y_1d, z_1d, indexing='ij')
+    x = np.repeat(x[None,:,:,:], n_findex, axis=0)
+    y = np.repeat(y[None,:,:,:], n_findex, axis=0)
+    z = np.repeat(z[None,:,:,:], n_findex, axis=0)
+
+    # Use the same number of x and y points for generality once we get to multiple
+    # findices at once (can consider revising later)
+    # Not yet handling heterogeneity; will work that in later.
+    u_freestream = np.tile(u_sheared, (n_findex, n_x_points, n_x_points, 1))
+    v_freestream = np.zeros_like(x, dtype=floris_float_type) # May not be needed. Always zeros?
+    w_freestream = np.zeros_like(x, dtype=floris_float_type) # May not be needed. Always zeros?
+    u_waked = np.zeros_like(x, dtype=floris_float_type)
+    v_waked = np.zeros_like(x, dtype=floris_float_type)
+    w_waked = np.zeros_like(x, dtype=floris_float_type)
+
+    # Code to generate one or multiple turbine indices that correspond to a certain x location
+    # Each element in the list turbines_in_plane should be a list of the turbines that appear at
+    # that plane's x location (i.e., often an empty list).
+    turbines_in_plane = [[] for _ in range(n_x_points)]
+    # Placeholders so that we can run through the code
+    turbines_in_plane[300] = [0]
+    turbines_in_plane[450] = [1]
+
+    for i in range(n_x_points):
+        u_freestream_plane = u_freestream[:, i, :, :]
+        v_freestream_plane = v_freestream[:, i, :, :]
+        w_freestream_plane = w_freestream[:, i, :, :]
+        u_waked_plane = u_waked[:, i, :, :]
+        v_waked_plane = v_waked[:, i, :, :]
+        w_waked_plane = w_waked[:, i, :, :]
+
+        ### ... solver code here ...
+
+        # If a turbine exists on this plane, calculate its inflow velocities as a subset of u_freestream_plane
+        for t in turbines_in_plane[i]:
+            turbine_x = grid.x_sorted[:,t,:,:]
+            turbine_y = grid.y_sorted[:,t,:,:]
+            turbine_z = grid.z_sorted[:,t,:,:]
+            # Pull values from u_waked_plane that are closest to the turbine locations
+            u_waked_plane_turbine = 8 * np.ones((3, 3)) # PLACEHOLDER
+            flow_field.u_sorted[0, t, :, :] = u_waked_plane_turbine
+
+        if turbines_in_plane[i]: # Just to avoid running unnecessarily if there are no turbines in plane
+            ct_i = thrust_coefficient(
+                velocities=flow_field.u_sorted,
+                turbulence_intensities=flow_field.turbulence_intensity_field_sorted,
+                air_density=flow_field.air_density,
+                yaw_angles=farm.yaw_angles_sorted,
+                tilt_angles=farm.tilt_angles_sorted,
+                power_setpoints=farm.power_setpoints_sorted,
+                awc_modes=farm.awc_modes_sorted,
+                awc_amplitudes=farm.awc_amplitudes_sorted,
+                thrust_coefficient_functions=farm.turbine_thrust_coefficient_functions,
+                tilt_interps=farm.turbine_tilt_interps,
+                correct_cp_ct_for_tilt=farm.correct_cp_ct_for_tilt_sorted,
+                turbine_type_map=farm.turbine_type_map_sorted,
+                turbine_power_thrust_tables=farm.turbine_power_thrust_tables,
+                ix_filter=turbines_in_plane[i],
+                average_method=grid.average_method,
+                cubature_weights=grid.cubature_weights,
+                multidim_condition=flow_field.multidim_conditions,
+            )
+            print("C_T:", ct_i)
+
+    print("Solve complete.")
 
     # Result: flow_field.u_sorted.
+    return None

@@ -1529,14 +1529,24 @@ def curled_wake_solver(
     # I'm generating the data matrices for the CWM with an empty first dimension,
     # as a placeholder for a final implementation with an n_findex dimension.
     n_findex = 1
-    n_x_points = 1000 # Temporarily hardcoded
-    n_z_points = 300 # Temporarily hardcoded
 
-    # Establish grid (Temporary---update to use information from grid object and model_manager)
-    x_1d = np.linspace(0, 1000, n_x_points, dtype=floris_float_type) # x coordinates
-    y_1d = np.linspace(0, 1000, n_x_points, dtype=floris_float_type) # y coordinates
-    z_1d = np.linspace(0, 1000, n_z_points, dtype=floris_float_type) # z coordinates
-    u_sheared = (z_1d / flow_field.reference_wind_height) ** flow_field.wind_shear * flow_field.wind_speeds
+
+    dx = model_manager.velocity_model.dx_D * farm.rotor_diameters_sorted.min()
+    x_min = 0 - farm.rotor_diameters_sorted.max() # 1D upstream of first turbine
+    x_max = grid.x_sorted.max() + farm.rotor_diameters_sorted.max() # 1D downstream of last turbine
+    y_min = grid.y_sorted.min() - farm.rotor_diameters_sorted.max()
+    y_max = grid.y_sorted.max() + farm.rotor_diameters_sorted.max()
+    x_1d = np.arange(x_min, x_max, dx, dtype=floris_float_type) # x coordinates
+    y_1d = np.arange(y_min, y_max, dx, dtype=floris_float_type) # y coordinates
+    z_1d = np.arange(
+        0, farm.hub_heights_sorted.max()+farm.rotor_diameters_sorted.max(), dtype=floris_float_type
+    ) # Go up to 0.5D above highest tip point
+    u_sheared = (
+        (z_1d / flow_field.reference_wind_height) ** flow_field.wind_shear
+        * flow_field.wind_speeds
+    )
+
+    n_x_planes = x_1d.shape[0]
 
     # Create large arrays (memory intensive!)
     x, y, z = np.meshgrid(x_1d, y_1d, z_1d, indexing='ij')
@@ -1547,7 +1557,7 @@ def curled_wake_solver(
     # Use the same number of x and y points for generality once we get to multiple
     # findices at once (can consider revising later)
     # Not yet handling heterogeneity; will work that in later.
-    u_freestream = np.tile(u_sheared, (n_findex, n_x_points, n_x_points, 1))
+    u_freestream = np.tile(u_sheared, (n_findex, n_x_planes, n_x_planes, 1))
     v_freestream = np.zeros_like(x, dtype=floris_float_type) # May not be needed. Always zeros?
     w_freestream = np.zeros_like(x, dtype=floris_float_type) # May not be needed. Always zeros?
     u_waked = np.zeros_like(x, dtype=floris_float_type)
@@ -1557,12 +1567,12 @@ def curled_wake_solver(
     # Code to generate one or multiple turbine indices that correspond to a certain x location
     # Each element in the list turbines_in_plane should be a list of the turbines that appear at
     # that plane's x location (i.e., often an empty list).
-    turbines_in_plane = [[] for _ in range(n_x_points)]
-    # Placeholders so that we can run through the code
-    turbines_in_plane[300] = [0]
-    turbines_in_plane[450] = [1]
+    turbines_in_plane = [[] for _ in range(n_x_planes)]
+    # Placeholders so that we can run through and demonstrate the code
+    turbines_in_plane[30] = [0]
+    turbines_in_plane[45] = [1]
 
-    for i in range(n_x_points):
+    for i in range(n_x_planes):
         u_freestream_plane = u_freestream[:, i, :, :]
         v_freestream_plane = v_freestream[:, i, :, :]
         w_freestream_plane = w_freestream[:, i, :, :]
@@ -1578,7 +1588,7 @@ def curled_wake_solver(
             turbine_y = grid.y_sorted[:,t,:,:]
             turbine_z = grid.z_sorted[:,t,:,:]
             # Pull values from u_waked_plane that are closest to the turbine locations
-            u_waked_plane_turbine = 8 * np.ones((3, 3)) # PLACEHOLDER
+            u_waked_plane_turbine = 10 * np.ones((3, 3)) # PLACEHOLDER
             flow_field.u_sorted[0, t, :, :] = u_waked_plane_turbine
 
         if turbines_in_plane[i]: # Just to avoid running unnecessarily if there are no turbines in plane

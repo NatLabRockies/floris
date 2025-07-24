@@ -1381,6 +1381,26 @@ class FlorisModel(LoggingManager):
             raise ValueError("x, y, and z must be the same size")
 
         return self.core.solve_for_points(x, y, z)
+    
+    def sample_ti_at_points(self, x: NDArrayFloat, y: NDArrayFloat, z: NDArrayFloat):
+        """
+        Extract the turbulence intensity at points in the flow.
+
+        Args:
+            x (1DArrayFloat | list): x-locations of points where TI is desired.
+            y (1DArrayFloat | list): y-locations of points where TI is desired.
+            z (1DArrayFloat | list): z-locations of points where TI is desired.
+
+        Returns:
+            3DArrayFloat containing turbulence intensity with dimensions
+            (# of findex, # of sample points)
+        """
+
+        # Check that x, y, z are all the same length
+        if not len(x) == len(y) == len(z):
+            raise ValueError("x, y, and z must be the same size")
+
+        return self.core.solve_ti_for_points(x, y, z)
 
     def sample_velocity_deficit_profiles(
         self,

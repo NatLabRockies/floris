@@ -313,6 +313,12 @@ def full_flow_sequential_solver(
     v_wake = np.zeros_like(flow_field.v_initial_sorted)
     w_wake = np.zeros_like(flow_field.w_initial_sorted)
 
+    # Initialize the turbulence intensity field over the entire flow field grid
+    n_points = flow_field_grid.x_sorted.shape[1]
+    ambient_turbulence_intensities = flow_field.turbulence_intensities[:, None, None, None]
+    ambient_turbulence_intensities = np.repeat(ambient_turbulence_intensities, n_points, axis=1)
+    turbulence_intensity_field = ambient_turbulence_intensities.copy()
+
     # Calculate the velocity deficit sequentially from upstream to downstream turbines
     for i in range(flow_field_grid.n_turbines):
 
@@ -446,9 +452,40 @@ def full_flow_sequential_solver(
             velocity_deficit * flow_field.u_initial_sorted
         )
 
+        wake_added_ti = model_manager.turbulence_model.function(
+            ambient_turbulence_intensities,
+            flow_field_grid.x_sorted,
+            x_i,
+            rotor_diameter_i,
+            axial_induction_i,
+        ) 
+
+        # Calculate wake overlap for wake-added turbulence (WAT)
+        area_overlap = (
+            np.sum(velocity_deficit * flow_field.u_initial_sorted > 0.05, axis=(2, 3))
+            / (flow_field_grid.grid_resolution * flow_field_grid.grid_resolution)
+        )
+        area_overlap = area_overlap[:, :, None, None]
+
+        # Modify wake added turbulence by wake area overlap
+        downstream_influence_length = 15 * rotor_diameter_i
+        ti_added = (
+            area_overlap
+            * np.nan_to_num(wake_added_ti, posinf=0.0)
+            * (flow_field_grid.x_sorted > x_i)
+            * (np.abs(y_i - flow_field_grid.y_sorted) < 2 * rotor_diameter_i)
+            * (flow_field_grid.x_sorted <= downstream_influence_length + x_i)
+        )
+        # Combine turbine TIs with WAT
+        turbulence_intensity_field = np.maximum(
+            np.sqrt(ti_added**2 + ambient_turbulence_intensities**2), turbulence_intensity_field
+        )
+
         flow_field.u_sorted = flow_field.u_initial_sorted - wake_field
         flow_field.v_sorted += v_wake
         flow_field.w_sorted += w_wake
+        
+    flow_field.turbulence_intensity_field_sorted = turbulence_intensity_field    
 
 
 def cc_solver(

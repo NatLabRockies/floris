@@ -458,14 +458,10 @@ def full_flow_sequential_solver(
             x_i,
             rotor_diameter_i,
             axial_induction_i,
-        ) 
-
-        # Calculate wake overlap for wake-added turbulence (WAT)
-        area_overlap = (
-            np.sum(velocity_deficit * flow_field.u_initial_sorted > 0.05, axis=(2, 3))
-            / (flow_field_grid.grid_resolution * flow_field_grid.grid_resolution)
         )
-        area_overlap = area_overlap[:, :, None, None]
+
+        # Calculate locations where wake-added turbulence (WAT) applies
+        area_overlap = np.where(velocity_deficit * flow_field.u_initial_sorted > 0.05, 1, 0)
 
         # Modify wake added turbulence by wake area overlap
         downstream_influence_length = 15 * rotor_diameter_i
@@ -484,8 +480,8 @@ def full_flow_sequential_solver(
         flow_field.u_sorted = flow_field.u_initial_sorted - wake_field
         flow_field.v_sorted += v_wake
         flow_field.w_sorted += w_wake
-        
-    flow_field.turbulence_intensity_field_sorted = turbulence_intensity_field    
+
+    flow_field.turbulence_intensity_field_sorted = turbulence_intensity_field
 
 
 def cc_solver(

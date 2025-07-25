@@ -1381,7 +1381,7 @@ class FlorisModel(LoggingManager):
             raise ValueError("x, y, and z must be the same size")
 
         return self.core.solve_for_points(x, y, z)
-    
+
     def sample_ti_at_points(self, x: NDArrayFloat, y: NDArrayFloat, z: NDArrayFloat):
         """
         Extract the turbulence intensity at points in the flow.

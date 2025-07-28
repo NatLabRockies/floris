@@ -1576,9 +1576,21 @@ def curled_wake_solver(
     # Each element in the list turbines_in_plane should be a list of the turbines that appear at
     # that plane's x location (i.e., often an empty list).
     turbines_in_plane = [[] for _ in range(n_x_planes)]
-    # Placeholders so that we can run through and demonstrate the code
-    turbines_in_plane[15] = [0]
-    turbines_in_plane[45] = [1]
+
+    # Let's try to extract the turbines in each plane
+    Nt = grid.x_sorted.shape[1]  # Number of turbines
+    for t in range(Nt):
+        # Get the x coordinate of the turbine
+        turbine_x = np.mean(grid.x_sorted[:, t, :, :])
+        # Find the index of the plane that contains this turbine
+        ip = np.argmin(np.abs(x_1d - turbine_x))
+        turbines_in_plane[ip] += [t]
+
+    #print("Turbines in each plane:", turbines_in_plane)
+
+    #turbine_x = grid.x_sorted[:,t,:,:]
+    #turbine_y = grid.y_sorted[:,t,:,:]
+    #turbine_z = grid.z_sorted[:,t,:,:]
 
     for i in range(1, n_x_planes):
         u_freestream_plane = np.maximum(u_freestream[:, i, :, :], 3) # Ensure freestream velocity is above 3 m/s (should really be 20% of U_inf)
@@ -1590,9 +1602,6 @@ def curled_wake_solver(
 
         # Compute the numerical viscosity needed for stability
         Re = 1e4
-        #nu = np.maximum(u_freestream_plane * flow_field.reference_wind_height / Re, 8 * 100 / Re)
-        u_fs = u_freestream_plane[0]
-        nu_2d = np.maximum(u_fs * flow_field.reference_wind_height / Re, 8 * 100 / Re)
 
         ### ... solver code here ...
         #u_waked[:, i, :, :] = u_waked[:, i-1, :, :]
@@ -1604,7 +1613,7 @@ def curled_wake_solver(
         u_fs   = u_freestream_plane[0]     # shape (ny, nz)
         v_fs   = v_freestream_plane[0]     # shape (ny, nz)
         w_fs   = w_freestream_plane[0]     # shape (ny, nz)
-        #nu_2d  = nu[0]                     # shape (ny, nz)
+        nu_2d = np.maximum(u_fs * flow_field.reference_wind_height / Re, 8 * 100 / Re)
 
         # Debug shapes
         #print("u_prev shape:", u_prev.shape)
@@ -1638,7 +1647,6 @@ def curled_wake_solver(
         # Assign it back
         u_waked[0, i, :, :] = u_new
 
-
         # If a turbine exists on this plane, calculate its inflow velocities as a subset of u_freestream_plane
         for t in turbines_in_plane[i]:
             turbine_x = grid.x_sorted[:,t,:,:]
@@ -1650,26 +1658,22 @@ def curled_wake_solver(
             t_y = np.mean(turbine_y)
             t_z = np.mean(turbine_z)
 
-            rotor_diameter_i = farm.rotor_diameters_sorted[:, t:t+1, None, None].max()
-            print("Rotor diameter:", rotor_diameter_i)
-            #r2 = (y - t_y)**2 + (z - t_z)**2
-            # This is inside the rotor disk
-            #mask = r2 < (rotor_diameter_i / 2)**2
-            #print(mask.shape)
+            #rotor_diameter_i = farm.rotor_diameters_sorted[:, t:t+1, None, None].max()
+            rotor_diameter_i = farm.rotor_diameters_sorted[:, t, None, None].max()
 
             # Create a mask for points inside the rotor disk at this x-plane
             # mask shape: (n_findex, n_y, n_z), True where (y, z) is inside rotor
             rotor_mask = ((y[:, i, :, :] - t_y) ** 2 + (z[:, i, :, :] - t_z) ** 2) < (rotor_diameter_i / 2)**2
-            print("Rotor mask shape:", rotor_mask.shape)
+            #print("Rotor mask shape:", rotor_mask.shape)
             # The filtered mask for points inside the rotor disk (wider)
             rotor_mask_filt = ((y[:, i, :, :] - t_y) ** 2 + (z[:, i, :, :] - t_z) ** 2) < (1.3 * rotor_diameter_i / 2)**2
-            print("Rotor mask shape:", rotor_mask_filt.shape)
+            #print("Rotor mask shape:", rotor_mask_filt.shape)
 
-            print("Turbine:", t, "at x:", turbine_x[0,0,0], "y:", turbine_y[0,0,0], "z:", turbine_z[0,0,0])
-            print("Turbine coordinates:", turbine_x.shape, turbine_y.shape, turbine_z.shape)
-            print("Turbine x: ", turbine_x)
-            print("Turbine y: ", turbine_y)
-            print("Turbine z: ", turbine_z)
+            #print("Turbine:", t, "at x:", turbine_x[0,0,0], "y:", turbine_y[0,0,0], "z:", turbine_z[0,0,0])
+            #print("Turbine coordinates:", turbine_x.shape, turbine_y.shape, turbine_z.shape)
+            #print("Turbine x: ", turbine_x)
+            #print("Turbine y: ", turbine_y)
+            #print("Turbine z: ", turbine_z)
             # Pull values from u_waked_plane that are closest to the turbine locations
             #u_waked_plane_turbine = 10 * np.ones((3, 3)) # PLACEHOLDER
             #flow_field.u_sorted[0, t, :, :] = u_waked_plane_turbine
@@ -1693,7 +1697,7 @@ def curled_wake_solver(
                 correct_cp_ct_for_tilt=farm.correct_cp_ct_for_tilt_sorted,
                 turbine_type_map=farm.turbine_type_map_sorted,
                 turbine_power_thrust_tables=farm.turbine_power_thrust_tables,
-                ix_filter=turbines_in_plane[i],
+                ix_filter=[t],
                 average_method=grid.average_method,
                 cubature_weights=grid.cubature_weights,
                 multidim_condition=flow_field.multidim_conditions,
@@ -1703,16 +1707,7 @@ def curled_wake_solver(
             a = (1. - np.sqrt(1. - ct_i * np.cos(0)**2)) / 2
             a = float(np.minimum(a, 0.35))  # force scalar  # Set a limit to guarantee numerical stability
             print("a:", a)
-            # Compute the induction u = -2aU
-            #du = - (U * 2 * a)
 
-            print("rotor_mask:", rotor_mask.shape)
-            print("u_freestream_plane:", u_freestream_plane.shape)
-            print("u_waked_plane:", u_waked_plane.shape)
-
-            #######################
-            # I beliebe there is an error here
-            #######################
             # Apply induction to points inside the rotor disk
             u_waked_plane[rotor_mask] = - 2 * a * u_freestream_plane[rotor_mask]
             #u_waked_plane = gaussian_filter(u_waked_plane, 3) 

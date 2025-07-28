@@ -1589,7 +1589,7 @@ def curled_wake_solver(
         w_waked_plane = w_waked[:, i, :, :]
 
         # Compute the numerical viscosity needed for stability
-        Re = 1e-4
+        Re = 1e4
         #nu = np.maximum(u_freestream_plane * flow_field.reference_wind_height / Re, 8 * 100 / Re)
         u_fs = u_freestream_plane[0]
         nu_2d = np.maximum(u_fs * flow_field.reference_wind_height / Re, 8 * 100 / Re)
@@ -1607,13 +1607,13 @@ def curled_wake_solver(
         #nu_2d  = nu[0]                     # shape (ny, nz)
 
         # Debug shapes
-        print("u_prev shape:", u_prev.shape)
-        print("u_fs shape:", u_fs.shape)
-        print("v_fs shape:", v_fs.shape)
-        print("w_fs shape:", w_fs.shape)
-        print("nu_2d shape:", nu_2d.shape)
-        print("dx:", dx)
-        print("f:", f)
+        #print("u_prev shape:", u_prev.shape)
+        #print("u_fs shape:", u_fs.shape)
+        #print("v_fs shape:", v_fs.shape)
+        #print("w_fs shape:", w_fs.shape)
+        #print("nu_2d shape:", nu_2d.shape)
+        #print("dx:", dx)
+        #print("f:", f)
 
         # Run RK step
         u_new = runge_kutta_step(
@@ -1629,11 +1629,11 @@ def curled_wake_solver(
         )
 
         #u_new = np.clip(u_new, -5, 0)
-        import matplotlib.pyplot as plt
-        plt.pcolormesh(u_new, label='u_new')
-        plt.colorbar(label='Velocity (m/s)')
-        plt.gca().set_aspect('equal', adjustable='box')
-        plt.show()
+        #import matplotlib.pyplot as plt
+        #plt.pcolormesh(u_new, label='u_new')
+        #plt.colorbar(label='Velocity (m/s)')
+        #plt.gca().set_aspect('equal', adjustable='box')
+        #plt.show()
 
         # Assign it back
         u_waked[0, i, :, :] = u_new
@@ -1661,7 +1661,9 @@ def curled_wake_solver(
             # mask shape: (n_findex, n_y, n_z), True where (y, z) is inside rotor
             rotor_mask = ((y[:, i, :, :] - t_y) ** 2 + (z[:, i, :, :] - t_z) ** 2) < (rotor_diameter_i / 2)**2
             print("Rotor mask shape:", rotor_mask.shape)
-
+            # The filtered mask for points inside the rotor disk (wider)
+            rotor_mask_filt = ((y[:, i, :, :] - t_y) ** 2 + (z[:, i, :, :] - t_z) ** 2) < (1.3 * rotor_diameter_i / 2)**2
+            print("Rotor mask shape:", rotor_mask_filt.shape)
 
             print("Turbine:", t, "at x:", turbine_x[0,0,0], "y:", turbine_y[0,0,0], "z:", turbine_z[0,0,0])
             print("Turbine coordinates:", turbine_x.shape, turbine_y.shape, turbine_z.shape)
@@ -1671,7 +1673,7 @@ def curled_wake_solver(
             # Pull values from u_waked_plane that are closest to the turbine locations
             #u_waked_plane_turbine = 10 * np.ones((3, 3)) # PLACEHOLDER
             #flow_field.u_sorted[0, t, :, :] = u_waked_plane_turbine
-            u_rotor_values = u_waked_plane[rotor_mask]
+            u_rotor_values = u_freestream_plane[rotor_mask] + u_waked_plane[rotor_mask]
             u_rotor_disk = np.mean(u_rotor_values)
             flow_field.u_sorted[0, t, :, :] = u_rotor_disk  # or shape match if 2D needed
 
@@ -1714,7 +1716,9 @@ def curled_wake_solver(
             # Apply induction to points inside the rotor disk
             u_waked_plane[rotor_mask] = - 2 * a * u_freestream_plane[rotor_mask]
             #u_waked_plane = gaussian_filter(u_waked_plane, 3) 
-            u_waked[0, i, :, :] = gaussian_filter(u_waked_plane, 3)
+            # (this filtered the entire plane) u_waked[0, i, :, :] = gaussian_filter(u_waked_plane, 3)
+            # Filter only around the rotor disk
+            u_waked[:,i,:,:][rotor_mask_filt] = gaussian_filter(u_waked_plane[rotor_mask_filt], 2)
 
         
         # Ensure boundary conditions are satisfied
@@ -1729,7 +1733,7 @@ def curled_wake_solver(
     import matplotlib.pyplot as plt
     #plt.pcolormesh(x_1d, y_1d, u_freestream[0, :, :, k].T, label='Waked', shading='gouraud')
     plt.pcolormesh(x_1d, y_1d, u_waked[0, :, :, k].T, label='Waked', shading='gouraud',
-                   vmin=3, vmax=9,
+                   #vmin=3, vmax=9,
                    )
     plt.colorbar()
     plt.gca().set_aspect('equal', adjustable='box')

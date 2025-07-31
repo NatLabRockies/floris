@@ -266,11 +266,6 @@ class Core(BaseClass):
 
         return self.flow_field.u_sorted[:,:,0,0] # Remove turbine grid dimensions
 
-    def solve_ti_for_points(self, x, y, z):
-        # Call _solve_for_points and return the turbulence intensity field
-        self.solve_for_points(x, y, z) # Ignore returned velocity field
-        return self.flow_field.turbulence_intensity_field_sorted[:, :, 0, 0]
-
     def solve_for_velocity_deficit_profiles(
         self,
         direction: str,

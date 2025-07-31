@@ -871,3 +871,60 @@ def test_merge_floris_models():
     fmodel_list = [fmodel1, "not a floris model"]
     with pytest.raises(TypeError):
         merged_fmodel = FlorisModel.merge_floris_models(fmodel_list)
+
+def test_sample_flow_at_points():
+    n_wds = 20
+
+    fmodel = FlorisModel(configuration=YAML_INPUT)
+    fmodel.set(
+        layout_x=[0, 1000, 1000],
+        layout_y=[0, 0, 1000],
+        wind_speeds=8.0*np.ones(n_wds),
+        wind_directions=np.linspace(270.0, 360.0, n_wds),
+        turbulence_intensities=0.06*np.ones(n_wds),
+    )
+
+    # Since we're using 270 as the first wind direction, we can get x, y, z points
+    # from the first findex.
+    x = fmodel.core.grid.x_sorted_inertial_frame[0, :, 1, 1].flatten()
+    y = fmodel.core.grid.y_sorted_inertial_frame[0, :, 1, 1].flatten()
+    z = fmodel.core.grid.z_sorted_inertial_frame[0, :, 1, 1].flatten()
+
+    # As baseline, get the flow field at the center turbine point
+    fmodel.run()
+    u_base = fmodel.core.flow_field.u[:, :, 1, 1]
+
+    # Use sample_flow_at_points to get the flow at the same points
+    u_sampled = fmodel.sample_flow_at_points(x, y, z)
+
+    # Assert reasonable match; not perfect because sampling may occur in front
+    # of rotor (?)
+    assert np.allclose(u_sampled, u_base, rtol=1e-1)
+
+def test_sample_ti_at_points():
+    n_wds = 20
+
+    fmodel = FlorisModel(configuration=YAML_INPUT)
+    fmodel.set(
+        layout_x=[0, 1000, 1000],
+        layout_y=[0, 0, 1000],
+        wind_speeds=8.0*np.ones(n_wds),
+        wind_directions=np.linspace(270.0, 360.0, n_wds),
+        turbulence_intensities=0.06*np.ones(n_wds),
+    )
+
+    # Since we're using 270 as the first wind direction, we can get x, y, z points
+    # from the first findex.
+    x = fmodel.core.grid.x_sorted_inertial_frame[0, :, 1, 1].flatten()
+    y = fmodel.core.grid.y_sorted_inertial_frame[0, :, 1, 1].flatten()
+    z = fmodel.core.grid.z_sorted_inertial_frame[0, :, 1, 1].flatten()
+
+    # As baseline, get the turbulence intensity at the turbine
+    fmodel.run()
+    ti_base = fmodel.core.flow_field.turbulence_intensity_field
+
+    # Use sample_ti_at_points to get the TI at the same points
+    ti_sampled = fmodel.sample_ti_at_points(x, y, z)
+
+    # Assert reasonable match
+    assert np.allclose(ti_sampled, ti_base, rtol=1e-1)

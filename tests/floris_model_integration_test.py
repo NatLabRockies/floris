@@ -873,58 +873,68 @@ def test_merge_floris_models():
         merged_fmodel = FlorisModel.merge_floris_models(fmodel_list)
 
 def test_sample_flow_at_points():
-    n_wds = 20
 
     fmodel = FlorisModel(configuration=YAML_INPUT)
+    u_inf = 8.0
+    n_points = 10
     fmodel.set(
-        layout_x=[0, 1000, 1000],
-        layout_y=[0, 0, 1000],
-        wind_speeds=8.0*np.ones(n_wds),
-        wind_directions=np.linspace(270.0, 360.0, n_wds),
-        turbulence_intensities=0.06*np.ones(n_wds),
+        layout_x=[0],
+        layout_y=[0],
+        wind_speeds=[u_inf, u_inf],
+        wind_directions=[270.0, 180.0],
+        turbulence_intensities=[0.06, 0.06],
     )
 
-    # Since we're using 270 as the first wind direction, we can get x, y, z points
-    # from the first findex.
-    x = fmodel.core.grid.x_sorted_inertial_frame[0, :, 1, 1].flatten()
-    y = fmodel.core.grid.y_sorted_inertial_frame[0, :, 1, 1].flatten()
-    z = fmodel.core.grid.z_sorted_inertial_frame[0, :, 1, 1].flatten()
+    # set up sample points
+    p = np.linspace(1, 1001, n_points)
+    x = np.concatenate((p, np.zeros_like(p)))
+    y = np.concatenate((np.zeros_like(p), p))
+    z = 100 * np.ones(n_points * 2)
 
-    # As baseline, get the flow field at the center turbine point
-    fmodel.run()
-    u_base = fmodel.core.flow_field.u[:, :, 1, 1]
+    # Use sample_flow_at_points to get the flow at the sample points
+    u_sampled_1 = fmodel.sample_flow_at_points(x, y, z)
 
-    # Use sample_flow_at_points to get the flow at the same points
-    u_sampled = fmodel.sample_flow_at_points(x, y, z)
+    # Check that the behind-turbine velocities match in the two directions
+    assert np.allclose(u_sampled_1[0,:n_points], u_sampled_1[1,n_points:])
+    # Check also that points outside the wake are all reasonable
+    assert np.allclose(u_sampled_1[0,n_points:], u_sampled_1[1,:n_points])
+    assert np.all(u_sampled_1[0,n_points:] > u_inf)
+    assert np.all(u_sampled_1[0,n_points:] == u_sampled_1[0,n_points])
 
-    # Assert reasonable match; not perfect because sampling may occur in front
-    # of rotor (?)
-    assert np.allclose(u_sampled, u_base, rtol=1e-1)
+    # Run again at a higher speed and check all sampled velocities are higher
+    fmodel.set(wind_speeds=[u_inf + 2.0, u_inf + 2.0])
+    u_sampled_2 = fmodel.sample_flow_at_points(x, y, z)
+    assert np.all(u_sampled_2 > u_sampled_1)
 
 def test_sample_ti_at_points():
-    n_wds = 20
 
     fmodel = FlorisModel(configuration=YAML_INPUT)
+    ti_inf = 8.0
+    n_points = 10
     fmodel.set(
-        layout_x=[0, 1000, 1000],
-        layout_y=[0, 0, 1000],
-        wind_speeds=8.0*np.ones(n_wds),
-        wind_directions=np.linspace(270.0, 360.0, n_wds),
-        turbulence_intensities=0.06*np.ones(n_wds),
+        layout_x=[0],
+        layout_y=[0],
+        wind_speeds=[8.0, 8.0],
+        wind_directions=[270.0, 180.0],
+        turbulence_intensities=[ti_inf, ti_inf],
     )
 
-    # Since we're using 270 as the first wind direction, we can get x, y, z points
-    # from the first findex.
-    x = fmodel.core.grid.x_sorted_inertial_frame[0, :, 1, 1].flatten()
-    y = fmodel.core.grid.y_sorted_inertial_frame[0, :, 1, 1].flatten()
-    z = fmodel.core.grid.z_sorted_inertial_frame[0, :, 1, 1].flatten()
+    # set up sample points
+    p = np.linspace(1, 1001, n_points)
+    x = np.concatenate((p, np.zeros_like(p)))
+    y = np.concatenate((np.zeros_like(p), p))
+    z = 100 * np.ones(n_points * 2)
 
-    # As baseline, get the turbulence intensity at the turbine
-    fmodel.run()
-    ti_base = fmodel.core.flow_field.turbulence_intensity_field
+    # Use sample_ti_at_points to get the TI at the sample points
+    ti_sampled_1 = fmodel.sample_ti_at_points(x, y, z)
 
-    # Use sample_ti_at_points to get the TI at the same points
-    ti_sampled = fmodel.sample_ti_at_points(x, y, z)
+    # Check that the behind-turbine TIs match in the two directions
+    assert np.allclose(ti_sampled_1[0,:n_points], ti_sampled_1[1,n_points:])
+    # Check also that points outside the wake are all reasonable
+    assert np.allclose(ti_sampled_1[0,n_points:], ti_sampled_1[1,:n_points])
+    assert np.all(ti_sampled_1[0,n_points:] == ti_inf)
 
-    # Assert reasonable match
-    assert np.allclose(ti_sampled, ti_base, rtol=1e-1)
+    # Run again at a higher TI and check all sampled TIs are higher
+    fmodel.set(turbulence_intensities=[ti_inf + 0.02, ti_inf + 0.02])
+    ti_sampled_2 = fmodel.sample_ti_at_points(x, y, z)
+    assert np.all(ti_sampled_2 > ti_sampled_1)

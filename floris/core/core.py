@@ -267,42 +267,9 @@ class Core(BaseClass):
         return self.flow_field.u_sorted[:,:,0,0] # Remove turbine grid dimensions
 
     def solve_ti_for_points(self, x, y, z):
-            # Do the calculation with the TurbineGrid for a single wind speed
-            # and wind direction and a 3x3 rotor grid. Then, use the result
-            # to construct the full flow field grid.
-            # This function call should be for a single wind direction and wind speed
-            # since the memory consumption is very large.
-        # Instantiate the flow_grid
-        field_grid = PointsGrid(
-            points_x=x,
-            points_y=y,
-            points_z=z,
-            turbine_coordinates=self.farm.coordinates,
-            turbine_diameters=self.farm.rotor_diameters,
-            wind_directions=self.flow_field.wind_directions,
-            grid_resolution=1,
-            x_center_of_rotation=self.grid.x_center_of_rotation,
-            y_center_of_rotation=self.grid.y_center_of_rotation
-        )
-
-        self.flow_field.initialize_velocity_field(field_grid)
-
-        vel_model = self.wake.model_strings["velocity_model"]
-
-        if vel_model == "turbopark":
-            raise NotImplementedError(
-                "solve_for_points is not available for the legacy \'turbopark\' model. "
-                "However, it is available for \'turboparkgauss\'."
-            )
-        elif vel_model == "empirical_gauss":
-            full_flow_empirical_gauss_solver(self.farm, self.flow_field, field_grid, self.wake)
-        elif vel_model == "cc":
-            full_flow_cc_solver(self.farm, self.flow_field, field_grid, self.wake)
-        else:
-            full_flow_sequential_solver(self.farm, self.flow_field, field_grid, self.wake)
-
+        # Call _solve_for_points and return the turbulence intensity field
+        self.solve_for_points(x, y, z) # Ignore returned velocity field
         return self.flow_field.turbulence_intensity_field_sorted[:, :, 0, 0]
-
 
     def solve_for_velocity_deficit_profiles(
         self,

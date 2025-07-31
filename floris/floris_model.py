@@ -1396,11 +1396,10 @@ class FlorisModel(LoggingManager):
             (# of findex, # of sample points)
         """
 
-        # Check that x, y, z are all the same length
-        if not len(x) == len(y) == len(z):
-            raise ValueError("x, y, and z must be the same size")
+        self.sample_flow_at_points(x, y, z) # Solve, but ignore returned velocities
 
-        return self.core.solve_ti_for_points(x, y, z)
+        # Remove grid dimensions and return sorted TI field
+        return self.core.flow_field.turbulence_intensity_field_sorted[:, :, 0, 0]
 
     def sample_velocity_deficit_profiles(
         self,

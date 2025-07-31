@@ -20,8 +20,10 @@ from floris import FlorisModel
 
 
 # User options
-# FLORIS model to use (legacy Turbopark not available)
-floris_model = "gch"  # Try "gch", "cc", "jensen", "emgauss", "turboparkgauss"
+# FLORIS model to use. Note that legacy "turbopark" is not available,
+# "turboparkgauss" is configured with none turbulence model by default,
+# and "emgauss" does not contain an explicit turbulence model.
+floris_model = "gch"  # Try "gch", "cc", "jensen"
 # Option to try different met mast locations
 met_mast_option = 0  # Try 0, 1, 2, 3
 

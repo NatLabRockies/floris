@@ -57,8 +57,7 @@ wake:
 
   wake_velocity_parameters:
     cwm:
-      a: 0.0
-      b: 0.0
+      C: 4.0
       dx_D: 0.1
 
   wake_turbulence_parameters:

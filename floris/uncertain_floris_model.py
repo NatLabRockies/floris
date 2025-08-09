@@ -10,7 +10,7 @@ from typing import (
 import numpy as np
 
 from floris import FlorisModel
-from floris.core import State
+from floris.core import average_velocity, State
 from floris.logging_manager import LoggingManager
 from floris.par_floris_model import ParFlorisModel
 from floris.type_dec import (
@@ -1141,6 +1141,29 @@ class UncertainFlorisModel(LoggingManager):
             Floris: The core of the unexpanded model.
         """
         return self.fmodel_unexpanded.core
+
+    @property
+    def turbine_average_velocities(self) -> NDArrayFloat:
+        # Get the expanded velocities
+        expanded_velocities = average_velocity(
+            velocities=self.fmodel_expanded.core.flow_field.u,
+            method=self.fmodel_expanded.core.grid.average_method,
+            cubature_weights=self.fmodel_expanded.core.grid.cubature_weights,
+        )
+
+        # Pass to off-class function
+        # Need to re-use this function for mapping powers but should work as well
+        # for wind speeds
+        result = map_turbine_powers_uncertain(
+            unique_turbine_powers=expanded_velocities,
+            map_to_expanded_inputs=self.map_to_expanded_inputs,
+            weights=self.weights,
+            n_unexpanded=self.n_unexpanded,
+            n_sample_points=self.n_sample_points,
+            n_turbines=self.fmodel_unexpanded.core.farm.n_turbines,
+        )
+
+        return result
 
 
 def map_turbine_powers_uncertain(

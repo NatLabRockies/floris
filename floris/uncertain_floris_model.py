@@ -1156,8 +1156,6 @@ class UncertainFlorisModel(LoggingManager):
         )
 
         # Pass to off-class function
-        # Need to re-use this function for mapping powers but should work as well
-        # for wind speeds
         result = map_turbine_values_uncertain(
             unique_turbine_values=expanded_velocities,
             map_to_expanded_inputs=self.map_to_expanded_inputs,

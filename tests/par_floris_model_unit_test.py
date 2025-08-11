@@ -297,8 +297,8 @@ def test_sample_flow_at_points(sample_inputs_fixture):
     wind_speeds = np.array([8.0, 8.0, 9.0])
     wind_directions = np.array([270.0, 270.0, 270.0])
     fmodel.set(
-        wind_directions=wind_speeds.flatten(),
-        wind_speeds=wind_directions.flatten(),
+        wind_directions=wind_directions,
+        wind_speeds=wind_speeds,
         turbulence_intensities=0.06 * np.ones_like(wind_speeds.flatten()),
     )
 
@@ -312,6 +312,33 @@ def test_sample_flow_at_points(sample_inputs_fixture):
         pfmodel = ParFlorisModel(fmodel, max_workers=2, interface=interface)
         ws_test = pfmodel.sample_flow_at_points(x_test, y_test, z_test)
         assert np.allclose(ws_base, ws_test)
+
+def test_sample_ti_at_points(sample_inputs_fixture):
+
+    sample_inputs_fixture.core["wake"]["model_strings"]["velocity_model"] = VELOCITY_MODEL
+    sample_inputs_fixture.core["wake"]["model_strings"]["deflection_model"] = DEFLECTION_MODEL
+    sample_inputs_fixture.core["wake"]["model_strings"]["turbulence_model"] = "crespo_hernandez"
+
+    fmodel = FlorisModel(sample_inputs_fixture.core)
+
+    wind_speeds = np.array([8.0, 8.0, 9.0])
+    wind_directions = np.array([270.0, 270.0, 270.0])
+    fmodel.set(
+        wind_directions=wind_directions,
+        wind_speeds=wind_speeds,
+        turbulence_intensities=0.06 * np.ones_like(wind_speeds.flatten()),
+    )
+
+    x_test = np.array([500.0, 750.0, 1000.0, 1250.0, 1500.0])
+    y_test = np.array([0.0, 0.0, 0.0, 0.0, 0.0])
+    z_test = np.array([90.0, 90.0, 90.0, 90.0, 90.0])
+
+    ti_base = fmodel.sample_ti_at_points(x_test, y_test, z_test)
+
+    for interface in ["multiprocessing", "pathos", "concurrent"]:
+        pfmodel = ParFlorisModel(fmodel, max_workers=2, interface=interface)
+        ti_test = pfmodel.sample_ti_at_points(x_test, y_test, z_test)
+        assert np.allclose(ti_base, ti_test)
 
 def test_copy(sample_inputs_fixture):
     """

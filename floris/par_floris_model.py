@@ -177,7 +177,7 @@ class ParFlorisModel(FlorisModel):
 
     def sample_flow_at_points(self, x: NDArrayFloat, y: NDArrayFloat, z: NDArrayFloat):
         """
-        Sample the flow field at specified points.
+        Sample the flow field velocity at specified points.
 
         Args:
             x: The x-coordinates of the points.
@@ -187,15 +187,59 @@ class ParFlorisModel(FlorisModel):
         Returns:
             NDArrayFloat: The wind speeds at the specified points.
         """
+        return self._sample_value_at_points(x, y, z, value="velocity")
+
+    def sample_ti_at_points(self, x: NDArrayFloat, y: NDArrayFloat, z: NDArrayFloat):
+        """
+        Sample the turbulence intensity at specified points.
+
+        Args:
+            x: The x-coordinates of the points.
+            y: The y-coordinates of the points.
+            z: The z-coordinates of the points.
+
+        Returns:
+            NDArrayFloat: The turbulence intensity at the specified points.
+        """
+        return self._sample_value_at_points(x, y, z, value="turbulence_intensity")
+
+    def _sample_value_at_points(
+            self,
+            x: NDArrayFloat,
+            y: NDArrayFloat,
+            z: NDArrayFloat,
+            value: str
+        ):
+        """
+        Underlying method for sample values at (x,y,z) points for ParFlorisModel.
+
+        Args:
+            x: The x-coordinates of the points.
+            y: The y-coordinates of the points.
+            z: The z-coordinates of the points.
+            value: The type of value to sample ("velocity" or "turbulence_intensity").
+
+        Returns:
+            NDArrayFloat: The values at the specified points.
+        """
         if self.return_turbine_powers_only:
             raise NotImplementedError(
-                "Sampling flow at points is not supported when "
+                "Sampling at points is not supported when "
                 "return_turbine_powers_only is set to True on ParFlorisModel."
+            )
+
+        valid_values = ["velocity", "turbulence_intensity"]
+        if value not in valid_values:
+            raise ValueError(
+                f"Invalid value '{value}' for sampling. Must be one of {valid_values}."
             )
 
         if self.interface is None:
             t0 = timerpc()
-            sampled_wind_speeds = super().sample_flow_at_points(x, y, z)
+            if value == "velocity":
+                output = super().sample_flow_at_points(x, y, z)
+            elif value == "turbulence_intensity":
+                output = super().sample_ti_at_points(x, y, z)
             t1 = timerpc()
             self._print_timings(t0, t1, None, None)
         else:
@@ -207,30 +251,37 @@ class ParFlorisModel(FlorisModel):
                 for fmodel_dict, control_setpoints in parallel_run_inputs
             ]
             t1 = timerpc()
+            if value == "velocity":
+                _parallel_func = _parallel_sample_flow_at_points
+                _parallel_fmap = _parallel_sample_flow_at_points_map
+            elif value == "turbulence_intensity":
+                _parallel_func = _parallel_sample_ti_at_points
+                _parallel_fmap = _parallel_sample_ti_at_points_map
+
             if self.interface == "multiprocessing":
                 with self._PoolExecutor(self.max_workers) as p:
                     sampled_wind_speeds_p = p.starmap(
-                        _parallel_sample_flow_at_points,
+                        _parallel_func,
                         parallel_sample_flow_at_points_inputs
                     )
             elif self.interface == "pathos":
                 sampled_wind_speeds_p = self.pathos_pool.map(
-                    _parallel_sample_flow_at_points_map,
+                    _parallel_fmap,
                     parallel_sample_flow_at_points_inputs
                 )
             elif self.interface == "concurrent":
                 with self._PoolExecutor(self.max_workers) as p:
                     sampled_wind_speeds_p = p.map(
-                        _parallel_sample_flow_at_points_map,
+                        _parallel_fmap,
                         parallel_sample_flow_at_points_inputs
                     )
                     sampled_wind_speeds_p = list(sampled_wind_speeds_p)
             t2 = timerpc()
-            sampled_wind_speeds = np.concatenate(sampled_wind_speeds_p, axis=0)
+            output = np.concatenate(sampled_wind_speeds_p, axis=0)
             t3 = timerpc()
             self._print_timings(t0, t1, t2, t3)
 
-        return sampled_wind_speeds
+        return output
 
     def _preprocessing(self):
         """
@@ -438,3 +489,14 @@ def _parallel_sample_flow_at_points_map(x):
     Wrapper for unpacking inputs to _parallel_sample_flow_at_points() for use with map().
     """
     return _parallel_sample_flow_at_points(*x)
+
+def _parallel_sample_ti_at_points(fmodel_dict, set_kwargs, x, y, z):
+    fmodel = FlorisModel(fmodel_dict)
+    fmodel.set(**set_kwargs)
+    return fmodel.sample_ti_at_points(x, y, z)
+
+def _parallel_sample_ti_at_points_map(x):
+    """
+    Wrapper for unpacking inputs to _parallel_sample_ti_at_points() for use with map().
+    """
+    return _parallel_sample_ti_at_points(*x)

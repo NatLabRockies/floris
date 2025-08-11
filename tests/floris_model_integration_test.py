@@ -909,7 +909,7 @@ def test_sample_flow_at_points():
 def test_sample_ti_at_points():
 
     fmodel = FlorisModel(configuration=YAML_INPUT)
-    ti_inf = 8.0
+    ti_inf = 0.8
     n_points = 10
     fmodel.set(
         layout_x=[0],

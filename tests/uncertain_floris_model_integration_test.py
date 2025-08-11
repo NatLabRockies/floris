@@ -522,6 +522,15 @@ def test_copy():
     assert isinstance(pufmodel_copy, UncertainFlorisModel)
     assert isinstance(pufmodel_copy.fmodel_expanded, ParFlorisModel)
 
+def test_invalid_wd_std():
+    """
+    Test that the UncertainFlorisModel raises asn error with a wd_std of 0 or negative.
+    """
+    with pytest.raises(ValueError):
+        UncertainFlorisModel(configuration=YAML_INPUT, wd_std=0.0)
+
+    with pytest.raises(ValueError):
+        UncertainFlorisModel(configuration=YAML_INPUT, wd_std=-1.0)
 
 def test_turbine_average_velocities_shape_and_type():
     """
@@ -606,7 +615,7 @@ def test_turbine_average_velocities_uncertain_vs_certain():
     # Downstream turbine higher than certain when aligned
     assert np.all(velocities_uncertain[:, 1] > velocities_certain[:, 1])
 
-    # Create a 0-std uncertain model
+    # Create a near 0-std uncertain model
     ufmodel_zero_std = UncertainFlorisModel(configuration=fmodel, wd_std=1e-5)
     ufmodel_zero_std.run()
     velocities_uncertain_zero_std = ufmodel_zero_std.turbine_average_velocities

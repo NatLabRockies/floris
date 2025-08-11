@@ -272,8 +272,8 @@ class UncertainFlorisModel(LoggingManager):
         """
 
         # Pass to off-class function
-        result = map_turbine_powers_uncertain(
-            unique_turbine_powers=self.fmodel_expanded._get_turbine_powers(),
+        result = map_turbine_values_uncertain(
+            unique_turbine_values=self.fmodel_expanded._get_turbine_powers(),
             map_to_expanded_inputs=self.map_to_expanded_inputs,
             weights=self.weights,
             n_unexpanded=self.n_unexpanded,
@@ -1154,8 +1154,8 @@ class UncertainFlorisModel(LoggingManager):
         # Pass to off-class function
         # Need to re-use this function for mapping powers but should work as well
         # for wind speeds
-        result = map_turbine_powers_uncertain(
-            unique_turbine_powers=expanded_velocities,
+        result = map_turbine_values_uncertain(
+            unique_turbine_values=expanded_velocities,
             map_to_expanded_inputs=self.map_to_expanded_inputs,
             weights=self.weights,
             n_unexpanded=self.n_unexpanded,
@@ -1174,35 +1174,57 @@ def map_turbine_powers_uncertain(
     n_sample_points,
     n_turbines,
 ):
-    """Calculates the power at each turbine in the wind farm based on uncertainty weights.
+    """
+    Alias for map_turbine_values_uncertain.
+    """
+    # Deprecation warning
+    print("map_turbine_powers_uncertain is deprecated, use map_turbine_values_uncertain instead.")
+    return map_turbine_values_uncertain(
+        unique_turbine_values=unique_turbine_powers,
+        map_to_expanded_inputs=map_to_expanded_inputs,
+        weights=weights,
+        n_unexpanded=n_unexpanded,
+        n_sample_points=n_sample_points,
+        n_turbines=n_turbines,
+    )
 
-    This function calculates the power at each turbine in the wind farm, considering
-    the underlying turbine powers and applying a weighted sum to handle uncertainty.
+def map_turbine_values_uncertain(
+    unique_turbine_values,
+    map_to_expanded_inputs,
+    weights,
+    n_unexpanded,
+    n_sample_points,
+    n_turbines,
+):
+    """Calculates values at each turbine in the wind farm based on uncertainty weights.
+
+    This function calculates the values (e.g. power, velocity) at each turbine in the wind farm,
+    considering the underlying turbine values and applying a weighted sum to handle uncertainty.
 
     Args:
-        unique_turbine_powers (NDArrayFloat): An array of unique turbine powers from the
-            underlying FlorisModel
-        map_to_expanded_inputs (NDArrayFloat): An array of indices mapping the unique powers to
-            the expanded powers
+        unique_turbine_values (NDArrayFloat): An array of unique turbine powers, velocities, etc
+            from the underlying FlorisModel
+        map_to_expanded_inputs (NDArrayFloat): An array of indices mapping the unique values to
+            the expanded values
         weights (NDArrayFloat): An array of weights for each wind direction sample point
         n_unexpanded (int): The number of unexpanded conditions
         n_sample_points (int): The number of wind direction sample points
         n_turbines (int): The number of turbines in the wind farm
 
     Returns:
-        NDArrayFloat: An array containing the powers at each turbine for each findex.
+        NDArrayFloat: An array containing the values at each turbine for each findex.
 
     """
 
     # Expand back to the expanded value
-    expanded_turbine_powers = unique_turbine_powers[map_to_expanded_inputs]
+    expanded_turbine_values = unique_turbine_values[map_to_expanded_inputs]
 
     # Reshape the weights array to make it compatible with broadcasting
     weights_reshaped = weights[:, np.newaxis]
 
-    # Reshape expanded_turbine_powers into blocks
+    # Reshape expanded_turbine_values into blocks
     blocks = np.reshape(
-        expanded_turbine_powers,
+        expanded_turbine_values,
         (n_unexpanded, n_sample_points, n_turbines),
         order="F",
     )

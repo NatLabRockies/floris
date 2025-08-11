@@ -607,7 +607,7 @@ def test_turbine_average_velocities_uncertain_vs_certain():
     assert np.all(velocities_uncertain[:, 1] > velocities_certain[:, 1])
 
     # Create a 0-std uncertain model
-    ufmodel_zero_std = UncertainFlorisModel(configuration=fmodel, wd_std=0.0)
+    ufmodel_zero_std = UncertainFlorisModel(configuration=fmodel, wd_std=1e-5)
     ufmodel_zero_std.run()
     velocities_uncertain_zero_std = ufmodel_zero_std.turbine_average_velocities
 

@@ -85,6 +85,10 @@ class UncertainFlorisModel(LoggingManager):
         fix_yaw_to_nominal_direction=False,
         verbose=False,
     ):
+        # Check validity of inputs
+        if wd_std <= 0:
+            raise ValueError("wd_std must be strictly greater than 0.")
+
         # Save these inputs
         self.wd_resolution = wd_resolution
         self.ws_resolution = ws_resolution
@@ -1266,7 +1270,7 @@ class ApproxFlorisModel(UncertainFlorisModel):
             yaw_resolution,
             power_setpoint_resolution,
             awc_amplitude_resolution,
-            wd_std=1.0,
+            wd_std=1.0,  # Arbitrary nonzero value, not used since only one sample point
             wd_sample_points=[0],
             fix_yaw_to_nominal_direction=False,
             verbose=verbose,

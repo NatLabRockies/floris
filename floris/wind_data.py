@@ -1587,16 +1587,12 @@ class WindTIRose(WindDataBase):
                 )
             )
             freq_matrix = np.concatenate(
-                (freq_matrix[0, :, :][None, :, :], freq_matrix, freq_matrix[-1, :, :][None, :, :]),
+                (freq_matrix[0:1, :, :], freq_matrix, freq_matrix[-1:, :, :]),
                 axis=0
             )
             if self.value_table is not None:
                 value_matrix = np.concatenate(
-                    (
-                        value_matrix[0, :, :][None, :, :],
-                        value_matrix,
-                        value_matrix[-1, :, :][None, :, :]
-                    ),
+                    (value_matrix[0:1, :, :], value_matrix, value_matrix[-1:, :, :]),
                     axis=0
                 )
 
@@ -1615,15 +1611,11 @@ class WindTIRose(WindDataBase):
 
             # Pad the remaining with the appropriate value
             freq_matrix = np.vstack(
-                (freq_matrix[-1, :, :][None, :, :], freq_matrix, freq_matrix[0, :, :][None, :, :])
+                (freq_matrix[-1:, :, :], freq_matrix, freq_matrix[0:1, :, :])
             )
             if self.value_table is not None:
                 value_matrix = np.vstack(
-                    (
-                        value_matrix[-1, :, :][None, :, :],
-                        value_matrix,
-                        value_matrix[0, :, :][None, :, :],
-                    )
+                    (value_matrix[-1:, :, :], value_matrix, value_matrix[0:1, :, :])
                 )
 
         # Pad out the wind speeds
@@ -1640,11 +1632,7 @@ class WindTIRose(WindDataBase):
         )
         if self.value_table is not None:
             value_matrix = np.concatenate(
-                (
-                    value_matrix[:, 0, :][:, None, :],
-                    value_matrix,
-                    value_matrix[:, -1, :][:, None, :]
-                ),
+                (value_matrix[:, 0:1, :], value_matrix, value_matrix[:, -1:, :]),
                 axis=1
             )
 
@@ -1657,16 +1645,12 @@ class WindTIRose(WindDataBase):
             )
         )
         freq_matrix = np.concatenate(
-            (freq_matrix[:, :, 0][:, :, None], freq_matrix, freq_matrix[:, :, -1][:, :, None]),
+            (freq_matrix[:, :, 0:1], freq_matrix, freq_matrix[:, :, -1:]),
             axis=2
         )
         if self.value_table is not None:
             value_matrix = np.concatenate(
-                (
-                    value_matrix[:, :, 0][:, :, None],
-                    value_matrix,
-                    value_matrix[:, :, -1][:, :, None]
-                ),
+                (value_matrix[:, :, 0:1], value_matrix, value_matrix[:, :, -1:]),
                 axis=2
             )
 

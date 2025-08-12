@@ -289,7 +289,7 @@ def wake_added_yaw(
         scale,
     )
 
-    turbine_average_velocity = np.cbrt(np.mean(u_i ** 3, axis=(2, 3)))[:, :, None, None]
+    turbine_average_velocity = np.cbrt(np.mean(u_i ** 3, axis=(2, 3), keepdims=True))
     Gamma_wake_rotation = 0.25 * 2 * pi * D * (aI - aI ** 2) * turbine_average_velocity / TSR
 
     ### compute the spanwise and vertical velocities induced by yaw
@@ -384,7 +384,7 @@ def calculate_transverse_velocity(
         Ct,
         scale,
     )
-    turbine_average_velocity = np.cbrt(np.mean(u_i ** 3, axis=(2,3)))[:, :, None, None]
+    turbine_average_velocity = np.cbrt(np.mean(u_i ** 3, axis=(2,3), keepdims=True))
     Gamma_wake_rotation = 0.25 * 2 * pi * D * (aI - aI ** 2) * turbine_average_velocity / TSR
 
     ### compute the spanwise and vertical velocities induced by yaw

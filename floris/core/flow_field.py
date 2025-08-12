@@ -7,13 +7,14 @@ import attrs
 import matplotlib.path as mpltPath
 import numpy as np
 from attrs import define, field
-from scipy.interpolate import LinearNDInterpolator
+from scipy.interpolate import LinearNDInterpolator, NearestNDInterpolator
 from scipy.spatial import ConvexHull
 from shapely.geometry import Polygon
 
 from floris.core import (
     BaseClass,
     Grid,
+    PointsGrid,
 )
 from floris.type_dec import (
     floris_array_converter,
@@ -118,6 +119,10 @@ class FlowField(BaseClass):
             # If only a 2D case, add "None" for the z locations
             value["z"] = None
 
+        if "interp_method" not in value:
+            # If no interpolation method is specified, default to linear
+            value["interp_method"] = "linear"
+
     @het_map.validator
     def het_map_validator(self, instance: attrs.Attribute, value: list | None) -> None:
         """Using this validator to make sure that the het_map has an interpolant defined for
@@ -149,14 +154,25 @@ class FlowField(BaseClass):
         # determined by this line. Since the right-most dimension on grid.z is storing the values
         # for height, using it here to apply the shear law makes that dimension store the vertical
         # wind profile.
-        wind_profile_plane = (grid.z_sorted / self.reference_wind_height) ** self.wind_shear
+
+        # Extract relevant x,y,z locations from the grid object
+        if isinstance(grid, PointsGrid):
+            x = np.tile(grid.points_x[None, :, None, None], (self.n_findex, 1, 1, 1))
+            y = np.tile(grid.points_y[None, :, None, None], (self.n_findex, 1, 1, 1))
+            z = grid.z_sorted
+        else:
+            x = grid.x_sorted_inertial_frame
+            y = grid.y_sorted_inertial_frame
+            z = grid.z_sorted
+
+        wind_profile_plane = (z / self.reference_wind_height) ** self.wind_shear
         dwind_profile_plane = (
             self.wind_shear
             * (1 / self.reference_wind_height) ** self.wind_shear
             * np.power(
-                grid.z_sorted,
+                z,
                 (self.wind_shear - 1),
-                where=grid.z_sorted != 0.0
+                where=z != 0.0
             )
         )
         # If no heterogeneous inflow defined, then set all speeds ups to 1.0
@@ -166,42 +182,33 @@ class FlowField(BaseClass):
         # If heterogeneous flow data is given, the speed ups at the defined
         # grid locations are determined in either 2 or 3 dimensions.
         else:
-            bounds = np.array(list(zip(
-                self.heterogeneous_inflow_config['x'],
-                self.heterogeneous_inflow_config['y']
-            )))
-            hull = ConvexHull(bounds)
-            polygon = Polygon(bounds[hull.vertices])
-            path = mpltPath.Path(polygon.boundary.coords)
-            points = np.column_stack(
-                (
-                    grid.x_sorted_inertial_frame.flatten(),
-                    grid.y_sorted_inertial_frame.flatten(),
-                )
-            )
-            inside = path.contains_points(points)
-            if not np.all(inside):
-                self.logger.warning(
-                    "The calculated flow field contains points outside of the the user-defined "
-                    "heterogeneous inflow bounds. For these points, the interpolated value has "
-                    "been filled with the freestream wind speed. If this is not the desired "
-                    "behavior, the user will need to expand the heterogeneous inflow bounds to "
-                    "fully cover the calculated flow field area."
-                )
+            if isinstance(self.het_map[0], NearestNDInterpolator):
+                # Do not check for being inside of bounds for nearest neighbor interpolation.
+                pass
+            else:
+                # Create a convex hull around the user-defined heterogeneous inflow bounds
+                # to check if the calculated flow field is within the bounds.
+                bounds = np.array(list(zip(
+                    self.heterogeneous_inflow_config['x'],
+                    self.heterogeneous_inflow_config['y']
+                )))
+                hull = ConvexHull(bounds)
+                polygon = Polygon(bounds[hull.vertices])
+                path = mpltPath.Path(polygon.boundary.coords)
+                inside = path.contains_points(np.column_stack((x.flatten(), y.flatten())))
+                if not np.all(inside):
+                    self.logger.warning(
+                        "The calculated flow field contains points outside of the the user-defined "
+                        "heterogeneous inflow bounds. For these points, the interpolated value has "
+                        "been filled with the freestream wind speed. If this is not the desired "
+                        "behavior, the user will need to expand the heterogeneous inflow bounds to "
+                        "fully cover the calculated flow field area."
+                    )
 
             if len(self.het_map[0].points[0]) == 2:
-                speed_ups = self.calculate_speed_ups(
-                    self.het_map,
-                    grid.x_sorted_inertial_frame,
-                    grid.y_sorted_inertial_frame
-                )
+                speed_ups = self.calculate_speed_ups(self.het_map, x, y)
             elif len(self.het_map[0].points[0]) == 3:
-                speed_ups = self.calculate_speed_ups(
-                    self.het_map,
-                    grid.x_sorted_inertial_frame,
-                    grid.y_sorted_inertial_frame,
-                    grid.z_sorted
-                )
+                speed_ups = self.calculate_speed_ups(self.het_map, x, y, z)
 
         # Create the sheer-law wind profile
         # This array is of shape (# wind directions, # wind speeds, grid.template_array)
@@ -284,13 +291,19 @@ class FlowField(BaseClass):
                 - **y**: A list of y locations at which the speed up factors are defined.
                 - **z** (optional): A list of z locations at which the speed up factors are defined.
         """
-        speed_multipliers = np.array(self.heterogeneous_inflow_config['speed_multipliers'])
-        x = self.heterogeneous_inflow_config['x']
-        y = self.heterogeneous_inflow_config['y']
-        z = self.heterogeneous_inflow_config['z']
+        speed_multipliers = np.array(self.heterogeneous_inflow_config["speed_multipliers"])
+        x = self.heterogeneous_inflow_config["x"]
+        y = self.heterogeneous_inflow_config["y"]
+        z = self.heterogeneous_inflow_config["z"]
+
+        if "interp_method" in self.heterogeneous_inflow_config.keys():
+            interp_method = self.heterogeneous_inflow_config["interp_method"]
+        else:
+            interp_method = "linear"
 
         # Declare an empty list to store interpolants by findex
         interps_f = np.empty(self.n_findex, dtype=object)
+
         if z is not None:
             # Compute the 3-dimensional interpolants for each wind direction
             # Linear interpolation is used for points within the user-defined area of values,
@@ -301,11 +314,17 @@ class FlowField(BaseClass):
 
             # Create triangulation using zeroth findex
             interp_3d = self.interpolate_multiplier_xyz(
-                x, y, z, speed_multipliers[0], fill_value=1.0
+                x,
+                y,
+                z,
+                speed_multipliers[0],
+                fill_value=1.0,
+                interp_method=interp_method,
             )
+            interp_shape = interp_3d.values.shape
             # Copy the interpolant for each findex and overwrite the values
             for findex in range(self.n_findex):
-                interp_3d.values = speed_multipliers[findex, :].reshape(-1, 1)
+                interp_3d.values = speed_multipliers[findex, :].reshape(interp_shape)
                 interps_f[findex] = copy.deepcopy(interp_3d)
 
         else:
@@ -317,19 +336,27 @@ class FlowField(BaseClass):
             # once and then overwrite the values for each findex.
 
             # Create triangulation using zeroth findex
-            interp_2d = self.interpolate_multiplier_xy(x, y, speed_multipliers[0], fill_value=1.0)
+            interp_2d = self.interpolate_multiplier_xy(
+                x, y, speed_multipliers[0], fill_value=1.0, interp_method=interp_method
+            )
             # Copy the interpolant for each findex and overwrite the values
             for findex in range(self.n_findex):
-                interp_2d.values = speed_multipliers[findex, :].reshape(-1, 1)
+                if interp_method == "linear":
+                    interp_2d.values = speed_multipliers[findex, :].reshape(-1, 1)
+                else:
+                    interp_2d.values = speed_multipliers[findex, :]
                 interps_f[findex] = copy.deepcopy(interp_2d)
 
         self.het_map = interps_f
 
     @staticmethod
-    def interpolate_multiplier_xy(x: NDArrayFloat,
-                                  y: NDArrayFloat,
-                                  multiplier: NDArrayFloat,
-                                  fill_value: float = 1.0):
+    def interpolate_multiplier_xy(
+        x: NDArrayFloat,
+        y: NDArrayFloat,
+        multiplier: NDArrayFloat,
+        fill_value: float = 1.0,
+        interp_method: str = "linear",
+    ):
         """Return an interpolant for a 2D multiplier field.
 
         Args:
@@ -337,20 +364,28 @@ class FlowField(BaseClass):
             y (NDArrayFloat): y locations
             multiplier (NDArrayFloat): multipliers
             fill_value (float): fill value for points outside the region
+            interp_method (str): interpolation method, either "linear" or "nearest".
+                Default is "linear".
 
         Returns:
             LinearNDInterpolator: interpolant
         """
-
-        return LinearNDInterpolator(list(zip(x, y)), multiplier, fill_value=fill_value)
-
+        if interp_method == "linear":
+            return LinearNDInterpolator(list(zip(x, y)), multiplier, fill_value=fill_value)
+        elif interp_method == "nearest":
+            return NearestNDInterpolator(list(zip(x, y)), multiplier)
+        else:
+            raise UserWarning("Incompatible interpolation method specified.")
 
     @staticmethod
-    def interpolate_multiplier_xyz(x: NDArrayFloat,
-                                   y: NDArrayFloat,
-                                   z: NDArrayFloat,
-                                   multiplier: NDArrayFloat,
-                                   fill_value: float = 1.0):
+    def interpolate_multiplier_xyz(
+        x: NDArrayFloat,
+        y: NDArrayFloat,
+        z: NDArrayFloat,
+        multiplier: NDArrayFloat,
+        fill_value: float = 1.0,
+        interp_method: str = "linear",
+    ):
         """Return an interpolant for a 3D multiplier field.
 
         Args:
@@ -359,9 +394,16 @@ class FlowField(BaseClass):
             z (NDArrayFloat): z locations
             multiplier (NDArrayFloat): multipliers
             fill_value (float): fill value for points outside the region
+            interp_method (str): interpolation method, either "linear" or "nearest".
+                Default is "linear".
 
         Returns:
             LinearNDInterpolator: interpolant
         """
 
-        return LinearNDInterpolator(list(zip(x, y, z)), multiplier, fill_value=fill_value)
+        if interp_method == "linear":
+            return LinearNDInterpolator(list(zip(x, y, z)), multiplier, fill_value=fill_value)
+        elif interp_method == "nearest":
+            return NearestNDInterpolator(list(zip(x, y, z)), multiplier)
+        else:
+            raise UserWarning("Incompatible interpolation method specified.")

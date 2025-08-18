@@ -3,13 +3,12 @@ from typing import Any, Dict
 
 import numexpr as ne
 import numpy as np
-from numba import njit
-
 from attrs import (
     define,
     field,
     fields,
 )
+from numba import njit
 
 from floris.core import (
     BaseModel,
@@ -83,7 +82,7 @@ class CurledWakeVelocityDeficit(BaseModel):
             nu_2d
         )
 
-        return u_new 
+        return u_new
 
 
 
@@ -98,7 +97,7 @@ def finite_diff(arr, dy, dz):
         arr: 2D numpy array of shape (ny, nz)
         dy: Grid spacing in the y-direction (axis 0)
         dz: Grid spacing in the z-direction (axis 1)
-    
+
     Returns:
         duwdy: Approximation of partial derivative w.r.t. y (axis 0)
         duwdz: Approximation of partial derivative w.r.t. z (axis 1)
@@ -133,18 +132,21 @@ def laplacian(u, dy, dz):
     # Compute second derivatives in y-direction (axis=1)
     for j in range(2, ny-2):
         for k in range(2, nz-2):
-            lap[j,k] = (u[j - 2, k] - 2 * u[j, k] + u[j + 2, k]) / (4 * dy * dy) + (u[j, k - 2] - 2 * u[j, k] + u[j, k + 2]) / (4 * dz * dz)
+            lap[j,k] = (
+                (u[j - 2, k] - 2 * u[j, k] + u[j + 2, k]) / (4 * dy * dy)
+                + (u[j, k - 2] - 2 * u[j, k] + u[j, k + 2]) / (4 * dz * dz)
+            )
 
     for k in range(nz):
         lap[0, k] = lap[0, k] + (u[2, k]/2 - u[0, k]/2 - u[1, k] + u[0, k]) / (dy * dy)
-        lap[1, k] = lap[1, k] + (u[3, k]/2 - u[1, k]/2 - u[1, k] + u[0, k]) / (2 * dy * dy)  
+        lap[1, k] = lap[1, k] + (u[3, k]/2 - u[1, k]/2 - u[1, k] + u[0, k]) / (2 * dy * dy)
         lap[-2, k] = lap[-2, k] + (u[-1, k] - u[-2, k] - u[-2, k]/2 + u[-4, k]/2) / (2 * dy * dy)
         lap[-1, k] = lap[-1, k] + (u[-1, k] - u[-2, k] - u[-1, k]/2 + u[-3, k]/2) / (dy * dy)
 
     for j in range(ny):
         lap[j, 0] = lap[j, 0] + (u[j, 2]/2 - u[j, 0]/2 - u[j, 1] + u[j, 0]) / (dz * dz)
-        lap[j, 1] = lap[j, 1] + (u[j, 3]/2 - u[j, 1]/2 - u[j, 1] + u[j, 0]) / (2 * dz * dz) 
-        lap[j, -2] = lap[j, -2] + (u[j,  -1] - u[j, -2] - u[j, -2]/2 + u[j, -4]/2) / (2 * dz * dz) 
+        lap[j, 1] = lap[j, 1] + (u[j, 3]/2 - u[j, 1]/2 - u[j, 1] + u[j, 0]) / (2 * dz * dz)
+        lap[j, -2] = lap[j, -2] + (u[j,  -1] - u[j, -2] - u[j, -2]/2 + u[j, -4]/2) / (2 * dz * dz)
         lap[j, -1] = lap[j, -1] + (u[j,  -1] - u[j, -2] - u[j, -1]/2 + u[j, -3]/2) / (dz * dz)
 
 
@@ -162,7 +164,7 @@ def compute_rhs_steady(u_current, U, V, W, dy, dz, C, nu):
 @njit
 def runge_kutta_step(u_current, dx, U, V, W, dy, dz, C, nu):
     k1 = compute_rhs_steady(u_current, U, V, W, dy, dz, C, nu)
-    
+
     tmp = u_current + 0.5 * dx * k1  # In-place variable reuse
     k2 = compute_rhs_steady(tmp, U, V, W, dy, dz, C, nu)
 
@@ -173,4 +175,3 @@ def runge_kutta_step(u_current, dx, U, V, W, dy, dz, C, nu):
     k4 = compute_rhs_steady(tmp, U, V, W, dy, dz, C, nu)
 
     return u_current + (dx / 6.0) * (k1 + 2 * k2 + 2 * k3 + k4)
-

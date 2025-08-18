@@ -33,6 +33,7 @@ from floris.utilities import cosd
 # For the CWM
 from .solver_cwm import curled_wake_solver
 
+
 def calculate_area_overlap(wake_velocities, freestream_velocities, y_ngrid, z_ngrid):
     """
     compute wake overlap based on the number of points that are not freestream
@@ -1513,5 +1514,3 @@ def full_flow_empirical_gauss_solver(
         flow_field.u_sorted = flow_field.u_initial_sorted - wake_field
         flow_field.v_sorted += v_wake
         flow_field.w_sorted += w_wake
-
-

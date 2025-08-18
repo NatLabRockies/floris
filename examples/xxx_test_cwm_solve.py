@@ -32,7 +32,9 @@ def main():
 
     # Single wind condition
     fmodel.set(
-        wind_directions=np.array([270.0]), wind_speeds=[8.0], turbulence_intensities=np.array([0.06])
+        wind_directions=np.array([270.0]),
+        wind_speeds=np.array([8.0]),
+        turbulence_intensities=np.array([0.06])
     )
 
     # After the set method, the run method is called to perform the simulation
@@ -60,17 +62,17 @@ def random_layout(N, xd, yd, xlim=(0, 100), ylim=(0, 100), max_attempts=100000):
     while len(layout_x) < N and attempts < max_attempts:
         x_new = np.random.uniform(*xlim)
         y_new = np.random.uniform(*ylim)
-        
+
         # Check distances with existing points
-        if layout_x:  
+        if layout_x:
             dx = np.abs(np.array(layout_x) - x_new)
             dy = np.abs(np.array(layout_y) - y_new)
-            
+
             # Valid if no other point is too close in BOTH directions
             if np.any((dx < xd) & (dy < yd)):
                 attempts += 1
                 continue
-        
+
         layout_x.append(x_new)
         layout_y.append(y_new)
         attempts = 0  # reset since we succeeded

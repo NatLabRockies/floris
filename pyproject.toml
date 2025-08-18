@@ -40,7 +40,7 @@ dependencies = [
     "shapely~=2.0",
     "coloredlogs~=15.0",
     "pathos~=0.3",
-    "numba~=0.61.2",
+    "numba",
 ]
 
 [project.optional-dependencies]

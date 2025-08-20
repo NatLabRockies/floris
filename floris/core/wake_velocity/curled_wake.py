@@ -28,9 +28,9 @@ class CurledWakeVelocityDeficit(BaseModel):
     """
 
     C: float = field(default=4)  # Turbulence constant for the CWM
-    dx_D: float = field(default=0.08)
-    dy_D: float = field(default=0.1)
-    dz_D: float = field(default=0.1)
+    dx_D: float = field(default=0.08) # grid size dx/D, recommended to be slightly smaller than dy/D
+    dy_D: float = field(default=0.1) # grid size dy/D, recommended to be around 0.1
+    dz_D: float = field(default=0.1) # grid size dz/D, recommended to be the same as dy/D
     Re: float = field(default=1e4)  # Reynolds number for numerical stability
 
     def prepare_function(
@@ -62,7 +62,6 @@ class CurledWakeVelocityDeficit(BaseModel):
             w_fs: np.ndarray,
             dy: float,
             dz: float,
-            C: float,
             nu_2d: np.ndarray,
     ) -> None:
         """
@@ -78,12 +77,36 @@ class CurledWakeVelocityDeficit(BaseModel):
             w_fs,
             dy,
             dz,
-            C,
             nu_2d
         )
 
         return u_new
 
+    def initialize_turbulence_viscosity(self, u_freestream, Z, dz, nu_min, f=1.0, C=4.0):
+        """
+        Initialize the turbulence viscosity based on the freestream velocity.
+        This is a simple initialization that can be modified as needed.
+        """
+        dudz = np.gradient(u_freestream, dz, axis=-1)  # Gradient in the z-direction
+
+        # von-Karman constant
+        kappa = 0.41
+
+        # Mixing length based on:
+        # ALFRED K. BLACKADAR 1962
+        # JIELUN SUN 2011
+        # ~ lmda = f * 15. # The maximum length [m]
+        lmda = f * 27. # The maximum length [m]
+        lm = kappa * Z / (1 + kappa * Z / lmda)
+
+        # Turbulent viscosity
+        nu_t = lm**2 * np.abs(dudz)
+
+        # Pick the maximum between the turbulent model and the one required for
+        #   numerical stability
+        nu = np.maximum(C * nu_t, nu_min)
+
+        return nu
 
 
 @njit
@@ -155,23 +178,23 @@ def laplacian(u, dy, dz):
 
 
 @njit
-def compute_rhs_steady(u_current, U, V, W, dy, dz, C, nu):
+def compute_rhs_steady(u_current, U, V, W, dy, dz, nu):
     duwdy, duwdz = finite_diff(u_current, dy, dz)
     inv_U = 1.0 / (U + u_current)  # Precompute inverse
-    rhs = inv_U * (-V * duwdy - W * duwdz + C * nu * laplacian(u_current, dy, dz))
+    rhs = inv_U * (-V * duwdy - W * duwdz + nu * laplacian(u_current, dy, dz))
     return rhs
 
 @njit
-def runge_kutta_step(u_current, dx, U, V, W, dy, dz, C, nu):
-    k1 = compute_rhs_steady(u_current, U, V, W, dy, dz, C, nu)
+def runge_kutta_step(u_current, dx, U, V, W, dy, dz, nu):
+    k1 = compute_rhs_steady(u_current, U, V, W, dy, dz, nu)
 
     tmp = u_current + 0.5 * dx * k1  # In-place variable reuse
-    k2 = compute_rhs_steady(tmp, U, V, W, dy, dz, C, nu)
+    k2 = compute_rhs_steady(tmp, U, V, W, dy, dz, nu)
 
     tmp = u_current + 0.5 * dx * k2
-    k3 = compute_rhs_steady(tmp, U, V, W, dy, dz, C, nu)
+    k3 = compute_rhs_steady(tmp, U, V, W, dy, dz, nu)
 
     tmp = u_current + dx * k3
-    k4 = compute_rhs_steady(tmp, U, V, W, dy, dz, C, nu)
+    k4 = compute_rhs_steady(tmp, U, V, W, dy, dz, nu)
 
     return u_current + (dx / 6.0) * (k1 + 2 * k2 + 2 * k3 + k4)

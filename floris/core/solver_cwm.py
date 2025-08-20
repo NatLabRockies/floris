@@ -73,6 +73,14 @@ def curled_wake_solver(
     v_waked = np.zeros_like(x, dtype=floris_float_type)
     w_waked = np.zeros_like(x, dtype=floris_float_type)
 
+    # Compute the numerical viscosity needed for stability
+    Re = model_manager.velocity_model.Re
+    # Minimum viscosity for numerical stability
+    nu_min = u_freestream * flow_field.reference_wind_height / Re
+    # Initialize the turbulence viscosity based on the standard curled wake model formulation
+    nu_t = model_manager.velocity_model.initialize_turbulence_viscosity(u_freestream, z, dz, nu_min)
+    print("nu_t shape:", nu_t.shape)
+
     # Code to generate one or multiple turbine indices that correspond to a certain x location
     # Each element in the list turbines_in_plane should be a list of the turbines that appear at
     # that plane's x location (i.e., often an empty list).
@@ -96,20 +104,15 @@ def curled_wake_solver(
         v_waked_plane = v_waked[:, i, :, :]  # noqa: F841 TODO: remove if not used
         w_waked_plane = w_waked[:, i, :, :]  # noqa: F841 TODO: remove if not used
 
-        # Compute the numerical viscosity needed for stability
-        Re = model_manager.velocity_model.Re
-
         ### ... solver code here ...
         #u_waked[:, i, :, :] = u_waked[:, i-1, :, :]
-
-        f = 4.  # turbulence visvosity factor
 
         # Extract the 2D slices for the current plane
         u_prev = u_waked[0, i-1, :, :]     # shape (ny, nz)
         u_fs   = u_freestream_plane[0]     # shape (ny, nz)
         v_fs   = v_freestream_plane[0]     # shape (ny, nz)
         w_fs   = w_freestream_plane[0]     # shape (ny, nz)
-        nu_2d = np.maximum(u_fs * flow_field.reference_wind_height / Re, 8 * 100 / Re)
+        nu_2d = nu_t[0, i, :, :]  # shape (ny, nz)
 
         # Debug shapes
         #print("u_prev shape:", u_prev.shape)
@@ -130,7 +133,6 @@ def curled_wake_solver(
             w_fs,
             dy,
             dz,
-            f,
             nu_2d
         )
 

@@ -38,7 +38,7 @@ flow_field:
   wind_shear: 0.12
   wind_speeds:
   - 8.0
-  wind_veer: 0.0
+  wind_veer: 10.0
 
 wake:
   model_strings:

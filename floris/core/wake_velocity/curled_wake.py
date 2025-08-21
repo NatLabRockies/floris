@@ -199,6 +199,42 @@ class CurledWakeVelocityDeficit(BaseModel):
 
         return Vcurl, Wcurl
 
+    def add_veer_theta(self, Z, U, *, theta_deg, th, D):
+        """
+        Compute the veer-induced spanwise velocity (theta-mode only).
+
+        Parameters
+        ----------
+        Z : array_like
+            Height array (same shape as U).
+        U : array_like or float
+            Streamwise velocity at each Z (broadcastable to Z).
+            (Use your hub or local profile; matches your original use of self.U.)
+        theta_deg : float
+            Total veer angle [degrees] between bottom and top of the rotor.
+        th : float
+            Hub height [m].
+        D : float
+            Rotor diameter [m].
+
+        Returns
+        -------
+        V_veer : ndarray
+            Spanwise velocity induced by veer (same shape as Z).
+        """
+        # Linear angle profile centered at hub height:
+        # alpha(z) varies from +theta/2 at z = th - D/2 to -theta/2 at z = th + D/2,
+        # and extrapolates linearly outside that range.
+        #
+        # Closed-form equivalent of the interp1d in your code:
+        #   angle_half = deg2rad(theta)/2
+        #   alpha(z) = - (deg2rad(theta) / D) * (z - th)
+        alpha = - np.deg2rad(theta_deg) * (Z - float(th)) / float(D)
+
+        # Veer crossflow = tan(local angle) * local streamwise speed
+        V_veer = np.tan(alpha) * U
+        return V_veer
+
 
 
 

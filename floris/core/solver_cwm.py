@@ -49,14 +49,8 @@ def curled_wake_solver(
         dz,
         dtype=floris_float_type
     ) # Go up to 0.5D above highest tip point
-    u_sheared = np.maximum(
-        (z_1d / flow_field.reference_wind_height) ** flow_field.wind_shear
-        * flow_field.wind_speeds, 3
-    )
 
     n_x_planes = x_1d.shape[0]
-    n_y_planes = y_1d.shape[0]
-    n_z_planes = z_1d.shape[0]  # noqa: F841 TODO: remove if not used in final implementation
 
     # Create large arrays (memory intensive!)
     x, y, z = np.meshgrid(x_1d, y_1d, z_1d, indexing='ij')
@@ -67,12 +61,32 @@ def curled_wake_solver(
     # Use the same number of x and y points for generality once we get to multiple
     # findices at once (can consider revising later)
     # Not yet handling heterogeneity; will work that in later.
-    u_freestream = np.tile(u_sheared, (n_findex, n_x_planes, n_y_planes, 1))
+    u_freestream = np.ones_like(x, dtype=floris_float_type) * np.max(flow_field.wind_speeds)
     v_freestream = np.zeros_like(x, dtype=floris_float_type) # May not be needed. Always zeros?
     w_freestream = np.zeros_like(x, dtype=floris_float_type) # May not be needed. Always zeros?
     u_waked = np.zeros_like(x, dtype=floris_float_type)
     v_waked = np.zeros_like(x, dtype=floris_float_type)
     w_waked = np.zeros_like(x, dtype=floris_float_type)
+
+    #
+    # Add flow features
+    #
+
+    # Add boundary layer
+    print('Adding boundary layer:')
+    u_sheared = (z / flow_field.reference_wind_height) ** flow_field.wind_shear * u_freestream
+    u_freestream = np.maximum(u_sheared, u_freestream*.3)  # Ensure freestream is above 3 m/s
+
+    # Add veer
+    if np.abs(flow_field.wind_veer) > 1e-6:
+        print("Adding veer:")
+        v_sheared = model_manager.velocity_model.add_veer_theta(z, u_freestream,
+                                                                theta_deg=flow_field.wind_veer,
+                                                                th=farm.hub_heights_sorted.max(),
+                                                                D=farm.rotor_diameters_sorted.max()
+                                                                )
+        print("V shear shape:", v_sheared.shape)
+        v_freestream += v_sheared
 
     # Compute the numerical viscosity needed for stability
     Re = model_manager.velocity_model.Re
@@ -112,7 +126,6 @@ def curled_wake_solver(
         v_fs   = v_freestream_plane[0]     # shape (ny, nz)
         w_fs   = w_freestream_plane[0]     # shape (ny, nz)
         nu_2d = nu_t[0, i, :, :]  # shape (ny, nz)
-
 
         # Run RK step
         u_new = model_manager.velocity_model.function(

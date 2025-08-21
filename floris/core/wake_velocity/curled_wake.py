@@ -108,6 +108,101 @@ class CurledWakeVelocityDeficit(BaseModel):
 
         return nu
 
+    def add_curl(self,
+        Y, Z, *,                 # <- no V, W here
+        D, Ct, Uh, alpha, tilt,
+        ground=False, th=0.0,
+        N=20, eps=None
+    ):
+        """
+        Return ONLY the curl-induced velocities (Vcurl, Wcurl), without
+        modifying any inputs. Caller can add these to their own V, W.
+        """
+        if eps is None:
+            eps = 0.2 * D
+
+        # Lamb–Oseen-style kernel; drop-in consistent with your original.
+        def vortex(dy, dz, Gamma=1.0, eps=0.2):
+            r2 = dy*dy + dz*dz
+            # zero exactly at r=0; avoids masked assignment pitfalls
+            safe = r2 > 1e-12
+            factor = np.zeros_like(r2, dtype=float)
+            np.divide(1.0 - np.exp(-r2/(eps*eps)), r2, out=factor, where=safe)
+            factor *= (float(Gamma) / (2.0*np.pi))
+            uy =  factor * dz     # +dz
+            uz = -factor * dy     # -dy
+            return uy, uz
+
+        Vcurl = np.zeros_like(Y, dtype=float)
+        Wcurl = np.zeros_like(Z, dtype=float)
+
+        R = 0.5 * D
+
+        # Rotor normal
+        n = np.array([
+            np.cos(alpha) * np.cos(tilt),  # x
+            np.sin(alpha),                 # y
+            -np.cos(alpha) * np.sin(tilt)  # z
+        ], dtype=float)
+
+        inflow = np.array([1.0, 0.0, 0.0], dtype=float)
+
+        # Total rotation angle
+        cosang = float(np.clip(np.dot(n, inflow), -1.0, 1.0))
+        theta_total = np.arccos(cosang)
+
+        # Rotation axis (use 1e-6 threshold like your original)
+        axis = np.cross(inflow, n)
+        axis_norm = np.linalg.norm(axis)
+        if axis_norm < 1e-6:
+            axis = np.array([0.0, 0.0, 1.0], dtype=float)
+        else:
+            axis /= axis_norm
+        axis_y, axis_z = axis[1], axis[2]
+
+        # Circulation magnitude (same as original)
+        Gamma_total = -(
+            np.pi * D / 4.0 * 0.5 * Ct * Uh *
+            np.sin(theta_total) * np.cos(theta_total)**2
+        )
+        Gamma0 = 4.0 / np.pi * Gamma_total
+
+        # Midpoint integration in θ
+        theta_edges = np.linspace(0.0, 0.5*np.pi, N + 1)
+        dtheta = theta_edges[1] - theta_edges[0]
+        theta = theta_edges[:-1] + 0.5*dtheta
+        r  = R * np.sin(theta)
+        dr = R * np.cos(theta) * dtheta
+
+        for s, ds in zip(r, dr):
+            # IMPORTANT: replicate original clipping order
+            denom = np.sqrt(1.0 - (2.0*s/D)**2)
+            denom = max(denom, 1e-12)
+
+            Gamma = -4.0 * Gamma0 * s * ds / (D*D * denom)
+
+            off_y, off_z = s * axis_y, s * axis_z
+
+            # Primary pair
+            vt1, wt1 = vortex(Y - off_y, Z - off_z,  Gamma,  eps)
+            vt2, wt2 = vortex(Y + off_y, Z + off_z, -Gamma,  eps)
+            Vcurl += vt1 + vt2
+            Wcurl += wt1 + wt2
+
+            if ground:
+                z_offset = 2.0 * th
+                # Image vortices (signs match your original)
+                vt1g, wt1g = vortex(Y - off_y, Z + off_z + z_offset, -Gamma, eps)
+                vt2g, wt2g = vortex(Y + off_y, Z - off_z + z_offset,  Gamma, eps)
+                Vcurl += vt1g + vt2g
+                Wcurl += wt1g + wt2g
+
+        return Vcurl, Wcurl
+
+
+
+
+
 
 @njit
 def finite_diff(arr, dy, dz):

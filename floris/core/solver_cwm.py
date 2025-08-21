@@ -34,17 +34,18 @@ def curled_wake_solver(
 
 
     dx = model_manager.velocity_model.dx_D * farm.rotor_diameters_sorted.min()
-    dy = dx
-    dz = dx
-    dx /= 2  # ensure smaller dx for numerical stability
+    dy = model_manager.velocity_model.dy_D * farm.rotor_diameters_sorted.min()
+    dz = model_manager.velocity_model.dz_D * farm.rotor_diameters_sorted.min()
+
+    #dx /= 2  # ensure smaller dx for numerical stability
     x_min = 0 - farm.rotor_diameters_sorted.max() # 1D upstream of first turbine
     x_max = grid.x_sorted.max() + farm.rotor_diameters_sorted.max() # 1D downstream of last turbine
-    y_min = grid.y_sorted.min() - farm.rotor_diameters_sorted.max()
-    y_max = grid.y_sorted.max() + farm.rotor_diameters_sorted.max()
+    y_min = grid.y_sorted.min() - 5*farm.rotor_diameters_sorted.max()
+    y_max = grid.y_sorted.max() + 5*farm.rotor_diameters_sorted.max()
     x_1d = np.arange(x_min, x_max, dx, dtype=floris_float_type) # x coordinates
     y_1d = np.arange(y_min, y_max, dy, dtype=floris_float_type) # y coordinates
     z_1d = np.arange(
-        0, farm.hub_heights_sorted.max()+farm.rotor_diameters_sorted.max(),
+        0, farm.hub_heights_sorted.max()+ 2*farm.rotor_diameters_sorted.max(),
         dz,
         dtype=floris_float_type
     ) # Go up to 0.5D above highest tip point
@@ -79,7 +80,6 @@ def curled_wake_solver(
     nu_min = u_freestream * flow_field.reference_wind_height / Re
     # Initialize the turbulence viscosity based on the standard curled wake model formulation
     nu_t = model_manager.velocity_model.initialize_turbulence_viscosity(u_freestream, z, dz, nu_min)
-    print("nu_t shape:", nu_t.shape)
 
     # Code to generate one or multiple turbine indices that correspond to a certain x location
     # Each element in the list turbines_in_plane should be a list of the turbines that appear at
@@ -104,47 +104,39 @@ def curled_wake_solver(
         v_waked_plane = v_waked[:, i, :, :]  # noqa: F841 TODO: remove if not used
         w_waked_plane = w_waked[:, i, :, :]  # noqa: F841 TODO: remove if not used
 
-        ### ... solver code here ...
-        #u_waked[:, i, :, :] = u_waked[:, i-1, :, :]
-
         # Extract the 2D slices for the current plane
         u_prev = u_waked[0, i-1, :, :]     # shape (ny, nz)
+        v_prev = v_waked[0, i-1, :, :]     # shape (ny, nz)
+        w_prev = w_waked[0, i-1, :, :]     # shape (ny, nz)
         u_fs   = u_freestream_plane[0]     # shape (ny, nz)
         v_fs   = v_freestream_plane[0]     # shape (ny, nz)
         w_fs   = w_freestream_plane[0]     # shape (ny, nz)
         nu_2d = nu_t[0, i, :, :]  # shape (ny, nz)
 
-        # Debug shapes
-        #print("u_prev shape:", u_prev.shape)
-        #print("u_fs shape:", u_fs.shape)
-        #print("v_fs shape:", v_fs.shape)
-        #print("w_fs shape:", w_fs.shape)
-        #print("nu_2d shape:", nu_2d.shape)
-        #print("dx:", dx)
-        #print("f:", f)
 
         # Run RK step
-#        u_new = runge_kutta_step(
         u_new = model_manager.velocity_model.function(
             u_prev,
             dx,
             u_fs,
-            v_fs,
-            w_fs,
+            v_fs + v_prev,
+            w_fs + w_prev,
             dy,
             dz,
             nu_2d
         )
 
-        #u_new = np.clip(u_new, -5, 0)
-        #import matplotlib.pyplot as plt
-        #plt.pcolormesh(u_new, label='u_new')
-        #plt.colorbar(label='Velocity (m/s)')
-        #plt.gca().set_aspect('equal', adjustable='box')
-        #plt.show()
-
         # Assign it back
         u_waked[0, i, :, :] = u_new
+
+        # A simple evolution model to scale v the same way that U has scaled
+        # This saves all the work of resolving the transport equation (du/dx~dv/dx)
+        U = u_freestream_plane[0, :, :]
+        fact = (U + u_waked[0, i-1, :, :]) / (U + u_waked[0, i, :, :])
+        # This ensures that V and W do not become larger (they should always decay)
+        fact = np.clip(fact, .1, 1.)
+        v_waked[:,i,:,:] = v_waked[:, i-1, :, :] * fact
+        w_waked[:,i,:,:] = w_waked[:, i-1, :, :] * fact
 
         # If a turbine exists on this plane, calculate its inflow velocities as a subset of
         # u_freestream_plane
@@ -173,26 +165,12 @@ def curled_wake_solver(
                 ((y[:, i, :, :] - t_y) ** 2 + (z[:, i, :, :] - t_z) ** 2)
                 < (1.3 * rotor_diameter_i / 2)**2
             )
-            #print("Rotor mask shape:", rotor_mask_filt.shape)
 
-            #print(
-            # "Turbine:", t, "at x:", turbine_x[0,0,0], "y:", turbine_y[0,0,0],
-            # "z:", turbine_z[0,0,0]
-            #)
-            #print("Turbine coordinates:", turbine_x.shape, turbine_y.shape, turbine_z.shape)
-            #print("Turbine x: ", turbine_x)
-            #print("Turbine y: ", turbine_y)
-            #print("Turbine z: ", turbine_z)
-            # Pull values from u_waked_plane that are closest to the turbine locations
-            #u_waked_plane_turbine = 10 * np.ones((3, 3)) # PLACEHOLDER
-            #flow_field.u_sorted[0, t, :, :] = u_waked_plane_turbine
+            # Calculate the average velocity at the rotor disk
             u_rotor_values = u_freestream_plane[rotor_mask] + u_waked_plane[rotor_mask]
             u_rotor_disk = np.mean(u_rotor_values)
             flow_field.u_sorted[0, t, :, :] = u_rotor_disk  # or shape match if 2D needed
 
-
-        #if turbines_in_plane[i]: # Just to avoid running unnecessarily if there are no turbines in
-        # plane
             ct_i = thrust_coefficient(
                 velocities=flow_field.u_sorted,
                 turbulence_intensities=flow_field.turbulence_intensity_field_sorted,
@@ -212,21 +190,31 @@ def curled_wake_solver(
                 cubature_weights=grid.cubature_weights,
                 multidim_condition=flow_field.multidim_conditions,
             )
-            print("C_T:", ct_i)
 
             a = (1. - np.sqrt(1. - ct_i * np.cos(0)**2)) / 2
             # force scalar  # Set a limit to guarantee numerical stability
             a = float(np.minimum(a, 0.35))
-            print("a:", a)
 
             # Apply induction to points inside the rotor disk
             u_waked_plane[rotor_mask] = - 2 * a * u_freestream_plane[rotor_mask]
-            #u_waked_plane = gaussian_filter(u_waked_plane, 3)
-            # (this filtered the entire plane)
-            # u_waked[0, i, :, :] = gaussian_filter(u_waked_plane, 3)
             # Filter only around the rotor disk
             u_waked[:,i,:,:][rotor_mask_filt] = gaussian_filter(u_waked_plane[rotor_mask_filt], 2)
 
+            # Add Curl
+            vcurl, wcurl = model_manager.velocity_model.add_curl(
+                y[:, i, :, :]-t_y, #[rotor_mask_filt],
+                z[:, i, :, :]-t_z, #[rotor_mask_filt],
+                D=rotor_diameter_i,
+                Ct=ct_i[0],
+                Uh=u_rotor_disk,
+                alpha=np.deg2rad(farm.yaw_angles_sorted[0, t]),
+                tilt=np.deg2rad(farm.tilt_angles_sorted[0, t]),
+                ground=True,
+                th=farm.hub_heights_sorted[0, t],
+                N=20,
+            )
+            v_waked[:,i,:,:] += vcurl
+            w_waked[:,i,:,:] += wcurl
 
         # Ensure boundary conditions are satisfied
         u_waked[:, i, :, [0, -1]] = 0
@@ -248,5 +236,4 @@ def curled_wake_solver(
     plt.show()
     print("Solve complete.")
 
-    # Result: flow_field.u_sorted.
     return None

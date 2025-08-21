@@ -18,16 +18,21 @@ def main():
     D = 126.  # Turbine diameter [m]
 
     # Test a random layout generator
-    N= 50  # Number of turbines
+    N= 20  # Number of turbines
     xd = 5 * D  # Minimum distance in x-direction
     yd = 3 * D  # Minimum distance in y-direction
-    xlim = (0, np.sqrt(N) * xd)  # X limits
-    ylim = (0, np.sqrt(N) * yd)  # Y limits
-    layout_x, layout_y = random_layout(N=20, xd=5*D, yd=3*D, xlim=xlim, ylim=ylim)
+    xlim = (0, np.sqrt(N*2.5) * xd)  # X limits
+    ylim = (0, np.sqrt(N*2.5) * yd)  # Y limits
+    layout_x, layout_y = random_layout(N=N, xd=5*D, yd=3*D, xlim=xlim, ylim=ylim)
     print(layout_x, layout_y)
 
+    yaw_angles = np.random.default_rng(0).uniform(-20, 20, size=(1, N))
+    #yaw_angles = -20 * np.ones((1, N))
+    print("Yaw angles:", yaw_angles)
 
-    fmodel.set(layout_x=layout_x, layout_y=layout_y)
+    fmodel.set(layout_x=layout_x, layout_y=layout_y,
+               yaw_angles=yaw_angles,
+               )
 
 
     # Single wind condition

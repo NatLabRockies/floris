@@ -45,20 +45,32 @@ TURBINE_MODEL_MAP = {
 }
 
 
-def select_multidim_condition(
-    condition: dict | tuple,
-    specified_conditions: Iterable[tuple]
+def _select_multidim_condition(
+    condition: dict,
+    specified_conditions: Iterable[tuple],
+    condition_keys: list[str]
 ) -> tuple:
     """
     Convert condition to the type expected by power_thrust_table and select
     nearest specified condition
     """
-    if type(condition) is tuple:
-        pass
-    elif type(condition) is dict:
-        condition = tuple(condition.values())
+    if type(condition) is dict:
+        # Check valid keys
+        if set(condition.keys()) != set(condition_keys):
+            raise ValueError(
+                f"The provided condition keys {list(condition.keys())} do not match the "
+                f"expected keys {condition_keys}. A single value should be provided for "
+                "each dimension of the multidimensional power/thrust_coefficient table."
+            )
+        # Create a tuple of the condition values in the correct order
+        condition = tuple(condition[k] for k in condition_keys)
+    elif condition is None:
+        raise ValueError(
+            "multidim_condition must be provided if using multidimensional "
+            "power/thrust_coefficient."
+        )
     else:
-        raise TypeError("condition should be of type dict or tuple.")
+        raise TypeError("condition should be of type dict.")
 
     # Find the nearest key to the specified conditions.
     specified_conditions = np.array(specified_conditions)
@@ -159,9 +171,10 @@ def power(
         else: # assumed multidimensional, use multidim lookup
             # Currently, only works for single mutlidim condition. May need to
             # loop in the case where there are multiple conditions.
-            multidim_condition = select_multidim_condition(
+            multidim_condition = _select_multidim_condition(
                 multidim_condition,
-                list(turbine_power_thrust_tables[turb_type].keys())
+                [k for k in turbine_power_thrust_tables[turb_type].keys() if k != "condition_keys"],
+                turbine_power_thrust_tables[turb_type]["condition_keys"]
             )
             power_thrust_table = turbine_power_thrust_tables[turb_type][multidim_condition]
 
@@ -275,9 +288,10 @@ def thrust_coefficient(
         else: # assumed multidimensional, use multidim lookup
             # Currently, only works for single mutlidim condition. May need to
             # loop in the case where there are multiple conditions.
-            multidim_condition = select_multidim_condition(
+            multidim_condition = _select_multidim_condition(
                 multidim_condition,
-                list(turbine_power_thrust_tables[turb_type].keys())
+                [k for k in turbine_power_thrust_tables[turb_type].keys() if k != "condition_keys"],
+                turbine_power_thrust_tables[turb_type]["condition_keys"]
             )
             power_thrust_table = turbine_power_thrust_tables[turb_type][multidim_condition]
 
@@ -389,10 +403,10 @@ def axial_induction(
             power_thrust_table = turbine_power_thrust_tables[turb_type]
         else: # assumed multidimensional, use multidim lookup
             # Currently, only works for single mutlidim condition. May need to
-            # loop in the case where there are multiple conditions.
-            multidim_condition = select_multidim_condition(
+            multidim_condition = _select_multidim_condition(
                 multidim_condition,
-                list(turbine_power_thrust_tables[turb_type].keys())
+                [k for k in turbine_power_thrust_tables[turb_type].keys() if k != "condition_keys"],
+                turbine_power_thrust_tables[turb_type]["condition_keys"]
             )
             power_thrust_table = turbine_power_thrust_tables[turb_type][multidim_condition]
 
@@ -578,7 +592,8 @@ class Turbine(BaseClass):
             )
             # Add reference information at the lower level
 
-        # Set on-object version
+        # Save names of dimensions and set on-object version
+        power_thrust_table_.update({"condition_keys": self.condition_keys})
         self.power_thrust_table = power_thrust_table_
 
     @power_thrust_table.validator

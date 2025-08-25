@@ -11,6 +11,7 @@ from floris import (
     WindRose,
 )
 from floris.core.turbine.operation_models import POWER_SETPOINT_DEFAULT
+from tests.conftest import SampleInputs
 
 
 TEST_DATA = Path(__file__).resolve().parent / "data"
@@ -782,3 +783,47 @@ def test_set_operation():
     with pytest.raises(ValueError):
         fmodel.set_operation(yaw_angles=np.array([[25.0, 0.0], [25.0, 0.0]]))
         fmodel.run()
+
+def test_set_multidim():
+    fmodel = FlorisModel(configuration=YAML_INPUT)
+    fmodel.set(turbine_type=[SampleInputs().turbine_multi_dim])
+
+    # No multidim condition has been set; should raise value error
+    with pytest.raises(ValueError):
+        fmodel.run()
+
+    # Set a multidim condition that is not a valid type
+    with pytest.raises(TypeError):
+        fmodel.set(multidim_conditions="invalid_type")
+        fmodel.run()
+
+    # Set an invalid multidim condition (not all dimensions specified)
+    with pytest.raises(ValueError):
+        fmodel.set(multidim_conditions={"Hs": 1.0})
+        fmodel.run()
+
+    # Set an invalid key (but the correct total number of keys)
+    with pytest.raises(ValueError):
+        fmodel.set(multidim_conditions={"invalid_key": 2.0, "Hs": 1.0})
+        fmodel.run()
+
+    # Set with an invalid key (as well as other keys being correct)
+    with pytest.raises(ValueError):
+        fmodel.set(multidim_conditions={"invalid_key": 2.0, "Hs": 1.0, "Tp": 8.0})
+        fmodel.run()
+
+    # Set a valid multidim condition, runs correctly
+    fmodel.set(multidim_conditions={"Hs": 1.0, "Tp": 8.0})
+    fmodel.run()
+
+    # Create a single-dimensional table
+    turbine = SampleInputs().turbine_multi_dim
+    turbine["power_thrust_table"]["power_thrust_data_file"] = "iea_15MW_multi_dim_TI.csv"
+    fmodel.set(turbine_type=[turbine])
+
+    with pytest.raises(ValueError):
+        fmodel.set(multidim_conditions={"TI": 0.06, "Tp": 8.0})
+        fmodel.run()
+
+    fmodel.set(multidim_conditions={"TI": 0.06})
+    fmodel.run()

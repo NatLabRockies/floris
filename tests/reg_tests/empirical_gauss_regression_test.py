@@ -17,7 +17,7 @@ from tests.conftest import (
 )
 
 
-DEBUG = True
+DEBUG = False
 VELOCITY_MODEL = "empirical_gauss"
 DEFLECTION_MODEL = "empirical_gauss"
 TURBULENCE_MODEL = "wake_induced_mixing"

@@ -62,13 +62,12 @@ def select_multidim_condition(
 
     # Find the nearest key to the specified conditions.
     specified_conditions = np.array(specified_conditions)
-    if len(specified_conditions.shape) == 1: # Single specified condition
+    if specified_conditions.ndim == 1: # Single specified condition
         specified_conditions = specified_conditions.reshape(-1, 1)
 
     # Find the nearest key to the specified conditions.
     nearest_condition = np.zeros_like(condition)
     for i, c in enumerate(condition):
-        # specified_conditions[:,i] assumes two dimensions, which isn't necessarily the case.
         nearest_condition[i] = (
             specified_conditions[:, i][np.absolute(specified_conditions[:, i] - c).argmin()]
         )

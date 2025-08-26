@@ -104,7 +104,7 @@ def power(
     average_method: str = "cubic-mean",
     cubature_weights: NDArrayFloat | None = None,
     correct_cp_ct_for_tilt: bool = False,
-    multidim_condition: tuple | None = None, # Assuming only one condition at a time?
+    multidim_condition: dict | None = None, # Assuming only one condition at a time?
 ) -> NDArrayFloat:
     """Power produced by a turbine adjusted for yaw and tilt. Value
     given in Watts.
@@ -138,7 +138,7 @@ def power(
             to determine a rotor-average wind speed. Defaults to "cubic-mean".
         cubature_weights (NDArrayFloat | None): Weights for cubature averaging methods. Defaults to
             None.
-        multidim_condition (tuple | None): The condition tuple used to select the appropriate
+        multidim_condition (dict | None): The condition dictionary used to select the appropriate
             thrust coefficient relationship for multidimensional power/thrust tables. Defaults to
             None.
 
@@ -219,7 +219,7 @@ def thrust_coefficient(
     ix_filter: NDArrayFilter | Iterable[int] | None = None,
     average_method: str = "cubic-mean",
     cubature_weights: NDArrayFloat | None = None,
-    multidim_condition: tuple | None = None, # Assuming only one condition at a time?
+    multidim_condition: dict | None = None, # Assuming only one condition at a time?
 ) -> NDArrayFloat:
 
     """Thrust coefficient of a turbine.
@@ -255,7 +255,7 @@ def thrust_coefficient(
             to determine a rotor-average wind speed. Defaults to "cubic-mean".
         cubature_weights (NDArrayFloat | None): Weights for cubature averaging methods. Defaults to
             None.
-        multidim_condition (tuple | None): The condition tuple used to select the appropriate
+        multidim_condition (dict | None): The condition dictionary used to select the appropriate
             thrust coefficient relationship for multidimensional power/thrust tables. Defaults to
             None.
 
@@ -339,7 +339,7 @@ def axial_induction(
     ix_filter: NDArrayFilter | Iterable[int] | None = None,
     average_method: str = "cubic-mean",
     cubature_weights: NDArrayFloat | None = None,
-    multidim_condition: tuple | None = None, # Assuming only one condition at a time?
+    multidim_condition: dict | None = None, # Assuming only one condition at a time?
 ) -> NDArrayFloat:
     """Axial induction factor of the turbine incorporating
     the thrust coefficient and yaw angle.
@@ -371,7 +371,7 @@ def axial_induction(
             to determine a rotor-average wind speed. Defaults to "cubic-mean".
         cubature_weights (NDArrayFloat | None): Weights for cubature averaging methods. Defaults to
             None.
-        multidim_condition (tuple | None): The condition tuple used to select the appropriate
+        multidim_condition (dict | None): The condition dictionary used to select the appropriate
             thrust coefficient relationship for multidimensional power/thrust tables. Defaults to
             None.
 

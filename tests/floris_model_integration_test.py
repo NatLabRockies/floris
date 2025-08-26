@@ -812,9 +812,14 @@ def test_set_multidim():
         fmodel.set(multidim_conditions={"invalid_key": 2.0, "Hs": 1.0, "Tp": 8.0})
         fmodel.run()
 
-    # Set a valid multidim condition, runs correctly
+    # Set a valid multidim condition, order of dictionary keys should not matter
     fmodel.set(multidim_conditions={"Hs": 1.0, "Tp": 8.0})
     fmodel.run()
+    powers_1 = fmodel.get_turbine_powers()
+    fmodel.set(multidim_conditions={"Tp": 8.0, "Hs": 1.0})
+    fmodel.run()
+    powers_2 = fmodel.get_turbine_powers()
+    assert np.array_equal(powers_1, powers_2)
 
     # Create a single-dimensional table
     turbine = SampleInputs().turbine_multi_dim

@@ -30,6 +30,12 @@ class YawOptimizationScipy(YawOptimization):
         Instantiate YawOptimizationScipy object with a FlorisModel object
         and assign parameter values.
         """
+        valid_op_models = ["cosine-loss"]
+        if fmodel.get_operation_model() not in valid_op_models:
+            raise ValueError(
+                "YawOptimizationScipy is currently limited to the following operation models: "
+                + ", ".join(valid_op_models)
+            )
         if opt_options is None:
             # Default SciPy parameters
             opt_options = {

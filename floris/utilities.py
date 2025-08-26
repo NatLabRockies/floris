@@ -15,7 +15,7 @@ import numpy as np
 import yaml
 from attrs import define, field
 
-from floris.type_dec import floris_array_converter, NDArrayFloat
+from floris.type_dec import floris_float_type, NDArrayFloat
 
 
 def pshape(array: np.ndarray, label: str = ""):
@@ -264,7 +264,10 @@ def rotate_coordinates_rel_west(
         + y_coord_offset * cosd(wind_deviation_from_west)
         + y_center_of_rotation
     )
-    z_coord_rotated = np.ones_like(wind_deviation_from_west) * z_coordinates
+    z_coord_rotated = np.ones_like(
+        wind_deviation_from_west,
+        dtype=floris_float_type
+    ) * z_coordinates
     return x_coord_rotated, y_coord_rotated, z_coord_rotated, x_center_of_rotation, \
         y_center_of_rotation
 

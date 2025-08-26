@@ -1,11 +1,12 @@
 import os
 from pathlib import Path
 
+import floris
 from floris import FlorisModel
 
 
 CONVERT_FOLDER = Path(__file__).resolve().parent / "v3_to_v4_convert_test"
-FLORIS_FOLDER = Path(__file__).resolve().parent / ".." / "floris"
+FLORIS_FOLDER = Path(floris.__file__).resolve().parent
 
 
 def test_v3_to_v4_convert():

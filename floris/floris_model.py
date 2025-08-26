@@ -33,6 +33,7 @@ from floris.type_dec import (
     NDArrayStr,
 )
 from floris.utilities import (
+    load_yaml,
     nested_get,
     nested_set,
     print_nested_dict,
@@ -63,7 +64,15 @@ class FlorisModel(LoggingManager):
                 - **logging**: See `floris.simulation.core.Core` for more details.
     """
 
+    @staticmethod
+    def get_defaults() -> dict:
+        return copy.deepcopy(load_yaml(Path(__file__).parent / "default_inputs.yaml"))
+
     def __init__(self, configuration: dict | str | Path):
+
+        if configuration == "defaults":
+            configuration = FlorisModel.get_defaults()
+
         self.configuration = configuration
 
         if isinstance(self.configuration, (str, Path)):
@@ -176,6 +185,16 @@ class FlorisModel(LoggingManager):
         if layout_y is not None:
             farm_dict["layout_y"] = layout_y
         if turbine_type is not None:
+            if reference_wind_height is None:
+                self.logger.warning(
+                    "turbine_type has been changed without specifying a new "
+                    +"reference_wind_height. reference_wind_height remains {0:.2f} m.".format(
+                        flow_field_dict["reference_wind_height"]
+                    )
+                    +f" Consider calling `{self.__class__.__name__}."
+                    +"assign_hub_height_to_ref_height` to update the reference wind height to the "
+                    +"turbine hub height."
+                )
             farm_dict["turbine_type"] = turbine_type
         if turbine_library_path is not None:
             farm_dict["turbine_library_path"] = turbine_library_path
@@ -448,10 +467,7 @@ class FlorisModel(LoggingManager):
         # previous setting
         if not (_yaw_angles == 0).all():
             self.core.farm.set_yaw_angles(_yaw_angles)
-        if not (
-            (_power_setpoints == POWER_SETPOINT_DEFAULT)
-            | (_power_setpoints == POWER_SETPOINT_DISABLED)
-        ).all():
+        if not (_power_setpoints == POWER_SETPOINT_DEFAULT).all():
             self.core.farm.set_power_setpoints(_power_setpoints)
         if _awc_modes is not None:
             self.core.farm.set_awc_modes(_awc_modes)
@@ -1047,6 +1063,7 @@ class FlorisModel(LoggingManager):
                 'y': self.core.flow_field.heterogeneous_inflow_config['y'],
                 'speed_multipliers':
                     self.core.flow_field.heterogeneous_inflow_config['speed_multipliers'][findex:findex+1],
+                'interp_method': self.core.flow_field.heterogeneous_inflow_config['interp_method'],
             }
             if 'z' in self.core.flow_field.heterogeneous_inflow_config:
                 heterogeneous_inflow_config['z'] = (
@@ -1156,7 +1173,7 @@ class FlorisModel(LoggingManager):
                 Defaults to None.
             y_bounds (tuple, optional): Limits of output array (in m).
                 Defaults to None.
-            finder_for_viz (int, optional): Index of the condition to visualize.
+            findex_for_viz (int, optional): Index of the condition to visualize.
 
         Returns:
             :py:class:`~.tools.cut_plane.CutPlane`: containing values
@@ -1371,6 +1388,25 @@ class FlorisModel(LoggingManager):
 
         return self.core.solve_for_points(x, y, z)
 
+    def sample_ti_at_points(self, x: NDArrayFloat, y: NDArrayFloat, z: NDArrayFloat):
+        """
+        Extract the turbulence intensity at points in the flow.
+
+        Args:
+            x (1DArrayFloat | list): x-locations of points where TI is desired.
+            y (1DArrayFloat | list): y-locations of points where TI is desired.
+            z (1DArrayFloat | list): z-locations of points where TI is desired.
+
+        Returns:
+            3DArrayFloat containing turbulence intensity with dimensions
+            (# of findex, # of sample points)
+        """
+
+        self.sample_flow_at_points(x, y, z) # Solve, but ignore returned velocities
+
+        # Remove grid dimensions and return sorted TI field
+        return self.core.flow_field.turbulence_intensity_field_sorted[:, :, 0, 0]
+
     def sample_velocity_deficit_profiles(
         self,
         direction: str = "cross-stream",
@@ -1537,7 +1573,10 @@ class FlorisModel(LoggingManager):
                 # Set a single one here, then, and return
                 turbine_type = self.core.farm.turbine_definitions[0]
                 turbine_type["operation_model"] = operation_model
-                self.set(turbine_type=[turbine_type])
+                self.set(
+                    turbine_type=[turbine_type],
+                    reference_wind_height=self.reference_wind_height
+                )
                 return
             else:
                 operation_model = [operation_model]*self.core.farm.n_turbines
@@ -1556,11 +1595,19 @@ class FlorisModel(LoggingManager):
             )
             turbine_type_list[tindex]["operation_model"] = operation_model[tindex]
 
-        self.set(turbine_type=turbine_type_list)
+        self.set(
+            turbine_type=turbine_type_list,
+            reference_wind_height=self.reference_wind_height
+        )
 
     def copy(self):
-        """Create an independent copy of the current FlorisModel object"""
-        return FlorisModel(self.core.as_dict())
+        """Create an independent copy of the current FlorisModel object
+
+        When creating the copy, this method uses self.__class__(), rather than FlorisModel()
+        directly, so that subclasses of FlorisModel can inherit this method and return
+        instantiations of their own class, rather than the FlorisModel class.
+        """
+        return self.__class__(self.core.as_dict(), **self.secondary_init_kwargs)
 
     def get_param(
         self,
@@ -1599,7 +1646,7 @@ class FlorisModel(LoggingManager):
         """
         fm_dict_mod = self.core.as_dict()
         nested_set(fm_dict_mod, param, value, param_idx)
-        self.__init__(fm_dict_mod)
+        self.__init__(fm_dict_mod, **self.secondary_init_kwargs)
 
     def get_turbine_layout(self, z=False):
         """
@@ -1619,13 +1666,39 @@ class FlorisModel(LoggingManager):
         else:
             return xcoords, ycoords
 
+    def show_config(self, full=False) -> None:
+        """Print the FlorisModel dictionary.
+        """
+        config_dict = self.core.as_dict()
+        if not full:
+            del config_dict["logging"]
+            del config_dict["wake"]["enable_secondary_steering"]
+            del config_dict["wake"]["enable_yaw_added_recovery"]
+            del config_dict["wake"]["enable_transverse_velocities"]
+            del config_dict["wake"]["enable_active_wake_mixing"]
+            del config_dict["wake"]["wake_deflection_parameters"]
+            del config_dict["wake"]["wake_velocity_parameters"]
+            del config_dict["wake"]["wake_turbulence_parameters"]
+        print_nested_dict(config_dict)
+
     def print_dict(self) -> None:
         """Print the FlorisModel dictionary.
         """
-        print_nested_dict(self.core.as_dict())
-
+        self.logger.warning(
+            "The print_dict() method has been deprecated."
+            " Please use the show_config() method instead."
+        )
+        self.show_config(full=True)
 
     ### Properties
+
+    @property
+    def secondary_init_kwargs(self):
+        """
+        FlorisModel takes only the configuration argument. This method is a placeholder for
+        subclasses of FlorisModel.
+        """
+        return {}
 
     @property
     def layout_x(self):
@@ -1698,6 +1771,16 @@ class FlorisModel(LoggingManager):
         return self.core.farm.n_turbines
 
     @property
+    def reference_wind_height(self):
+        """
+        Reference wind height.
+
+        Returns:
+            float: Reference wind height.
+        """
+        return self.core.flow_field.reference_wind_height
+
+    @property
     def turbine_average_velocities(self) -> NDArrayFloat:
         return average_velocity(
             velocities=self.core.flow_field.u,
@@ -1727,9 +1810,16 @@ class FlorisModel(LoggingManager):
 
     @staticmethod
     def merge_floris_models(fmodel_list, reference_wind_height=None):
-        """Merge a list of FlorisModel objects into a single FlorisModel object. Note that it uses
-        the very first object specified in fmodel_list to build upon,
+        """Merge a list of FlorisModel objects into a single FlorisModel object.
+        Note that it uses the first object specified in fmodel_list to build upon,
         so it uses those wake model parameters, air density, and so on.
+        Currently, this function supports merging the following components of the FLORIS inputs:
+            - farm
+                - layout_x
+                - layout_y
+                - turbine_type
+            - flow_field
+                - reference_wind_height
 
         Args:
             fmodel_list (list): Array-like of FlorisModel objects.
@@ -1746,8 +1836,8 @@ class FlorisModel(LoggingManager):
                 or general solver settings.
         """
 
-        if not isinstance(fmodel_list[0], FlorisModel):
-            raise ValueError(
+        if not all( type(fm) is FlorisModel for fm in fmodel_list ):
+            raise TypeError(
                 "Incompatible input specified. fmodel_list must be a list of FlorisModel objects."
             )
 

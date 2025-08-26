@@ -35,7 +35,10 @@ const_CT_turb = build_cosine_loss_turbine_dict(
 ### Start by visualizing a single turbine in and its wake with the new model
 # Load the new TurboPark implementation and switch to constant CT turbine
 fmodel_new = FlorisModel("../inputs/turboparkgauss_cubature.yaml")
-fmodel_new.set(turbine_type=[const_CT_turb])
+fmodel_new.set(
+    turbine_type=[const_CT_turb],
+    reference_wind_height=fmodel_new.reference_wind_height
+)
 fmodel_new.run()
 u0 = fmodel_new.wind_speeds[0]
 
@@ -94,7 +97,10 @@ ax[2].set_xlim([-2, 2])
 ### Look at the wake profile at a single downstream distance for a range of wind directions
 # Load the original TurboPark implementation and switch to constant CT turbine
 fmodel_orig = FlorisModel("../inputs/turbopark_cubature.yaml")
-fmodel_orig.set(turbine_type=[const_CT_turb])
+fmodel_orig.set(
+    turbine_type=[const_CT_turb],
+    reference_wind_height=fmodel_orig.reference_wind_height
+)
 
 # Set up and solve flows
 wd_array = np.arange(225,315,0.1)

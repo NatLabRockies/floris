@@ -252,13 +252,15 @@ class Core(BaseClass):
 
         vel_model = self.wake.model_strings["velocity_model"]
 
-        if vel_model == "cc" or vel_model == "turbopark":
+        if vel_model == "turbopark":
             raise NotImplementedError(
-                "solve_for_points is currently only available with the "+\
-                "gauss, jensen, and empirical_gauss models."
+                "solve_for_points is not available for the legacy \'turbopark\' model. "
+                "However, it is available for \'turboparkgauss\'."
             )
         elif vel_model == "empirical_gauss":
             full_flow_empirical_gauss_solver(self.farm, self.flow_field, field_grid, self.wake)
+        elif vel_model == "cc":
+            full_flow_cc_solver(self.farm, self.flow_field, field_grid, self.wake)
         else:
             full_flow_sequential_solver(self.farm, self.flow_field, field_grid, self.wake)
 

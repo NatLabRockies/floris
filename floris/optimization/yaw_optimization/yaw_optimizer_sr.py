@@ -93,6 +93,7 @@ class YawOptimizationSR(YawOptimization, LoggingManager):
         wd_array_subset = self.fmodel_subset.core.flow_field.wind_directions
         ws_array_subset = self.fmodel_subset.core.flow_field.wind_speeds
         ti_array_subset = self.fmodel_subset.core.flow_field.turbulence_intensities
+        power_setpoints_subset = self.fmodel_subset.core.farm.power_setpoints
         turbine_weights_subset = self._turbine_weights_subset
 
         # Reformat yaw_angles_subset, if necessary
@@ -108,6 +109,7 @@ class YawOptimizationSR(YawOptimization, LoggingManager):
             wd_array_subset = np.tile(wd_array_subset, Ny)
             ws_array_subset = np.tile(ws_array_subset, Ny)
             ti_array_subset = np.tile(ti_array_subset, Ny)
+            power_setpoints_subset = np.tile(power_setpoints_subset, (Ny, 1))
             turbine_weights_subset = np.tile(turbine_weights_subset, (Ny, 1))
 
         # Initialize empty matrix for floris farm power outputs
@@ -143,7 +145,8 @@ class YawOptimizationSR(YawOptimization, LoggingManager):
                 ti_array=ti_array_subset[~idx],
                 turbine_weights=turbine_weights_subset[~idx, :],
                 yaw_angles=yaw_angles_subset[~idx, :],
-                heterogeneous_speed_multipliers=het_sm
+                heterogeneous_speed_multipliers=het_sm,
+                power_setpoints=power_setpoints_subset[~idx, :],
             )
             self.time_spent_in_floris += (timerpc() - start_time)
 

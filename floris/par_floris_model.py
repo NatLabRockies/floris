@@ -8,6 +8,9 @@ import numpy as np
 
 from floris.core import State
 from floris.floris_model import FlorisModel
+from floris.type_dec import (
+    NDArrayFloat,
+)
 
 
 class ParFlorisModel(FlorisModel):
@@ -47,8 +50,19 @@ class ParFlorisModel(FlorisModel):
         """
         # Instantiate the underlying FlorisModel
         if isinstance(configuration, FlorisModel):
-            configuration = configuration.core.as_dict()
-        super().__init__(configuration)
+            configuration_dict = configuration.core.as_dict()
+            super().__init__(configuration_dict)
+            # Copy over any control setpoints, wind data, if not already done.
+            self.set(
+                yaw_angles=configuration.core.farm.yaw_angles,
+                power_setpoints=configuration.core.farm.power_setpoints,
+                awc_modes=configuration.core.farm.awc_modes,
+                awc_amplitudes=configuration.core.farm.awc_amplitudes,
+                awc_frequencies=configuration.core.farm.awc_frequencies,
+                wind_data=configuration.wind_data,
+            )
+        else:
+            super().__init__(configuration)
 
         # Save parallelization parameters
         if interface == "multiprocessing":
@@ -112,81 +126,162 @@ class ParFlorisModel(FlorisModel):
             t0 = timerpc()
             super().run()
             t1 = timerpc()
-        elif self.interface == "multiprocessing":
+            self._print_timings(t0, t1, None, None)
+        else:
             t0 = timerpc()
             self.core.initialize_domain()
             parallel_run_inputs = self._preprocessing()
             t1 = timerpc()
-            if self.return_turbine_powers_only:
-                with self._PoolExecutor(self.max_workers) as p:
-                    self._turbine_powers_split = p.starmap(
-                        _parallel_run_powers_only,
-                        parallel_run_inputs
-                    )
-            else:
-                with self._PoolExecutor(self.max_workers) as p:
-                    self._fmodels_split = p.starmap(_parallel_run, parallel_run_inputs)
-            t2 = timerpc()
-            self._postprocessing()
-            self.core.farm.finalize(self.core.grid.unsorted_indices)
-            self.core.state = State.USED
-            t3 = timerpc()
-        elif self.interface == "pathos":
-            t0 = timerpc()
-            self.core.initialize_domain()
-            parallel_run_inputs = self._preprocessing()
-            t1 = timerpc()
-            if self.return_turbine_powers_only:
-                self._turbine_powers_split = self.pathos_pool.map(
-                    _parallel_run_powers_only_map,
-                    parallel_run_inputs
-                )
-            else:
-                self._fmodels_split = self.pathos_pool.map(
-                    _parallel_run_map,
-                    parallel_run_inputs
-                )
-            t2 = timerpc()
-            self._postprocessing()
-            self.core.farm.finalize(self.core.grid.unsorted_indices)
-            self.core.state = State.USED
-            t3 = timerpc()
-        elif self.interface == "concurrent":
-            t0 = timerpc()
-            self.core.initialize_domain()
-            parallel_run_inputs = self._preprocessing()
-            t1 = timerpc()
-            if self.return_turbine_powers_only:
-                with self._PoolExecutor(self.max_workers) as p:
-                    self._turbine_powers_split = p.map(
+            if self.interface == "multiprocessing":
+                if self.return_turbine_powers_only:
+                    with self._PoolExecutor(self.max_workers) as p:
+                        self._turbine_powers_split = p.starmap(
+                            _parallel_run_powers_only,
+                            parallel_run_inputs
+                        )
+                else:
+                    with self._PoolExecutor(self.max_workers) as p:
+                        self._fmodels_split = p.starmap(_parallel_run, parallel_run_inputs)
+            elif self.interface == "pathos":
+                if self.return_turbine_powers_only:
+                    self._turbine_powers_split = self.pathos_pool.map(
                         _parallel_run_powers_only_map,
                         parallel_run_inputs
                     )
-                    self._turbine_powers_split = list(self._turbine_powers_split)
-            else:
-                with self._PoolExecutor(self.max_workers) as p:
-                    self._fmodels_split = p.map(
+                else:
+                    self._fmodels_split = self.pathos_pool.map(
                         _parallel_run_map,
                         parallel_run_inputs
                     )
-                    self._fmodels_split = list(self._fmodels_split)
+            elif self.interface == "concurrent":
+                if self.return_turbine_powers_only:
+                    with self._PoolExecutor(self.max_workers) as p:
+                        self._turbine_powers_split = p.map(
+                            _parallel_run_powers_only_map,
+                            parallel_run_inputs
+                        )
+                        self._turbine_powers_split = list(self._turbine_powers_split)
+                else:
+                    with self._PoolExecutor(self.max_workers) as p:
+                        self._fmodels_split = p.map(
+                            _parallel_run_map,
+                            parallel_run_inputs
+                        )
+                        self._fmodels_split = list(self._fmodels_split)
             t2 = timerpc()
             self._postprocessing()
             self.core.farm.finalize(self.core.grid.unsorted_indices)
             self.core.state = State.USED
             t3 = timerpc()
-        if self.print_timings:
-            print("===============================================================================")
-            if self.interface is None:
-                print(f"Total time spent for serial calculation (interface=None): {t1 - t0:.3f} s")
-            else:
-                print(
-                    "Total time spent for parallel calculation "
-                    f"({self.max_workers} workers): {t3-t0:.3f} s"
+            self._print_timings(t0, t1, t2, t3)
+
+    def sample_flow_at_points(self, x: NDArrayFloat, y: NDArrayFloat, z: NDArrayFloat):
+        """
+        Sample the flow field velocity at specified points.
+
+        Args:
+            x: The x-coordinates of the points.
+            y: The y-coordinates of the points.
+            z: The z-coordinates of the points.
+
+        Returns:
+            NDArrayFloat: The wind speeds at the specified points.
+        """
+        return self._sample_value_at_points(x, y, z, value="velocity")
+
+    def sample_ti_at_points(self, x: NDArrayFloat, y: NDArrayFloat, z: NDArrayFloat):
+        """
+        Sample the turbulence intensity at specified points.
+
+        Args:
+            x: The x-coordinates of the points.
+            y: The y-coordinates of the points.
+            z: The z-coordinates of the points.
+
+        Returns:
+            NDArrayFloat: The turbulence intensity at the specified points.
+        """
+        return self._sample_value_at_points(x, y, z, value="turbulence_intensity")
+
+    def _sample_value_at_points(
+            self,
+            x: NDArrayFloat,
+            y: NDArrayFloat,
+            z: NDArrayFloat,
+            value: str
+        ):
+        """
+        Underlying method for sample values at (x,y,z) points for ParFlorisModel.
+
+        Args:
+            x: The x-coordinates of the points.
+            y: The y-coordinates of the points.
+            z: The z-coordinates of the points.
+            value: The type of value to sample ("velocity" or "turbulence_intensity").
+
+        Returns:
+            NDArrayFloat: The values at the specified points.
+        """
+        if self.return_turbine_powers_only:
+            raise NotImplementedError(
+                "Sampling at points is not supported when "
+                "return_turbine_powers_only is set to True on ParFlorisModel."
+            )
+
+        valid_values = ["velocity", "turbulence_intensity"]
+        if value not in valid_values:
+            raise ValueError(
+                f"Invalid value '{value}' for sampling. Must be one of {valid_values}."
+            )
+
+        if self.interface is None:
+            t0 = timerpc()
+            if value == "velocity":
+                output = super().sample_flow_at_points(x, y, z)
+            elif value == "turbulence_intensity":
+                output = super().sample_ti_at_points(x, y, z)
+            t1 = timerpc()
+            self._print_timings(t0, t1, None, None)
+        else:
+            t0 = timerpc()
+            self.core.initialize_domain()
+            parallel_run_inputs = self._preprocessing()
+            parallel_sample_flow_at_points_inputs = [
+                (fmodel_dict, control_setpoints, x, y, z)
+                for fmodel_dict, control_setpoints in parallel_run_inputs
+            ]
+            t1 = timerpc()
+            if value == "velocity":
+                _parallel_func = _parallel_sample_flow_at_points
+                _parallel_fmap = _parallel_sample_flow_at_points_map
+            elif value == "turbulence_intensity":
+                _parallel_func = _parallel_sample_ti_at_points
+                _parallel_fmap = _parallel_sample_ti_at_points_map
+
+            if self.interface == "multiprocessing":
+                with self._PoolExecutor(self.max_workers) as p:
+                    sampled_wind_speeds_p = p.starmap(
+                        _parallel_func,
+                        parallel_sample_flow_at_points_inputs
+                    )
+            elif self.interface == "pathos":
+                sampled_wind_speeds_p = self.pathos_pool.map(
+                    _parallel_fmap,
+                    parallel_sample_flow_at_points_inputs
                 )
-                print(f"  Time spent in parallel preprocessing: {t1-t0:.3f} s")
-                print(f"  Time spent in parallel loop execution: {t2-t1:.3f} s.")
-                print(f"  Time spent in parallel postprocessing: {t3-t2:.3f} s")
+            elif self.interface == "concurrent":
+                with self._PoolExecutor(self.max_workers) as p:
+                    sampled_wind_speeds_p = p.map(
+                        _parallel_fmap,
+                        parallel_sample_flow_at_points_inputs
+                    )
+                    sampled_wind_speeds_p = list(sampled_wind_speeds_p)
+            t2 = timerpc()
+            output = np.concatenate(sampled_wind_speeds_p, axis=0)
+            t3 = timerpc()
+            self._print_timings(t0, t1, t2, t3)
+
+        return output
 
     def _preprocessing(self):
         """
@@ -267,6 +362,23 @@ class ParFlorisModel(FlorisModel):
                     axis=0
                 )
 
+    def _print_timings(self, t0, t1, t2, t3):
+        """
+        Print the timings for the parallel execution.
+        """
+        if self.print_timings:
+            print("===============================================================================")
+            if self.interface is None:
+                print(f"Total time spent for serial calculation (interface=None): {t1 - t0:.3f} s")
+            else:
+                print(
+                    "Total time spent for parallel calculation "
+                    f"({self.max_workers} workers): {t3-t0:.3f} s"
+                )
+                print(f"  Time spent in parallel preprocessing: {t1-t0:.3f} s")
+                print(f"  Time spent in parallel loop execution: {t2-t1:.3f} s.")
+                print(f"  Time spent in parallel postprocessing: {t3-t2:.3f} s")
+
     def _get_turbine_powers(self):
         """
         Calculates the power at each turbine in the wind farm.
@@ -288,6 +400,19 @@ class ParFlorisModel(FlorisModel):
             return self._stored_turbine_powers
         else:
             return super()._get_turbine_powers()
+
+    @property
+    def secondary_init_kwargs(self):
+        """
+        ParFlorisModel secondary keyword arguments (after configuration).
+        """
+        return {
+            "interface": self.interface,
+            "max_workers": self.max_workers,
+            "n_wind_condition_splits": self.n_wind_condition_splits,
+            "return_turbine_powers_only": self.return_turbine_powers_only,
+            "print_timings": self.print_timings
+        }
 
     @property
     def fmodel(self):
@@ -353,3 +478,25 @@ def _parallel_run_powers_only_map(x):
     Wrapper for unpacking inputs to _parallel_run_powers_only() for use with map().
     """
     return _parallel_run_powers_only(*x)
+
+def _parallel_sample_flow_at_points(fmodel_dict, set_kwargs, x, y, z):
+    fmodel = FlorisModel(fmodel_dict)
+    fmodel.set(**set_kwargs)
+    return fmodel.sample_flow_at_points(x, y, z)
+
+def _parallel_sample_flow_at_points_map(x):
+    """
+    Wrapper for unpacking inputs to _parallel_sample_flow_at_points() for use with map().
+    """
+    return _parallel_sample_flow_at_points(*x)
+
+def _parallel_sample_ti_at_points(fmodel_dict, set_kwargs, x, y, z):
+    fmodel = FlorisModel(fmodel_dict)
+    fmodel.set(**set_kwargs)
+    return fmodel.sample_ti_at_points(x, y, z)
+
+def _parallel_sample_ti_at_points_map(x):
+    """
+    Wrapper for unpacking inputs to _parallel_sample_ti_at_points() for use with map().
+    """
+    return _parallel_sample_ti_at_points(*x)

@@ -10,7 +10,7 @@ name: GCH
 description: Three turbines using Gauss Curl Hybrid model
 
 ###
-# The earliest verion of FLORIS this input file supports.
+# The earliest version of FLORIS this input file supports.
 # This is not currently only for the user's reference.
 floris_version: v4
 
@@ -136,7 +136,7 @@ flow_field:
   wind_veer: 0.0
 
   ###
-  # The conditions that are specified for use with the multi-dimensional Cp/Ct capbility.
+  # The conditions that are specified for use with the multi-dimensional Cp/Ct capability.
   # These conditions are external to FLORIS and specified by the user. They are used internally
   # through a nearest-neighbor selection process to choose the correct Cp/Ct interpolants
   # to use.

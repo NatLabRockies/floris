@@ -4,8 +4,9 @@ on:
   push:
     branches:
     - develop
-    paths:
-    - docs/**
+
+
+  workflow_dispatch:  # Allows manual triggering of the workflow
 
 # This job installs dependencies, builds the book, and pushes it to `gh-pages`
 jobs:
@@ -18,11 +19,11 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: "3.10"
+        python-version: "3.13"
 
     - name: Install dependencies
       run: |
-        pip install -e ".[docs]"
+        pip install -e ".[docs, develop]"
 
     # Make a copy of the examples folder within the docs folder
     - name: Copy examples to docs
@@ -35,12 +36,8 @@ jobs:
     - name: Convert examples to notebooks
       working-directory: ${{runner.workspace}}/floris/docs/examples/
       run: |
-        # Print the working directory
         pwd
-
-        # Show the contents
         ls
-
         python _convert_examples_to_notebooks.py
 
     # Build the book
@@ -51,7 +48,53 @@ jobs:
 
     # Push the book's HTML to github-pages
     - name: GitHub Pages action
-      uses: peaceiris/actions-gh-pages@v3.6.1
+      uses: peaceiris/actions-gh-pages@v4.0.0
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./docs/_build/html
+
+    # Stash changes before benchmark action
+    - name: Stash changes
+      working-directory: ${{runner.workspace}}/floris/
+      run: |
+        git stash
+
+    - name: Run benchmark
+      working-directory: ${{runner.workspace}}/floris/
+      run: |
+        ls -lah
+        cd benchmarks
+        pytest bench.py --benchmark-json output.json
+
+    # Store benchmark result and create the benchmark pages
+    # Update the index.html and data.js files in the
+    # dev/bench folder of the benches branch
+    # dev/bench is the default folder for pytest-benchmark
+    - name: Store benchmark result
+      uses: benchmark-action/github-action-benchmark@v1
+      with:
+        name: Python Benchmark with pytest-benchmark
+        tool: 'pytest'
+        output-file-path: benchmarks/output.json
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        auto-push: true
+        gh-pages-branch: benches
+
+    # Add bench mark files to the gh-pages branch
+    - name: Add benchmark files to gh-pages
+      working-directory: ${{runner.workspace}}/floris/
+      run: |
+        ls -lah
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
+        git fetch origin benches
+        git checkout benches
+        rsync -av dev/bench /tmp/bench
+        git fetch origin gh-pages
+        git checkout gh-pages
+        mkdir -p dev
+        rsync -av /tmp/bench/ dev/
+        ls -lah dev/bench
+        git add dev
+        git commit -m "Add bench folder to gh-pages"
+        git push origin gh-pages

@@ -209,7 +209,7 @@ class TurbineGrid(Grid):
         # np.linspace would just return the starting value of -1 * disc_area_radius
         # which would place the point below the center of the rotor.
         if self.grid_resolution == 1:
-            disc_grid = np.zeros((np.shape(disc_area_radius)[0], 1 ))
+            disc_grid = np.zeros((np.shape(disc_area_radius)[0], 1 ),dtype=floris_float_type)
         else:
             disc_grid = np.linspace(
                 -1 * disc_area_radius,

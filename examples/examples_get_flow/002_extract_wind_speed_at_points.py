@@ -20,8 +20,8 @@ from floris import FlorisModel
 
 
 # User options
-# FLORIS model to use (limited to Gauss/GCH, Jensen, and empirical Gauss)
-floris_model = "gch"  # Try "gch", "jensen", "emgauss"
+# FLORIS model to use (legacy Turbopark not available)
+floris_model = "gch"  # Try "gch", "cc", "jensen", "emgauss", "turboparkgauss"
 # Option to try different met mast locations
 met_mast_option = 0  # Try 0, 1, 2, 3
 

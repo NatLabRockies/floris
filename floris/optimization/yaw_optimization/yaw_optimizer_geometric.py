@@ -1,6 +1,7 @@
 
 import numpy as np
 
+from floris.core.turbine.operation_models import POWER_SETPOINT_DISABLED
 from floris.utilities import rotate_coordinates_rel_west
 
 from .yaw_optimization_base import YawOptimization
@@ -46,10 +47,11 @@ class YawOptimizationGeometric(YawOptimization):
         # Loop through every WD individually. WS ignored!
         wd_array = self.fmodel_subset.core.flow_field.wind_directions
 
+        active_turbines = self.fmodel_subset.core.farm.power_setpoints > POWER_SETPOINT_DISABLED
         for nwdi, wd in enumerate(wd_array):
-            self._yaw_angles_opt_subset[nwdi, :] = geometric_yaw(
-                self.fmodel_subset.layout_x,
-                self.fmodel_subset.layout_y,
+            self._yaw_angles_opt_subset[nwdi, active_turbines[nwdi]] = geometric_yaw(
+                self.fmodel_subset.layout_x[active_turbines[nwdi]],
+                self.fmodel_subset.layout_y[active_turbines[nwdi]],
                 wd,
                 self.fmodel.core.farm.turbine_definitions[0]["rotor_diameter"],
                 top_left_yaw_upper=self.maximum_yaw_angle[0, 0],

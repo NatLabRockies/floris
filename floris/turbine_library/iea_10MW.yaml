@@ -16,6 +16,16 @@ power_thrust_table:
   helix_power_c: 2.314e-10
   helix_thrust_b: 1.157e-03
   helix_thrust_c: 1.167e-04
+  controller_dependent_turbine_parameters:
+    rotor_solidity: 0.03500415472147307
+    rated_rpm:  8.6
+    generator_efficiency: 0.944
+    rated_power: 10000.0
+    rotor_diameter: 198
+    beta: -3.8233819218614817
+    cd:  0.004612981322772105
+    cl_alfa: 4.602140680380394
+    cp_ct_data_file: "demo_cp_ct_surfaces/iea_10MW_demo_cp_ct_surface.npz"
   power:
     - 0.0
     - 0.0

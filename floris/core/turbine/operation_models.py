@@ -382,22 +382,22 @@ class SimpleDeratingTurbine(BaseOperationModel):
 @define
 class MixedOperationTurbine(BaseOperationModel):
 
+    @staticmethod
     def power(
         yaw_angles: NDArrayFloat,
         power_setpoints: NDArrayFloat,
         **kwargs
     ):
-        # Yaw angles mask all yaw_angles not equal to zero
-        yaw_angles_mask = yaw_angles != 0.0
-        power_setpoints_mask = power_setpoints < POWER_SETPOINT_DEFAULT
-        neither_mask = np.logical_not(yaw_angles_mask) & np.logical_not(power_setpoints_mask)
-
-        if (power_setpoints_mask & yaw_angles_mask).any():
-            raise ValueError((
-                "Power setpoints and yaw angles are incompatible."
-                "If yaw_angles entry is nonzero, power_setpoints must be greater than"
-                " or equal to {0}.".format(POWER_SETPOINT_DEFAULT)
-            ))
+        (
+            yaw_angles,
+            power_setpoints,
+            yaw_angles_mask,
+            power_setpoints_mask,
+            neither_mask
+        ) = MixedOperationTurbine._handle_mixed_operation_setpoints(
+            yaw_angles=yaw_angles,
+            power_setpoints=power_setpoints
+        )
 
         powers = np.zeros_like(power_setpoints)
         powers[yaw_angles_mask] += CosineLossTurbine.power(
@@ -414,21 +414,22 @@ class MixedOperationTurbine(BaseOperationModel):
 
         return powers
 
+    @staticmethod
     def thrust_coefficient(
         yaw_angles: NDArrayFloat,
         power_setpoints: NDArrayFloat,
         **kwargs
     ):
-        yaw_angles_mask = yaw_angles != 0.0
-        power_setpoints_mask = power_setpoints < POWER_SETPOINT_DEFAULT
-        neither_mask = np.logical_not(yaw_angles_mask) & np.logical_not(power_setpoints_mask)
-
-        if (power_setpoints_mask & yaw_angles_mask).any():
-            raise ValueError((
-                "Power setpoints and yaw angles are incompatible."
-                "If yaw_angles entry is nonzero, power_setpoints must be greater than"
-                " or equal to {0}.".format(POWER_SETPOINT_DEFAULT)
-            ))
+        (
+            yaw_angles,
+            power_setpoints,
+            yaw_angles_mask,
+            power_setpoints_mask,
+            neither_mask
+        ) = MixedOperationTurbine._handle_mixed_operation_setpoints(
+            yaw_angles=yaw_angles,
+            power_setpoints=power_setpoints
+        )
 
         thrust_coefficients = np.zeros_like(power_setpoints)
         thrust_coefficients[yaw_angles_mask] += CosineLossTurbine.thrust_coefficient(
@@ -445,21 +446,22 @@ class MixedOperationTurbine(BaseOperationModel):
 
         return thrust_coefficients
 
+    @staticmethod
     def axial_induction(
         yaw_angles: NDArrayFloat,
         power_setpoints: NDArrayFloat,
         **kwargs
     ):
-        yaw_angles_mask = yaw_angles != 0.0
-        power_setpoints_mask = power_setpoints < POWER_SETPOINT_DEFAULT
-        neither_mask = np.logical_not(yaw_angles_mask) & np.logical_not(power_setpoints_mask)
-
-        if (power_setpoints_mask & yaw_angles_mask).any():
-            raise ValueError((
-                "Power setpoints and yaw angles are incompatible."
-                "If yaw_angles entry is nonzero, power_setpoints must be greater than"
-                " or equal to {0}.".format(POWER_SETPOINT_DEFAULT)
-            ))
+        (
+            yaw_angles,
+            power_setpoints,
+            yaw_angles_mask,
+            power_setpoints_mask,
+            neither_mask
+        ) = MixedOperationTurbine._handle_mixed_operation_setpoints(
+            yaw_angles=yaw_angles,
+            power_setpoints=power_setpoints
+        )
 
         axial_inductions = np.zeros_like(power_setpoints)
         axial_inductions[yaw_angles_mask] += CosineLossTurbine.axial_induction(
@@ -476,6 +478,34 @@ class MixedOperationTurbine(BaseOperationModel):
 
         return axial_inductions
 
+    @staticmethod
+    def _handle_mixed_operation_setpoints(
+        yaw_angles: NDArrayFloat,
+        power_setpoints: NDArrayFloat,
+    ):
+        """
+        Check for incompatible yaw angles and power setpoints and raise an error if found.
+        Return masks and updated setpoints.
+        """
+        # If any turbines are disabled, set their yaw angles to zero
+        yaw_angles[power_setpoints <= POWER_SETPOINT_DISABLED] = 0.0
+
+        # Create masks for whether yaw angles and power setpoints are set
+        yaw_angles_mask = yaw_angles != 0.0
+        power_setpoints_mask = power_setpoints < POWER_SETPOINT_DEFAULT
+        neither_mask = np.logical_not(yaw_angles_mask) & np.logical_not(power_setpoints_mask)
+
+        # Check for incompatibility and raise error if found.
+        if (power_setpoints_mask & yaw_angles_mask).any():
+            raise ValueError((
+                "Power setpoints and yaw angles are incompatible."
+                "If yaw_angles entry is nonzero, power_setpoints must be greater than"
+                " or equal to {0}.".format(POWER_SETPOINT_DEFAULT)
+            ))
+
+        # Return updated setpoints as well as masks
+        return yaw_angles, power_setpoints, yaw_angles_mask, power_setpoints_mask, neither_mask
+
 @define
 class AWCTurbine(BaseOperationModel):
     """
@@ -488,6 +518,9 @@ class AWCTurbine(BaseOperationModel):
     added to the kwargs dictionaries in the respective functions on turbine.py. They won't affect
     the other operation models.
     """
+
+    def AWC_model(a, b, c, base_values, awc_amplitudes):
+            return base_values * (1 - (b + c*base_values)*awc_amplitudes**a)
 
     def power(
         power_thrust_table: dict,
@@ -507,29 +540,34 @@ class AWCTurbine(BaseOperationModel):
             cubature_weights=cubature_weights
         )
 
-        if (awc_modes == 'helix').any():
-            if np.any(np.isclose(
-                base_powers/1000,
-                np.max(power_thrust_table['power'])
-                )):
-                raise UserWarning(
-                    'The selected wind speed is above or near rated wind speed. '
-                    '`AWCTurbine` operation model is not designed '
-                    'or verified for above-rated conditions.'
-                    )
-            return base_powers * (1 - (
-                power_thrust_table['helix_power_b']
-                + power_thrust_table['helix_power_c']*base_powers
-                )
-                *awc_amplitudes**power_thrust_table['helix_a']
-            ) # TODO: Should probably add max function here
-        if (awc_modes == 'baseline').any():
-            return base_powers
-        else:
+        valid_entries = ['helix', 'baseline']
+        if not np.all(np.isin(awc_modes, valid_entries)):
             raise UserWarning(
                 'Active wake mixing strategies other than the `helix` strategy '
                 'have not yet been implemented in FLORIS. Returning baseline power.'
-                )
+            )
+
+        # Create a copy of the base power to modify according to different AWC modes
+        powers = base_powers.copy()
+
+        helix_mask = (awc_modes == 'helix')
+        if np.any(np.isclose(base_powers[helix_mask]/1000,np.max(power_thrust_table['power']))):
+            raise UserWarning(
+                'The selected wind speed is above or near rated wind speed. '
+                '`AWCTurbine` operation model is not designed '
+                'or verified for above-rated conditions.'
+            )
+
+        awc_powers = AWCTurbine.AWC_model(
+            power_thrust_table['helix_a'],
+            power_thrust_table['helix_power_b'],
+            power_thrust_table['helix_power_c'],
+            base_powers[helix_mask],
+            awc_amplitudes[helix_mask]
+        )
+        powers[helix_mask] = awc_powers
+
+        return powers
 
 
     def thrust_coefficient(
@@ -547,20 +585,22 @@ class AWCTurbine(BaseOperationModel):
             average_method=average_method,
             cubature_weights=cubature_weights
         )
-        if (awc_modes == 'helix').any():
-            return base_thrust_coefficients * (1 - (
-                power_thrust_table['helix_thrust_b']
-                + power_thrust_table['helix_thrust_c']*base_thrust_coefficients
-                )
-                *awc_amplitudes**power_thrust_table['helix_a']
-            )
-        if (awc_modes == 'baseline').any():
-            return base_thrust_coefficients
-        else:
-            raise UserWarning(
-                'Active wake mixing strategies other than the `helix` strategy '
-                'have not yet been implemented in FLORIS. Returning baseline power.'
-                )
+
+        # Create a copy of the base thrust coefficients to modify according to different AWC modes
+        thrust_coefficients = base_thrust_coefficients.copy()
+
+        helix_mask = (awc_modes == 'helix')
+
+        awc_thrust_coefficients = AWCTurbine.AWC_model(
+            power_thrust_table['helix_a'],
+            power_thrust_table['helix_thrust_b'],
+            power_thrust_table['helix_thrust_c'],
+            base_thrust_coefficients[helix_mask],
+            awc_amplitudes[helix_mask]
+        )
+        thrust_coefficients[helix_mask] = awc_thrust_coefficients
+
+        return thrust_coefficients
 
     def axial_induction(
         power_thrust_table: dict,

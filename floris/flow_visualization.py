@@ -543,7 +543,8 @@ def calculate_horizontal_plane_with_turbines(
                     awc_modes=awc_modes,
                     awc_amplitudes=awc_amplitudes,
                     awc_frequencies=awc_frequencies,
-                    turbine_type=turbine_types_test
+                    turbine_type=turbine_types_test,
+                    reference_wind_height=fmodel_viz.reference_wind_height
                 )
                 fmodel_viz.run()
 
@@ -759,8 +760,9 @@ class VelocityProfilesFigure():
                 'color': 'k',
                 'linewidth': 1.1
         }
-        kwargs = default_params | kwargs
+        params = copy.deepcopy(default_params)
+        params.update(kwargs)
 
         for ax in self.axs[row]:
             for coordinate in ref_lines_D:
-                ax.plot([0.0, 1.0], [coordinate, coordinate], **kwargs)
+                ax.plot([0.0, 1.0], [coordinate, coordinate], **params)

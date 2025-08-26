@@ -51,6 +51,7 @@ fmodel.set(
     wind_speeds=wind_speeds,
     turbulence_intensities=turbulence_intensities,
     turbine_type=[turbine_dict],
+    reference_wind_height=fmodel.reference_wind_height
 )
 fmodel.run()
 

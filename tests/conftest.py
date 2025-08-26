@@ -2,10 +2,12 @@
 from __future__ import annotations
 
 import copy
+from pathlib import Path
 
 import numpy as np
 import pytest
 
+import floris
 from floris.core import (
     Core,
     FlowField,
@@ -138,6 +140,10 @@ N_TURBINES = len(X_COORDS)
 ROTOR_DIAMETER = 126.0
 TURBINE_GRID_RESOLUTION = 2
 
+DEMO_CP_CT_5MW_FILE = (
+    Path(floris.__file__).resolve().parent /
+    "turbine_library/demo_cp_ct_surfaces/nrel_5MW_demo_cp_ct_surface.npz"
+)
 
 ## Unit test fixtures
 
@@ -388,6 +394,20 @@ class SampleInputs:
                 ],
             },
             "TSR": 8.0
+        }
+
+        self.controller_dependent_turbine_parameters = {
+            "ref_air_density": 1.225,
+            "ref_tilt": 5.0,
+            "rated_rpm": 12.1,
+            "rotor_solidity": 0.05132,
+            "generator_efficiency": 0.944,
+            "rated_power": 5000.0,
+            "rotor_diameter": 126,
+            "beta": -0.45891,
+            "cd": 0.0040638,
+            "cl_alfa": 4.275049,
+            "cp_ct_data_file": DEMO_CP_CT_5MW_FILE
         }
 
         self.turbine_floating = copy.deepcopy(self.turbine)

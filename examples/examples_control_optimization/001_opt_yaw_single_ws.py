@@ -8,6 +8,8 @@ Use the serial-refine method to optimize the yaw angles for a 3-turbine wind far
 import matplotlib.pyplot as plt
 import numpy as np
 
+import floris.flow_visualization as flowviz
+import floris.layout_visualization as layoutviz
 from floris import FlorisModel, TimeSeries
 from floris.optimization.yaw_optimization.yaw_optimizer_sr import YawOptimizationSR
 
@@ -62,5 +64,28 @@ ax.set_ylabel('Power (W)')
 ax.set_xlabel('Wind Direction (deg)')
 ax.legend()
 ax.grid(True)
+
+# Visualize results for a single wind direction (270 deg) and wind speed (8 m/s)
+fig, axarr = plt.subplots(2, 1, figsize=(10, 5), sharex=False)
+ax = axarr[0] # Baseline aligned operation
+fmodel.reset_operation()
+fmodel.set(wind_directions=[270.0], wind_speeds=[8.0], turbulence_intensities=[0.06])
+fmodel.run()
+horizontal_plane = fmodel.calculate_horizontal_plane(height=90.0)
+flowviz.visualize_cut_plane(horizontal_plane, ax=ax)
+layoutviz.plot_turbine_rotors(fmodel, ax=ax)
+ax.set_title("Turbines aligned")
+
+ax = axarr[1] # Optimized yaw angles
+optimal_yaw_angles = (
+    df_opt[(df_opt["wind_direction"] == 270.0) & (df_opt["wind_speed"] == 8.0)]
+    .yaw_angles_opt.values[0]
+).reshape(1,-1)
+fmodel.set(yaw_angles=optimal_yaw_angles)
+fmodel.run()
+horizontal_plane = fmodel.calculate_horizontal_plane(height=90.0)
+flowviz.visualize_cut_plane(horizontal_plane, ax=ax)
+layoutviz.plot_turbine_rotors(fmodel, ax=ax, yaw_angles=optimal_yaw_angles)
+ax.set_title("Optimized yaw angles")
 
 plt.show()

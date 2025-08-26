@@ -10,7 +10,7 @@ from typing import (
 import numpy as np
 
 from floris import FlorisModel
-from floris.core import State
+from floris.core import average_velocity, State
 from floris.logging_manager import LoggingManager
 from floris.par_floris_model import ParFlorisModel
 from floris.type_dec import (
@@ -85,6 +85,10 @@ class UncertainFlorisModel(LoggingManager):
         fix_yaw_to_nominal_direction=False,
         verbose=False,
     ):
+        # Check validity of inputs
+        if wd_std <= 0:
+            raise ValueError("wd_std must be strictly greater than 0.")
+
         # Save these inputs
         self.wd_resolution = wd_resolution
         self.ws_resolution = ws_resolution
@@ -109,6 +113,15 @@ class UncertainFlorisModel(LoggingManager):
         # Instantiate the un-expanded FlorisModel
         if isinstance(configuration, (FlorisModel, ParFlorisModel)):
             self.fmodel_unexpanded = configuration.copy()
+            # Copy over any control setpoints, wind data, if not already done.
+            self.fmodel_unexpanded.set(
+                yaw_angles=configuration.core.farm.yaw_angles,
+                power_setpoints=configuration.core.farm.power_setpoints,
+                awc_modes=configuration.core.farm.awc_modes,
+                awc_amplitudes=configuration.core.farm.awc_amplitudes,
+                awc_frequencies=configuration.core.farm.awc_frequencies,
+                wind_data=configuration.wind_data,
+            )
         elif isinstance(configuration, (dict, str, Path)):
             self.fmodel_unexpanded = FlorisModel(configuration)
         else:
@@ -263,8 +276,8 @@ class UncertainFlorisModel(LoggingManager):
         """
 
         # Pass to off-class function
-        result = map_turbine_powers_uncertain(
-            unique_turbine_powers=self.fmodel_expanded._get_turbine_powers(),
+        result = map_turbine_values_uncertain(
+            unique_turbine_values=self.fmodel_expanded._get_turbine_powers(),
             map_to_expanded_inputs=self.map_to_expanded_inputs,
             weights=self.weights,
             n_unexpanded=self.n_unexpanded,
@@ -958,7 +971,10 @@ class UncertainFlorisModel(LoggingManager):
                 # Set a single one here, then, and return
                 turbine_type = self.fmodel_unexpanded.core.farm.turbine_definitions[0]
                 turbine_type["operation_model"] = operation_model
-                self.set(turbine_type=[turbine_type])
+                self.set(
+                    turbine_type=[turbine_type],
+                    reference_wind_height=self.reference_wind_height
+                )
                 return
             else:
                 operation_model = [operation_model] * self.fmodel_unexpanded.core.farm.n_turbines
@@ -976,23 +992,20 @@ class UncertainFlorisModel(LoggingManager):
             )
             turbine_type_list[tindex]["operation_model"] = operation_model[tindex]
 
-        self.set(turbine_type=turbine_type_list)
+        self.set(
+            turbine_type=turbine_type_list,
+            reference_wind_height=self.reference_wind_height
+        )
 
     def copy(self):
-        """Create an independent copy of the current UncertainFlorisModel object"""
-        return UncertainFlorisModel(
-            self.fmodel_unexpanded.core.as_dict(),
-            wd_resolution=self.wd_resolution,
-            ws_resolution=self.ws_resolution,
-            ti_resolution=self.ti_resolution,
-            yaw_resolution=self.yaw_resolution,
-            power_setpoint_resolution=self.power_setpoint_resolution,
-            awc_amplitude_resolution=self.awc_amplitude_resolution,
-            wd_std=self.wd_std,
-            wd_sample_points=self.wd_sample_points,
-            fix_yaw_to_nominal_direction=self.fix_yaw_to_nominal_direction,
-            verbose=self.verbose,
-        )
+        """Create an independent copy of the current UncertainFlorisModel object
+
+        When creating the copy, this method uses self.__class__(), rather than
+        UncertainFlorisModel() directly, so that subclasses of UncertainFlorisModel can inherit this
+        method and return instantiations of their own class, rather than the UncertainFlorisModel
+        class.
+        """
+        return self.__class__(self.fmodel_unexpanded.copy(), **self.secondary_init_kwargs)
 
     def get_param(self, param: List[str], param_idx: Optional[int] = None) -> Any:
         """Get a parameter from a FlorisModel object.
@@ -1022,8 +1035,26 @@ class UncertainFlorisModel(LoggingManager):
         """
         fm_dict_mod = self.fmodel_unexpanded.core.as_dict()
         nested_set(fm_dict_mod, param, value, param_idx)
-        self.fmodel_unexpanded.__init__(fm_dict_mod)
+        self.fmodel_unexpanded.__init__(fm_dict_mod, **self.fmodel_unexpanded.secondary_init_kwargs)
         self.set()
+
+    @property
+    def secondary_init_kwargs(self):
+        """
+        UncertainFlorisModel secondary keyword arguments (after configuration).
+        """
+        return {
+            "wd_resolution": self.wd_resolution,
+            "ws_resolution": self.ws_resolution,
+            "ti_resolution": self.ti_resolution,
+            "yaw_resolution": self.yaw_resolution,
+            "power_setpoint_resolution": self.power_setpoint_resolution,
+            "awc_amplitude_resolution": self.awc_amplitude_resolution,
+            "wd_std": self.wd_std,
+            "wd_sample_points": self.wd_sample_points,
+            "fix_yaw_to_nominal_direction": self.fix_yaw_to_nominal_direction,
+            "verbose": self.verbose,
+        }
 
     @property
     def layout_x(self):
@@ -1096,6 +1127,16 @@ class UncertainFlorisModel(LoggingManager):
         return self.fmodel_unexpanded.core.farm.n_turbines
 
     @property
+    def reference_wind_height(self):
+        """
+        Reference wind height.
+
+        Returns:
+            float: Reference wind height.
+        """
+        return self.fmodel_unexpanded.core.flow_field.reference_wind_height
+
+    @property
     def core(self):
         """
         Returns the core of the unexpanded model.
@@ -1104,6 +1145,27 @@ class UncertainFlorisModel(LoggingManager):
             Floris: The core of the unexpanded model.
         """
         return self.fmodel_unexpanded.core
+
+    @property
+    def turbine_average_velocities(self) -> NDArrayFloat:
+        # Get the expanded velocities
+        expanded_velocities = average_velocity(
+            velocities=self.fmodel_expanded.core.flow_field.u,
+            method=self.fmodel_expanded.core.grid.average_method,
+            cubature_weights=self.fmodel_expanded.core.grid.cubature_weights,
+        )
+
+        # Pass to off-class function
+        result = map_turbine_values_uncertain(
+            unique_turbine_values=expanded_velocities,
+            map_to_expanded_inputs=self.map_to_expanded_inputs,
+            weights=self.weights,
+            n_unexpanded=self.n_unexpanded,
+            n_sample_points=self.n_sample_points,
+            n_turbines=self.fmodel_unexpanded.core.farm.n_turbines,
+        )
+
+        return result
 
 
 def map_turbine_powers_uncertain(
@@ -1114,35 +1176,57 @@ def map_turbine_powers_uncertain(
     n_sample_points,
     n_turbines,
 ):
-    """Calculates the power at each turbine in the wind farm based on uncertainty weights.
+    """
+    Alias for map_turbine_values_uncertain.
+    """
+    # Deprecation warning
+    print("map_turbine_powers_uncertain is deprecated, use map_turbine_values_uncertain instead.")
+    return map_turbine_values_uncertain(
+        unique_turbine_values=unique_turbine_powers,
+        map_to_expanded_inputs=map_to_expanded_inputs,
+        weights=weights,
+        n_unexpanded=n_unexpanded,
+        n_sample_points=n_sample_points,
+        n_turbines=n_turbines,
+    )
 
-    This function calculates the power at each turbine in the wind farm, considering
-    the underlying turbine powers and applying a weighted sum to handle uncertainty.
+def map_turbine_values_uncertain(
+    unique_turbine_values,
+    map_to_expanded_inputs,
+    weights,
+    n_unexpanded,
+    n_sample_points,
+    n_turbines,
+):
+    """Calculates values at each turbine in the wind farm based on uncertainty weights.
+
+    This function calculates the values (e.g. power, velocity) at each turbine in the wind farm,
+    considering the underlying turbine values and applying a weighted sum to handle uncertainty.
 
     Args:
-        unique_turbine_powers (NDArrayFloat): An array of unique turbine powers from the
-            underlying FlorisModel
-        map_to_expanded_inputs (NDArrayFloat): An array of indices mapping the unique powers to
-            the expanded powers
+        unique_turbine_values (NDArrayFloat): An array of unique turbine powers, velocities, etc
+            from the underlying FlorisModel
+        map_to_expanded_inputs (NDArrayFloat): An array of indices mapping the unique values to
+            the expanded values
         weights (NDArrayFloat): An array of weights for each wind direction sample point
         n_unexpanded (int): The number of unexpanded conditions
         n_sample_points (int): The number of wind direction sample points
         n_turbines (int): The number of turbines in the wind farm
 
     Returns:
-        NDArrayFloat: An array containing the powers at each turbine for each findex.
+        NDArrayFloat: An array containing the values at each turbine for each findex.
 
     """
 
     # Expand back to the expanded value
-    expanded_turbine_powers = unique_turbine_powers[map_to_expanded_inputs]
+    expanded_turbine_values = unique_turbine_values[map_to_expanded_inputs]
 
     # Reshape the weights array to make it compatible with broadcasting
     weights_reshaped = weights[:, np.newaxis]
 
-    # Reshape expanded_turbine_powers into blocks
+    # Reshape expanded_turbine_values into blocks
     blocks = np.reshape(
-        expanded_turbine_powers,
+        expanded_turbine_values,
         (n_unexpanded, n_sample_points, n_turbines),
         order="F",
     )
@@ -1184,7 +1268,7 @@ class ApproxFlorisModel(UncertainFlorisModel):
             yaw_resolution,
             power_setpoint_resolution,
             awc_amplitude_resolution,
-            wd_std=1.0,
+            wd_std=1.0,  # Arbitrary nonzero value, not used since only one sample point
             wd_sample_points=[0],
             fix_yaw_to_nominal_direction=False,
             verbose=verbose,
@@ -1196,3 +1280,18 @@ class ApproxFlorisModel(UncertainFlorisModel):
         self.yaw_resolution = yaw_resolution
         self.power_setpoint_resolution = power_setpoint_resolution
         self.awc_amplitude_resolution = awc_amplitude_resolution
+
+    @property
+    def secondary_init_kwargs(self):
+        """
+        ApproxFlorisModel secondary keyword arguments (after configuration).
+        """
+        return {
+            "wd_resolution": self.wd_resolution,
+            "ws_resolution": self.ws_resolution,
+            "ti_resolution": self.ti_resolution,
+            "yaw_resolution": self.yaw_resolution,
+            "power_setpoint_resolution": self.power_setpoint_resolution,
+            "awc_amplitude_resolution": self.awc_amplitude_resolution,
+            "verbose": self.verbose,
+        }

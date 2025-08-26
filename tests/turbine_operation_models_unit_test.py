@@ -568,6 +568,36 @@ def test_AWCTurbine():
     assert test_ai < base_ai
     assert test_ai > 0
 
+    # Test a mixture of "baseline" and "helix" modes
+    n_turbines = 3
+    awc_modes_test = np.array(
+        [
+            ["baseline", "baseline", "baseline"],
+            ["baseline", "helix", "helix"]
+        ]
+    )
+    test_power = AWCTurbine.power(
+        power_thrust_table=turbine_data["power_thrust_table"],
+        velocities=wind_speed * np.ones((2, n_turbines, 3, 3)), # 2 findices, 3 turbines, 3x3 grid
+        air_density=turbine_data["power_thrust_table"]["ref_air_density"],
+        awc_modes=awc_modes_test,
+        awc_amplitudes=2*np.ones((2, n_turbines)),
+    )
+    assert np.allclose(test_power[0,:], base_power)
+    assert np.allclose(test_power[1,0], base_power)
+    assert (test_power[1,1:] < base_power).all()
+
+    test_Ct = AWCTurbine.thrust_coefficient(
+        power_thrust_table=turbine_data["power_thrust_table"],
+        velocities=wind_speed * np.ones((2, n_turbines, 3, 3)), # 2 findices, 3 turbines, 3x3 grid
+        air_density=turbine_data["power_thrust_table"]["ref_air_density"],
+        awc_modes=awc_modes_test,
+        awc_amplitudes=2*np.ones((2, n_turbines)),
+    )
+    assert np.allclose(test_Ct[0,:], base_Ct)
+    assert np.allclose(test_Ct[1,0], base_Ct)
+    assert (test_Ct[1,1:] < base_Ct).all()
+
 def test_PeakShavingTurbine():
 
     n_turbines = 1

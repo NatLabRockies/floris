@@ -210,7 +210,7 @@ is located at `floris/.github/workflows/continuous-integration-workflow.yaml`.
 The online documentation is built with Jupyter Book which uses Sphinx
 as a framework. It is automatically built and hosted by GitHub, but it
 can also be compiled locally. Additional dependencies are required
-for the documentation, and they are listed in the `EXTRAS` of `setup.py`.
+for the documentation, and they are listed in the `project.optional-dependencies` of `pyproject.toml`.
 The commands to build the docs are given below. After successfully
 compiling, a file should be located at ``docs/_build/html/index.html``.
 This file can be opened in any browser.
@@ -246,7 +246,7 @@ Be sure to complete each step in the sequence as described.
     with a commit message such as "Update version to vN.M".
     The version number must be updated in the following two files:
     - [floris/README.md](https://github.com/NREL/floris/blob/main/README.md)
-    - [floris/floris/version.py](https://github.com/NREL/floris/blob/main/floris/version.py)
+    - [pyproject.toml](https://github.com/NREL/floris/blob/main/pyproject.toml)
     Note that a `.0` version number is left off meaning that valid versions
     are `v3`, `v3.1`, `v3.1.1`, etc.
 

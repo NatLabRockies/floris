@@ -29,7 +29,13 @@ class HeterogeneousMap(LoggingManager):
             (degrees). Optional.
         wind_speeds (NDArrayFloat, optional): A 1D NumPy array (size num_ws) of wind speeds (m/s).
             Optional.
-
+        interp_method (str, optional): Interpolation method used to calculate the heterogeneous
+            wind speeds at various locations in the wind farm. Options are 'linear' and 'nearest',
+            representing linear interpolation and nearest-neighbor interpolation respectively.
+            Linear interpolation is accurate, nearest-neighbor interpolation is very fast but
+            inaccurate. Note also that in the default 'linear' setting, speed-ups at locations
+            outside the convex hull of points defined by `x`, `y` and `z` are 1.0 while in
+            the nearest case will be the value of the nearest point. Defaults to 'linear'. Optional.
 
     Notes:
         * If wind_directions and wind_speeds are both defined, then they must be the same length
@@ -45,6 +51,7 @@ class HeterogeneousMap(LoggingManager):
         z: NDArrayFloat = None,
         wind_directions: NDArrayFloat = None,
         wind_speeds: NDArrayFloat = None,
+        interp_method: str = "linear",
     ):
         # Check that x, y and speed_multipliers are lists or numpy arrays
         if not isinstance(x, (list, np.ndarray)):
@@ -62,6 +69,7 @@ class HeterogeneousMap(LoggingManager):
         self.x = np.array(x)
         self.y = np.array(y)
         self.speed_multipliers = np.array(speed_multipliers)
+        self.interp_method = str(interp_method)
 
         # If z is provided, save it as an np array
         if z is not None:
@@ -163,12 +171,11 @@ class HeterogeneousMap(LoggingManager):
         )
 
         return (
-            f"HeterogeneousMap with {num_dim} dimensions\n"
-            f"Speeds-up defined for {len(self.x)} points and\n"
-            f"{self.speed_multipliers.shape[0]} wind conditions"
-
+            f"HeterogeneousMap with {num_dim} dimensions "
+            f"using interpolation method \"{self.interp_method}\".\n"
+            f"Speed multipliers are defined for {len(self.x)} points and "
+            f"{self.speed_multipliers.shape[0]} wind conditions."
             f"\n\n{df}"
-
         )
 
     def get_heterogeneous_inflow_config(
@@ -251,6 +258,7 @@ class HeterogeneousMap(LoggingManager):
                 "x": self.x,
                 "y": self.y,
                 "speed_multipliers": speed_multipliers_by_findex,
+                "interp_method": self.interp_method,
             }
         else:
             return {
@@ -258,6 +266,7 @@ class HeterogeneousMap(LoggingManager):
                 "y": self.y,
                 "z": self.z,
                 "speed_multipliers": speed_multipliers_by_findex,
+                "interp_method": self.interp_method,
             }
 
     def get_heterogeneous_map_2d(self, z: float):
@@ -287,6 +296,7 @@ class HeterogeneousMap(LoggingManager):
             speed_multipliers=speed_multipliers,
             wind_directions=self.wind_directions,
             wind_speeds=self.wind_speeds,
+            interp_method=self.interp_method,
         )
 
     @staticmethod
@@ -459,29 +469,22 @@ class HeterogeneousMap(LoggingManager):
             np.linspace(plot_min_y, plot_max_y, 100),
             indexing="ij",
         )
-        x_plot = x_plot.flatten()
-        y_plot = y_plot.flatten()
 
         try:
-            lin_interpolant = FlowField.interpolate_multiplier_xy(x, y, speed_multiplier_row)
+            interpolant = FlowField.interpolate_multiplier_xy(
+                x,
+                y,
+                speed_multiplier_row,
+                fill_value=1.0,
+                interp_method=self.interp_method
+            )
 
-            lin_values = lin_interpolant(x, y)
+            het_map_mesh = interpolant(x_plot.flatten(), y_plot.flatten()).reshape(x_plot.shape)
         except scipy.spatial._qhull.QhullError:
             self.logger.warning(
-                "QhullError occurred in computing visualize. Falling back to nearest neighbor. "
-                "Note this may not represent the exact speed multipliers used within FLORIS."
+                "QhullError occurred in computing visualize. Creating null visualization."
             )
-            lin_values = np.nan * np.ones_like(x)
-
-        nearest_interpolant = NearestNDInterpolator(
-            x=np.vstack([x, y]).T,
-            y=speed_multiplier_row,
-        )
-        nn_values = nearest_interpolant(x, y)
-        ids_isnan = np.isnan(lin_values)
-
-        het_map_mesh = np.array(lin_values, copy=True)
-        het_map_mesh[ids_isnan] = nn_values[ids_isnan]
+            het_map_mesh = np.nan * np.ones_like(x_plot)
 
         # If vmin is not provided, use a value rounded to the nearest 0.01 below the minimum
         if vmin is None:
@@ -492,9 +495,9 @@ class HeterogeneousMap(LoggingManager):
             vmax = np.ceil(het_map_mesh.max() * 100) / 100
 
         # Produce color plot of the speed multipliers
-        im = ax.tricontourf(
-            x,
-            y,
+        im = ax.contourf(
+            x_plot,
+            y_plot,
             het_map_mesh,
             cmap=cmap,
             vmin=vmin,

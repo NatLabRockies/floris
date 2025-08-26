@@ -54,6 +54,19 @@ power_thrust_table:
   peak_shaving_fraction: 0.2
   # Threshold turbulence intensity above which to apply peak shaving
   peak_shaving_TI_threshold: 0.1
+
+  ### Parameters for the 'controller-dependenter-dependent' operation model
+  controller_dependent_turbine_parameters:
+    rated_rpm: 12.1
+    rotor_solidity: 0.05132
+    generator_efficiency: 0.944
+    rated_power: 5000.0
+    rotor_diameter: 126
+    beta: -0.45891
+    cd:  0.0040638
+    cl_alfa: 4.275049
+    cp_ct_data_file: "demo_cp_ct_surfaces/nrel_5MW_demo_cp_ct_surface.npz"
+
   ### Power thrust table data
   # wind speeds for look-up tables of power and thrust_coefficient
   wind_speed:

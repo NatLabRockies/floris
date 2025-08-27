@@ -110,7 +110,7 @@ def power(
     average_method: str = "cubic-mean",
     cubature_weights: NDArrayFloat | None = None,
     correct_cp_ct_for_tilt: bool = False,
-    multidim_condition: dict | None = None, # Assuming only one condition at a time?
+    multidim_condition: dict | None = None,
 ) -> NDArrayFloat:
     """Power produced by a turbine adjusted for yaw and tilt. Value
     given in Watts.
@@ -225,7 +225,7 @@ def thrust_coefficient(
     ix_filter: NDArrayFilter | Iterable[int] | None = None,
     average_method: str = "cubic-mean",
     cubature_weights: NDArrayFloat | None = None,
-    multidim_condition: dict | None = None, # Assuming only one condition at a time?
+    multidim_condition: dict | None = None,
 ) -> NDArrayFloat:
 
     """Thrust coefficient of a turbine.
@@ -345,7 +345,7 @@ def axial_induction(
     ix_filter: NDArrayFilter | Iterable[int] | None = None,
     average_method: str = "cubic-mean",
     cubature_weights: NDArrayFloat | None = None,
-    multidim_condition: dict | None = None, # Assuming only one condition at a time?
+    multidim_condition: dict | None = None,
 ) -> NDArrayFloat:
     """Axial induction factor of the turbine incorporating
     the thrust coefficient and yaw angle.

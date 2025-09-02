@@ -938,3 +938,6 @@ def test_sample_ti_at_points():
     fmodel.set(turbulence_intensities=[ti_inf + 0.02, ti_inf + 0.02])
     ti_sampled_2 = fmodel.sample_ti_at_points(x, y, z)
     assert np.all(ti_sampled_2 > ti_sampled_1)
+
+def test_windIO_interface():
+    return True

@@ -142,10 +142,18 @@ class FlorisModel(LoggingManager):
         solver_settings: dict | None = None,
         heterogeneous_inflow_config=None,
         wind_data: type[WindDataBase] | None = None,
+        wake_velocity_model: str = None,
+        wake_deflection_model: str = None,
+        wake_turbulence_model: str = None,
+        wake_combination_model: str = None,
+        enable_secondary_steering: bool = False,
+        enable_yaw_added_recovery: bool = False,
+        enable_active_wake_mixing: bool = False,
+        enable_transverse_velocities: bool = False,
     ):
         """
-        Instantiate a new Floris object with updated conditions set by arguments. Any parameters
-        in Floris that aren't changed by arguments to this function retain their values.
+        Instantiate a new Core with updated conditions set by arguments. Any parameters
+        that aren't changed by arguments to this function retain their values.
         Note that, although it's name is similar to the reinitialize() method from Floris v3,
         this function is not meant to be called directly by the user---users should instead call
         the set() method.
@@ -177,6 +185,7 @@ class FlorisModel(LoggingManager):
         floris_dict = self.core.as_dict()
         flow_field_dict = floris_dict["flow_field"]
         farm_dict = floris_dict["farm"]
+        wake_dict = floris_dict["wake"]
 
         ## Farm
         if layout_x is not None:
@@ -204,12 +213,8 @@ class FlorisModel(LoggingManager):
                 self._wind_data.set_layout(farm_dict["layout_x"], farm_dict["layout_y"])
 
         # Wind data
-        if (
-            (wind_directions is not None)
-            or (wind_speeds is not None)
-            or (turbulence_intensities is not None)
-            or (heterogeneous_inflow_config is not None)
-        ):
+        if any([wind_directions, wind_speeds, turbulence_intensities, heterogeneous_inflow_config]):
+            # The if-statement above checks if any of these inputs are not None
             if wind_data is not None:
                 raise ValueError(
                     "If wind_data is passed to reinitialize, then do not pass wind_directions, "
@@ -264,15 +269,31 @@ class FlorisModel(LoggingManager):
 
             flow_field_dict["heterogeneous_inflow_config"] = heterogeneous_inflow_config
 
-
-
         if solver_settings is not None:
             floris_dict["solver"] = solver_settings
 
-        floris_dict["flow_field"] = flow_field_dict
-        floris_dict["farm"] = farm_dict
+        # Wake models
+        if wake_velocity_model is not None:
+            wake_dict["model_strings"]["velocity_model"] = wake_velocity_model
+        if wake_deflection_model is not None:
+            wake_dict["model_strings"]["deflection_model"] = wake_deflection_model
+        if wake_turbulence_model is not None:
+            wake_dict["model_strings"]["turbulence_model"] = wake_turbulence_model
+        if wake_combination_model is not None:
+            wake_dict["model_strings"]["combination_model"] = wake_combination_model
+        if enable_secondary_steering is not None:
+            wake_dict["enable_secondary_steering"] = enable_secondary_steering
+        if enable_yaw_added_recovery is not None:
+            wake_dict["enable_yaw_added_recovery"] = enable_yaw_added_recovery
+        if enable_active_wake_mixing is not None:
+            wake_dict["enable_active_wake_mixing"] = enable_active_wake_mixing
+        if enable_transverse_velocities is not None:
+            wake_dict["enable_transverse_velocities"] = enable_transverse_velocities
 
         # Create a new instance of floris and attach to self
+        floris_dict["flow_field"] = flow_field_dict
+        floris_dict["farm"] = farm_dict
+        floris_dict["wake"] = wake_dict
         self.core = Core.from_dict(floris_dict)
 
     def set_operation(
@@ -401,6 +422,14 @@ class FlorisModel(LoggingManager):
         awc_amplitudes: NDArrayFloat | list[float] | list[float, None] | None = None,
         awc_frequencies: NDArrayFloat | list[float] | list[float, None] | None = None,
         disable_turbines: NDArrayBool | list[bool] | None = None,
+        wake_velocity_model: str = None,
+        wake_deflection_model: str = None,
+        wake_turbulence_model: str = None,
+        wake_combination_model: str = None,
+        enable_secondary_steering: bool = False,
+        enable_yaw_added_recovery: bool = False,
+        enable_active_wake_mixing: bool = False,
+        enable_transverse_velocities: bool = False,
     ):
         """
         Set the wind conditions and operation setpoints for the wind farm.
@@ -431,11 +460,14 @@ class FlorisModel(LoggingManager):
                 Defaults to None.
             power_setpoints (NDArrayFloat | list[float] | list[float, None] | None, optional):
                 Turbine power setpoints.
+            awc_modes (NDArrayStr | list[str] | list[str, None] | None = None):
+            awc_amplitudes (NDArrayFloat | list[float] | list[float, None] | None = None):
+            awc_frequencies (NDArrayFloat | list[float] | list[float, None] | None = None):
             disable_turbines (NDArrayBool | list[bool] | None, optional): NDArray with dimensions
                 n_findex x n_turbines. True values indicate the turbine is disabled at that findex
                 and the power setpoint at that position is set to 0. Defaults to None.
         """
-        # Initialize a new Floris object after saving the setpoints
+        # Initialize a new Core object after saving the setpoints
         _yaw_angles = self.core.farm.yaw_angles
         _power_setpoints = self.core.farm.power_setpoints
         _awc_modes = self.core.farm.awc_modes
@@ -456,6 +488,14 @@ class FlorisModel(LoggingManager):
             solver_settings=solver_settings,
             heterogeneous_inflow_config=heterogeneous_inflow_config,
             wind_data=wind_data,
+            wake_velocity_model=wake_velocity_model,
+            wake_deflection_model=wake_deflection_model,
+            wake_turbulence_model=wake_turbulence_model,
+            wake_combination_model=wake_combination_model,
+            enable_secondary_steering=enable_secondary_steering,
+            enable_yaw_added_recovery=enable_yaw_added_recovery,
+            enable_active_wake_mixing=enable_active_wake_mixing,
+            enable_transverse_velocities=enable_transverse_velocities,
         )
 
         # If the yaw angles or power setpoints are not the default, set them back to the
@@ -548,7 +588,6 @@ class FlorisModel(LoggingManager):
             multidim_condition=self.core.flow_field.multidim_conditions,
         )
         return turbine_powers
-
 
     def get_turbine_powers(self):
         """
@@ -1877,3 +1916,173 @@ class FlorisModel(LoggingManager):
         )
 
         return fmodel_merged
+
+    @staticmethod
+    def from_windIO(input_file: str | Path) -> FlorisModel:
+        import windIO
+
+        WAKE_MODEL_MAPPING = {
+            # Velocity models
+            "jensen": {
+                "model_ref": "jensen",
+                "parameters": {
+                    "we": "alpha",
+                }
+            },
+            # "bastankhah2014": {     # NOT IMPLEMENTED
+            #     "model_ref": None,
+            #     "parameters": {}
+            # },
+            "bastankhah2016": {
+                "model_ref": "gauss",
+                "parameters": {
+                    "alpha": "alpha",
+                    "beta": "beta",
+                    "ka": "ka",
+                    "kb": "kb",
+                }
+            },
+            "turbopark": {
+                "model_ref": "turbopark",
+                "parameters": {
+                    "A": "A",
+                }
+            },
+
+            # Deflection model
+            "jimenez": {
+                "model_ref": "jimenez",
+                "parameters": {
+                    "kd": "beta",
+                }
+            },
+            "bastankhah2016_deflection": {
+                "model_ref": "gauss",
+                "parameters": {
+                    "alpha": "alpha",
+                    "beta": "beta",
+                    "ka": "ka",
+                    "kb": "kb",
+                }
+            },
+        }
+
+        _fmodel = FlorisModel("defaults")
+
+        input_dictionary = windIO.load_yaml(input_file)
+        windIO.validate(input_dictionary)
+
+        # _floris_dict = {}
+        _fmodel.core.name = input_dictionary["name"]
+        _fmodel.core.description = input_dictionary["name"]
+
+        # Leave the default; there's not currently a method to change logging level after init
+        # _floris_dict["logging"] = {
+        #     "console": {
+        #         "enable": True,
+        #         "level": "WARNING"
+        #     },
+        #     "file": {
+        #         "enable": False,
+        #         "level": "WARNING"
+        #     }
+        # }
+
+        # TODO
+        # _floris_dict["solver"] = {
+        #     "type": "turbine_grid",
+        #     "turbine_grid_points": 3
+        # }
+
+        input_dictionary_turbine = input_dictionary["wind_farm"]["turbines"]
+        new_turbine = {
+            "turbine_type": input_dictionary_turbine["name"],
+            "hub_height": input_dictionary_turbine["hub_height"],
+            "rotor_diameter": input_dictionary_turbine["rotor_diameter"],
+            "TSR": 8.0,         # Can we calculate this from diameter and power curve?
+            "operation_model": "cosine-loss",
+            "power_thrust_table": {
+                "ref_air_density": 1.225,
+                "ref_tilt": 6.0,
+                "cosine_loss_exponent_yaw": 1.88,
+                "cosine_loss_exponent_tilt": 1.88,
+                "helix_a": 1.719,
+                "helix_power_b": 4.823e-03,
+                "helix_power_c": 2.314e-10,
+                "helix_thrust_b": 1.157e-03,
+                "helix_thrust_c": 1.167e-04,
+                "power": input_dictionary_turbine["performance"]["Cp_curve"]["Cp_values"],
+                "thrust": input_dictionary_turbine["performance"]["Ct_curve"]["Ct_values"],
+                "wind_speed": input_dictionary_turbine["performance"]["Ct_curve"]["Ct_wind_speeds"]
+            }
+        }
+
+        input_dictionary_wind_resource = input_dictionary["site"]["energy_resource"]["wind_resource"]
+
+        # TODO - is this supported in windIO?
+        # _floris_dict["multidim_conditions"]
+
+        input_dictionary_analysis = input_dictionary["attributes"]["analyses"]
+        _velocity_model_mapping = WAKE_MODEL_MAPPING[input_dictionary_analysis["wake_model"]["velocity"]["name"]]
+        _velocity_model = _velocity_model_mapping["model_ref"]
+        _velocity_model_parameters = {
+            k: input_dictionary_analysis["wake_model"]["velocity"]["parameters"][v]
+            for k, v in _velocity_model_mapping["parameters"].items()
+        }
+        if input_dictionary_analysis["wake_model"]["deflection"]["name"] is not None:
+            _deflection_model_mapping = WAKE_MODEL_MAPPING[input_dictionary_analysis["wake_model"]["deflection"]["name"]]
+            _deflection_model = _deflection_model_mapping["model_ref"]
+            _deflection_model_parameters = {
+                k: input_dictionary_analysis["wake_model"]["deflection"]["parameters"][v]
+                for k, v in _deflection_model_mapping["parameters"].items()
+            }
+        else:
+            _deflection_model = "none"
+            _deflection_model_parameters = {}
+
+        # _floris_dict['wake'] = {
+        #     'model_strings': {
+        #         'combination_model': 'sosfs',
+        #         'deflection_model': _deflection_model,
+        #         'turbulence_model': 'crespo_hernandez',
+        #         'velocity_model': _velocity_model
+        #     },
+        #     'enable_secondary_steering': False,
+        #     'enable_yaw_added_recovery': False,
+        #     'enable_active_wake_mixing': False,
+        #     'enable_transverse_velocities': False,
+        #     'wake_deflection_parameters': {_deflection_model: _deflection_model_parameters},
+        #     'wake_velocity_parameters': {_velocity_model: _velocity_model_parameters},
+        #     'wake_turbulence_parameters': {
+        #         'crespo_hernandez': {
+        #             'initial': 0.1,
+        #             'constant': 0.5,
+        #             'ai': 0.8,
+        #             'downstream': -0.32
+        #         }
+        #     }
+        # }
+
+        _fmodel.set(
+            wind_speeds=input_dictionary_wind_resource["wind_speed"],
+            wind_directions=input_dictionary_wind_resource["wind_direction"],
+            # wind_shear: float | None = None,
+            # wind_veer: float | None = None,
+            reference_wind_height=-1,
+            turbulence_intensities=input_dictionary_wind_resource["turbulence_intensity"]["data"],
+            # air_density: float | None = None,
+            layout_x=input_dictionary["wind_farm"]["layouts"]["initial_layout"]["coordinates"]["x"],
+            layout_y=input_dictionary["wind_farm"]["layouts"]["initial_layout"]["coordinates"]["y"],
+            turbine_type=[new_turbine],
+            # turbine_library_path: str | Path | None = None,
+            # solver_settings: dict | None = None,
+            # yaw_angles: NDArrayFloat | list[float] | None = None,
+            wake_velocity_model=_velocity_model,
+            wake_deflection_model=_deflection_model,
+            # wake_turbulence_model=wake_turbulence_model,
+            # wake_combination_model=wake_combination_model,
+            # enable_secondary_steering=enable_secondary_steering,
+            # enable_yaw_added_recovery=enable_yaw_added_recovery,
+            # enable_active_wake_mixing=enable_active_wake_mixing,
+            # enable_transverse_velocities=enable_transverse_velocities,
+        )

@@ -266,7 +266,8 @@ class CosineLossTurbine(BaseOperationModel):
         thrust_coefficient = (
             thrust_coefficient
             * cosd(yaw_angles)
-            * cosd(tilt_angles - power_thrust_table["ref_tilt"])
+            * cosd(tilt_angles)
+            / cosd(power_thrust_table["ref_tilt"])
         )
 
         return thrust_coefficient
@@ -294,7 +295,9 @@ class CosineLossTurbine(BaseOperationModel):
             correct_cp_ct_for_tilt=correct_cp_ct_for_tilt
         )
 
-        misalignment_loss = cosd(yaw_angles) * cosd(tilt_angles - power_thrust_table["ref_tilt"])
+        misalignment_loss = (
+            cosd(yaw_angles) * cosd(tilt_angles) / cosd(power_thrust_table["ref_tilt"])
+        )
         return 0.5 / misalignment_loss * (1 - np.sqrt(1 - thrust_coefficient * misalignment_loss))
 
 @define

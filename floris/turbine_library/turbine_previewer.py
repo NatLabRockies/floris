@@ -25,6 +25,11 @@ from floris.utilities import (
 INTERNAL_LIBRARY = Path(__file__).parent
 DEFAULT_WIND_SPEEDS = np.linspace(0, 40, 81)
 
+DEPRECATION_MESSAGE = (
+    "The TurbineInterface and TurbineLibrary classes are now deprecated as will be removed in a",
+    " future FLORIS release."
+)
+
 
 @define(auto_attribs=True)
 class TurbineInterface:
@@ -43,6 +48,7 @@ class TurbineInterface:
         Returns:
             (TurbineInterface): Creates a new ``TurbineInterface`` object.
         """
+        print(DEPRECATION_MESSAGE)
         # Use the pre-mapped internal turbine library or validate the user's library
         if library_path == "internal":
             library_path = INTERNAL_LIBRARY
@@ -64,6 +70,7 @@ class TurbineInterface:
         Returns:
             (TurbineInterface): Creates a new ``TurbineInterface`` object.
         """
+        print(DEPRECATION_MESSAGE)
         file_path = Path(file_path).resolve()
 
         # Add in the library specification if needed, and load from dict
@@ -81,6 +88,7 @@ class TurbineInterface:
         Returns:
             (`TurbineInterface`): Returns a ``TurbineInterface`` object.
         """
+        print(DEPRECATION_MESSAGE)
         return cls(turbine=Turbine.from_dict(config_dict))
 
     def power_curve(
@@ -351,6 +359,7 @@ class TurbineLibrary:
             exclude (list[str], optional): A list of file names to exclude from loading.
                 Defaults to [].
         """
+        print(DEPRECATION_MESSAGE)
         include = [el for el in INTERNAL_LIBRARY.iterdir() if el.suffix in (".yaml", ".yml")]
         which = [INTERNAL_LIBRARY / el for el in which] if which != [] else include
         exclude = [INTERNAL_LIBRARY / el for el in exclude]
@@ -379,6 +388,7 @@ class TurbineLibrary:
             exclude (list[str], optional): A list of file names to exclude from loading.
                 Defaults to [].
         """
+        print(DEPRECATION_MESSAGE)
         library_path = Path(library_path).resolve()
         include = [el for el in library_path.iterdir() if el.suffix in (".yaml", ".yml")]
         which = [library_path / el for el in which] if which != [] else include

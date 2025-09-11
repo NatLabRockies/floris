@@ -37,7 +37,7 @@ power_thrust_table:
   ref_air_density: 1.225
   ###
   # Tilt angle at which the power and thrust_coefficient curves are defined (degrees).
-  # Used to capture the effects of a floating platform on a turbine's power and wake. 
+  # Used to capture the effects of a floating platform on a turbine's power and wake.
   # Float type.
   ref_tilt: 5.0
   ###
@@ -83,7 +83,7 @@ power_thrust_table:
     cl_alfa: 4.275049
     cp_ct_data_file: "demo_cp_ct_surfaces/nrel_5MW_demo_cp_ct_surface.npz"
 
-  ### 
+  ###
   # Wind speeds for look-up tables of power and thrust_coefficient. List of float type.
   wind_speed:
     - 0.0

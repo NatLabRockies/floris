@@ -52,7 +52,7 @@ logging:
 solver:
 
   ###
-  # Grid type for solving flow values at the turbines. 
+  # Grid type for solving flow values at the turbines.
   # String type. Can be one of: "turbine_grid", "turbine_cubature_grid".
   type: turbine_grid
 
@@ -69,7 +69,7 @@ farm:
   ###
   # x-coordinates for the turbine locations, with the x axis corresponding to the
   # "west to east" direction. The order of the coordinates corresponds to the index of the
-  # turbine in the primary data structures. 
+  # turbine in the primary data structures.
   # List of float type.
   layout_x:
   - 0.0
@@ -79,7 +79,7 @@ farm:
   ###
   # y-coordinates for the turbine locations, with the y axis corresponding to the
   # "south to north" direction. The order of the coordinates corresponds to the index of the
-  # turbine in the primary data structures. 
+  # turbine in the primary data structures.
   # List of float type.
   layout_y:
   - 0.0
@@ -133,7 +133,7 @@ flow_field:
   wind_shear: 0.12
 
   ###
-  # The wind speeds for the simulation, specified in m/s at the ``reference_wind_height``. 
+  # The wind speeds for the simulation, specified in m/s at the ``reference_wind_height``.
   # Type list of floats.
   wind_speeds:
   - 8.0

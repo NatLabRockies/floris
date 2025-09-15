@@ -1,25 +1,27 @@
-"""Example: Multi-dimensional Cp/Ct data
+"""Example: Multi-dimensional power/thrust coefficient data
 This example creates a FLORIS instance and:
 1) Makes a two-turbine layout
 2) Demonstrates single ws/wd simulations
 3) Demonstrates multiple ws/wd simulations
 
-with the modification of using a turbine definition that has a multi-dimensional Cp/Ct table.
+with the modification of using a turbine definition that has a multi-dimensional
+power/thrust coefficient table.
 
 In the input file `gch_multi_dim_cp_ct.yaml`, the turbine_type points to a turbine definition,
 iea_15MW_floating_multi_dim_cp_ct.yaml located in the turbine_library,
-that supplies a multi-dimensional Cp/Ct data file in the form of a .csv file. This .csv file
-contains two additional conditions to define Cp/Ct values for: Tp for wave period, and Hs for wave
-height. For every combination of Tp and Hs defined, a Cp/Ct/Wind speed table of values is also
-defined. It is required for this .csv file to have the last 3 columns be ws, Cp, and Ct. In order
+that supplies a multi-dimensional power/thrust coefficient data file in the form of a .csv file.
+This .csv file contains two additional conditions to define power and thrust coefficient values for:
+Tp for wave period, and Hs for wave height. For every combination of Tp and Hs defined, a
+power/thrust coefficient/Wind speed table of values is also defined. It is required for this .csv
+file to have the last 3 columns be ws, power, and thrust coefficient. In order
 for this table to be used, the flag 'multi_dimensional_cp_ct' must be present and set to true in
 the turbine definition. With this flag enabled, the solver will down-select to use the
 interpolant defined at the closest conditions. The user must supply these conditions in the
 main input file under the 'flow_field' section, e.g.:
 
-NOTE: The multi-dimensional Cp/Ct data used in this example is fictional for the purposes of
-facilitating this example. The Cp/Ct values for the different wave conditions are scaled
-values of the original Cp/Ct data for the IEA 15MW turbine.
+NOTE: The multi-dimensional power/thrust coefficient data used in this example is fictional for the
+purposes of facilitating this example. The power/thrust coefficient values for the different wave
+conditions are scaled values of the original power/thrust coefficient data for the IEA 15MW turbine.
 
 flow_field:
   multidim_conditions:
@@ -30,7 +32,7 @@ The solver will then use the nearest-neighbor interpolant. These conditions are 
 and used to select the interpolant at each turbine.
 
 Also note in the example below that there is a specific method for computing powers when
-using turbines with multi-dimensional Cp/Ct data under FlorisModel, called
+using turbines with multi-dimensional power/thrust coefficient data under FlorisModel, called
 'get_turbine_powers_multidim'. The normal 'get_turbine_powers' method will not work.
 """
 

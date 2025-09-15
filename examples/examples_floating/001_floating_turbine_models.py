@@ -11,9 +11,9 @@ have been defined.
 If `correct_cp_ct_for_tilt` is True, then the difference between the current tilt as
 interpolated from the floating tilt table is used to scale the turbine power and thrust.
 
-If `correct_cp_ct_for_tilt` is False, then it is assumed that the power/thrust coefficient tables provided
-already account for the variation in tilt with wind speed (for example they were computed from
-a turbine simulator with tilt degree-of-freedom enabled and the floating platform simulated),
+If `correct_cp_ct_for_tilt` is False, then it is assumed that the power/thrust coefficient tables
+provided already account for the variation in tilt with wind speed (for example they were computed
+from a turbine simulator with tilt degree-of-freedom enabled and the floating platform simulated),
 and no correction is made.
 
 In the example below, three single-turbine simulations are run to show the different behaviors.

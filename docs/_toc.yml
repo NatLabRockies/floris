@@ -21,6 +21,7 @@ parts:
       - file: floating_wind_turbine
       - file: multidimensional_wind_turbine
       - file: input_reference_turbine
+      - file: turbine_library
     - file: advanced_concepts
     - file: heterogeneous_map
     - file: layout_optimization

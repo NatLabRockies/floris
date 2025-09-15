@@ -8,7 +8,13 @@ power_thrust_table:
   ref_tilt: 6.0
   cosine_loss_exponent_yaw: 1.88
   cosine_loss_exponent_tilt: 1.88
+  # Note that the multidimensional data provided here is fictional and does not represent a real
+  # wind turbine.
   power_thrust_data_file: 'iea_15MW_multi_dim_Tp_Hs.csv'
+# The floating_tilt_table describes the steady state tilt of the floating platform as a function of
+# wind speed. This is used to adjust the power and thrust coefficients when correct_cp_ct_for_tilt
+# is True. The values specified here should be treated as a fictional example only, and may not
+# represent a real floating platform.
 floating_tilt_table:
   tilt:
     - 5.747296314800103

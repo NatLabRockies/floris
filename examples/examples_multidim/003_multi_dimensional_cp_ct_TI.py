@@ -3,7 +3,8 @@ This example follows the previous example, but demonstrating how a multidimensio
 used to model the effect of turbulence intensity on power and thrust coefficient.
 
 NOTE: The multi-dimensional power/thrust coefficient data used in this example is fictional for the
-purposes of facilitating this example.
+purposes of facilitating this example and the power values shown should not be taken as
+representative of the actual effect of turbulence intensity on power/thrust coefficient.
 """
 
 
@@ -20,13 +21,15 @@ fmodel = FlorisModel("../inputs/gch_multi_dim_cp_ct_TI.yaml")
 fmodel.set(layout_x=[0.0, 500.0, 1000.0], layout_y=[0.0, 0.0, 0.0])
 
 # Use a sweep of wind speeds
-wind_speeds = np.arange(5, 20, 1.0)
+wind_speeds = np.arange(5, 20, 0.1)
 time_series = TimeSeries(
     wind_directions=270.0, wind_speeds=wind_speeds, turbulence_intensities=0.06
 )
 fmodel.set(wind_data=time_series)
 
 # Loop over different turbulence intensities using set()
+# When running with TI=0.10, the multidimensional data handler will find the nearest defined
+# value of 0.08 and use that data.
 fig, axarr = plt.subplots(1, 3, sharex=True, figsize=(12, 4))
 for ti, col in zip([0.06, 0.10], ["k", "r"]):
     fmodel.set(multidim_conditions={"TI": ti})

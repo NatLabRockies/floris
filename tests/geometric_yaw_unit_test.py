@@ -61,7 +61,20 @@ def test_basic_optimization(sample_inputs_fixture):
     # Check last turbine's angles are zero at 270.0
     assert np.allclose(df_opt.loc[3, "yaw_angles_opt"][-1], 0.0)
 
-    # YawOptimizationGeometric does not compute farm powers
+    # Check the critical angle where a turbine comes just outside of the Jensen wake
+    # (based on trial and error with defaults)
+    fmodel.set(
+        wind_directions=[282.0],
+        wind_speeds=WIND_SPEEDS[0:1],
+        turbulence_intensities=TURBULENCE_INTENSITIES[0:1]
+    )
+    yaw_opt = YawOptimizationGeometric(
+        fmodel,
+        minimum_yaw_angle=0.0,
+        maximum_yaw_angle=MAXIMUM_YAW_ANGLE
+    )
+    df_opt = yaw_opt.optimize()
+    assert np.allclose(df_opt.yaw_angles_opt.values[0], 0.0)
 
 def test_disabled_turbines(sample_inputs_fixture):
     """

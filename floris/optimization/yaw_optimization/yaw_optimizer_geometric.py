@@ -181,7 +181,7 @@ def _process_layout(
     x_dists[x_dists <= 0.] = np.inf
 
     # Check within Jensen model spread
-    in_Jensen_wake = (abs(y_dists) < spread * x_dists + rotor_diameter)
+    in_Jensen_wake = (abs(y_dists) < spread * x_dists + rotor_diameter/1.0)
     x_dists[~in_Jensen_wake] = np.inf
 
     # Get minimums (and arguments to select the correct y values also)

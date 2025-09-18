@@ -64,6 +64,8 @@ def test_basic_optimization(sample_inputs_fixture):
     # Check last turbine's angles are zero at 270.0
     assert np.allclose(df_opt.loc[3, "yaw_angles_opt"][-1], 0.0)
 
+    # YawOptimizationGeometric does not compute farm powers
+
 def test_disabled_turbines(sample_inputs_fixture):
     """
     Tests SR when some turbines are disabled and checks that the results are equivalent to removing

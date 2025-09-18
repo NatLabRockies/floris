@@ -85,23 +85,30 @@ def geometric_yaw(
     bottom_right_yaw_lower=0.0,
 ):
     """
-    turbine_x: unrotated x turbine coords
-    turbine_y: unrotated y turbine coords
-    wind_direction: float, degrees
-    rotor_diameter: float
-    left_x: where we start the trapezoid. Should be left as 0.
-    top_left_y: trapezoid top left coord
-    right_x: where to stop the trapezoid downstream.
-        Max coord after which the upstream turbine won't yaw.
-    top_right_y: trapezoid top right coord
-    top_left_yaw_upper: yaw angle associated with top left point (upper trapezoid)
-    top_right_yaw_upper: yaw angle associated with top right point
-    bottom_left_yaw_upper: yaw angle associated with bottom left point
-    bottom_right_yaw_upper: yaw angle associated with bottom right point
-    top_left_yaw_lower: yaw angle associated with top left point (lower trapezoid)
-    top_right_yaw_lower: yaw angle associated with top right point
-    bottom_left_yaw_lower: yaw angle associated with bottom left point
-    bottom_right_yaw_lower: yaw angle associated with bottom right point
+    Main function to compute geometric yaw angles based on wind farm layout for a single wind
+    direction.
+
+    Arguments:
+        turbine_x: unrotated x turbine coords
+        turbine_y: unrotated y turbine coords
+        wind_direction: float, degrees
+        rotor_diameter: float
+        left_x: where we start the trapezoid. Should be left as 0.
+        top_left_y: trapezoid top left coord
+        right_x: where to stop the trapezoid downstream.
+            Max coord after which the upstream turbine won't yaw.
+        top_right_y: trapezoid top right coord
+        top_left_yaw_upper: yaw angle associated with top left point (upper trapezoid)
+        top_right_yaw_upper: yaw angle associated with top right point
+        bottom_left_yaw_upper: yaw angle associated with bottom left point
+        bottom_right_yaw_upper: yaw angle associated with bottom right point
+        top_left_yaw_lower: yaw angle associated with top left point (lower trapezoid)
+        top_right_yaw_lower: yaw angle associated with top right point
+        bottom_left_yaw_lower: yaw angle associated with bottom left point
+        bottom_right_yaw_lower: yaw angle associated with bottom right point
+
+    Returns:
+        yaw_array: yaw angles for all turbines for the present wind direction.
     """
 
     nturbs = len(turbine_x)
@@ -143,15 +150,20 @@ def _process_layout(
     spread=0.1
 ):
     """
-    returns the distance from each turbine to the nearest downstream waked turbine
+    Returns the distance from each turbine to the nearest downstream waked turbine
     normalized by the rotor diameter. Right now "waked" is determined by a Jensen-like
     wake spread, but this could/should be modified to be the same as the trapezoid rule
     used to determine the yaw angles.
 
-    turbine_x: turbine x coords (rotated)
-    turbine_y: turbine y coords (rotated)
-    rotor_diameter: turbine rotor diameter (float)
-    spread=0.1: Jensen alpha wake spread value
+    Arguments:
+        turbine_x: turbine x coords (rotated)
+        turbine_y: turbine y coords (rotated)
+        rotor_diameter: turbine rotor diameter (float)
+        spread=0.1: Jensen alpha wake spread value
+
+    Returns:
+        dx: distance to nearest downstream turbine in rotor diameters for all turbines
+        dy: lateral distance to nearest downstream turbine in rotor diameters for all turbines
     """
 
     # Compute distances
@@ -189,27 +201,30 @@ def _get_yaw_angles(
     bottom_right_yaw_lower
 ):
     """
-    _______2,5___________________________4,6
-    |.......................................
-    |......1,7...........................3,8
-    |.......................................
-    ________________________________________
+    For a given turbine, return the geometric yaw angle based on its position relative to the
+    nearest downstream turbine.
 
-    x and y: dx and dy to the nearest downstream turbine in rotor diameters with
+    Arguments:
+        x: downstream distance to the nearest downstream turbine in rotor diameters with
         turbines rotated so wind is coming left to right
-    left_x: where we start the trapezoid. Should be left as 0.
-    top_left_y: trapezoid top left coord
-    right_x: where to stop the trapezoid downstream.
-        Max coord after which the upstream turbine won't yaw.
-    top_right_y: trapezoid top right coord
-    top_left_yaw_upper: yaw angle associated with top left point (upper trapezoid)
-    top_right_yaw_upper: yaw angle associated with top right point
-    bottom_left_yaw_upper: yaw angle associated with bottom left point
-    bottom_right_yaw_upper: yaw angle associated with bottom right point
-    top_left_yaw_lower: yaw angle associated with top left point (lower trapezoid)
-    top_right_yaw_lower: yaw angle associated with top right point
-    bottom_left_yaw_lower: yaw angle associated with bottom left point
-    bottom_right_yaw_lower: yaw angle associated with bottom right point
+        y: lateral distance to the nearest downstream turbine in rotor diameters with
+        turbines rotated so wind is coming left to right
+        left_x: where we start the trapezoid. Should be left as 0.
+        top_left_y: trapezoid top left coord
+        right_x: where to stop the trapezoid downstream.
+            Max coord after which the upstream turbine won't yaw.
+        top_right_y: trapezoid top right coord
+        top_left_yaw_upper: yaw angle associated with top left point (upper trapezoid)
+        top_right_yaw_upper: yaw angle associated with top right point
+        bottom_left_yaw_upper: yaw angle associated with bottom left point
+        bottom_right_yaw_upper: yaw angle associated with bottom right point
+        top_left_yaw_lower: yaw angle associated with top left point (lower trapezoid)
+        top_right_yaw_lower: yaw angle associated with top right point
+        bottom_left_yaw_lower: yaw angle associated with bottom left point
+        bottom_right_yaw_lower: yaw angle associated with bottom right point
+
+    Returns:
+        (yaw angle): float, geometric yaw angle for the given turbine
     """
 
     dx = (x-left_x)/(right_x-left_x)

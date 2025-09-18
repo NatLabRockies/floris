@@ -14,7 +14,7 @@ class YawOptimizationGeometric(YawOptimization):
     used to provide a rough estimate of optimal yaw angles based purely on the
     wind farm geometry. Main use case is for coupled layout and yaw optimization.
 
-    See Stanely et al. (2023) for details: https://wes.copernicus.org/articles/8/1341/2023/
+    See Stanley et al. (2023) for details: https://wes.copernicus.org/articles/8/1341/2023/
     """
 
     def __init__(
@@ -153,31 +153,12 @@ def _process_layout(
     rotor_diameter: turbine rotor diameter (float)
     spread=0.1: Jensen alpha wake spread value
     """
-    len(turbine_x)
-
-    # # Intialize storage
-    # dx = np.zeros(nturbs) + 1E10
-    # dy = np.zeros(nturbs)
-
-    # for waking_index in range(nturbs):
-    #     for waked_index in range(nturbs):
-    #         if turbine_x[waked_index] > turbine_x[waking_index]:
-    #             r = spread*(turbine_x[waked_index]-turbine_x[waking_index]) + rotor_diameter/2.0
-    #             if abs(turbine_y[waked_index]-turbine_y[waking_index]) < (r+rotor_diameter/2.0):
-    #                 if (turbine_x[waked_index] - turbine_x[waking_index]) < dx[waking_index]:
-    #                     dx[waking_index] = turbine_x[waked_index] - turbine_x[waking_index]
-    #                     dy[waking_index] = turbine_y[waked_index]- turbine_y[waking_index]
-    #     if dx[waking_index] == 1E10:
-    #         dx[waking_index] = 0.0
-
-    # dx_ = dx
-    # dy_ = dy
 
     # Compute distances
     x_dists = turbine_x.reshape(-1,1).T - turbine_x.reshape(-1,1)
     y_dists = turbine_y.reshape(-1,1).T - turbine_y.reshape(-1,1)
 
-    # Any turbines upstream or at the turbine location are ineligble
+    # Any turbines upstream or at the turbine location are ineligible
     x_dists[x_dists <= 0.] = np.inf
 
     # Check within Jensen model spread

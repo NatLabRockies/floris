@@ -144,7 +144,7 @@ def _process_layout(
 ):
     """
     returns the distance from each turbine to the nearest downstream waked turbine
-    normalized by the rotor diameter. Right now "waked" is determind by a Jensen-like
+    normalized by the rotor diameter. Right now "waked" is determined by a Jensen-like
     wake spread, but this could/should be modified to be the same as the trapezoid rule
     used to determine the yaw angles.
 
@@ -181,7 +181,7 @@ def _process_layout(
     x_dists[x_dists <= 0.] = np.inf
 
     # Check within Jensen model spread
-    in_Jensen_wake = (abs(y_dists) < spread * x_dists + rotor_diameter/1.0)
+    in_Jensen_wake = (abs(y_dists) < spread * x_dists + rotor_diameter/2.0)
     x_dists[~in_Jensen_wake] = np.inf
 
     # Get minimums (and arguments to select the correct y values also)

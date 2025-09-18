@@ -188,11 +188,6 @@ def _process_layout(
     dx = x_dists.min(axis=1)
     dy = y_dists[range(len(turbine_x)), x_dists.argmin(axis=1)]
 
-    # Handle last turbine downstream
-    furthest_ds_turb_idx = np.where(dx == np.inf)[0]
-    dx[furthest_ds_turb_idx] = 0.
-    dy[furthest_ds_turb_idx] = 0.
-
     return dx/rotor_diameter, dy/rotor_diameter
 
 
@@ -219,7 +214,7 @@ def _get_yaw_angles(
     |.......................................
     ________________________________________
 
-    x and y: dx and dy to the nearest downstream turbine in rotor diameteters with
+    x and y: dx and dy to the nearest downstream turbine in rotor diameters with
         turbines rotated so wind is coming left to right
     left_x: where we start the trapezoid. Should be left as 0.
     top_left_y: trapezoid top left coord
@@ -236,20 +231,17 @@ def _get_yaw_angles(
     bottom_right_yaw_lower: yaw angle associated with bottom right point
     """
 
-    if x <= 0:
+    dx = (x-left_x)/(right_x-left_x)
+    if dx >= 1.0:
         return 0.0
-    else:
-        dx = (x-left_x)/(right_x-left_x)
-        if dx >= 1.0:
-            return 0.0
-        edge_y = top_left_y + (top_right_y-top_left_y)*dx
-        if abs(y) > edge_y:
-            return 0.0
-        elif y >= -0.01: # Tolerance to handle numerical issues
-            top_yaw = top_left_yaw_upper + (top_right_yaw_upper-top_left_yaw_upper)*dx
-            bottom_yaw = bottom_left_yaw_upper + (bottom_right_yaw_upper-bottom_left_yaw_upper)*dx
-            return bottom_yaw + (top_yaw-bottom_yaw)*abs(y)/edge_y
-        elif y < -0.01:
-            top_yaw = top_left_yaw_lower + (top_right_yaw_lower-top_left_yaw_lower)*dx
-            bottom_yaw = bottom_left_yaw_lower + (bottom_right_yaw_lower-bottom_left_yaw_lower)*dx
-            return bottom_yaw + (top_yaw-bottom_yaw)*abs(y)/edge_y
+    edge_y = top_left_y + (top_right_y-top_left_y)*dx
+    if abs(y) > edge_y:
+        return 0.0
+    elif y >= -0.01: # Tolerance to handle numerical issues
+        top_yaw = top_left_yaw_upper + (top_right_yaw_upper-top_left_yaw_upper)*dx
+        bottom_yaw = bottom_left_yaw_upper + (bottom_right_yaw_upper-bottom_left_yaw_upper)*dx
+        return bottom_yaw + (top_yaw-bottom_yaw)*abs(y)/edge_y
+    elif y < -0.01:
+        top_yaw = top_left_yaw_lower + (top_right_yaw_lower-top_left_yaw_lower)*dx
+        bottom_yaw = bottom_left_yaw_lower + (bottom_right_yaw_lower-bottom_left_yaw_lower)*dx
+        return bottom_yaw + (top_yaw-bottom_yaw)*abs(y)/edge_y

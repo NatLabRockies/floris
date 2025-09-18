@@ -135,7 +135,7 @@ def test_process_layout():
         rotor_diameter=1.0,
         spread=0.5
     )
-    assert dx[0] == 0.0 # Distance to downstream turbine, which is outside the wake
+    assert dx[0] == np.inf # Distance to downstream turbine, which is outside the wake
 
     # Test effect of rotor diameter
     dx, dy, = _process_layout(
@@ -144,7 +144,7 @@ def test_process_layout():
         rotor_diameter=100.0,
         spread=0.5
     )
-    assert dx[0] > 0.0 # This turbine is now inside the wake
+    assert dx[0] != np.inf # This turbine is now inside the wake
 
     dx, dy = _process_layout(
         turbine_x=np.array([0.0, 1000.0]),
@@ -152,4 +152,4 @@ def test_process_layout():
         rotor_diameter=100.0,
         spread=0.5
     )
-    assert dx[0] == 0.0 # This turbine is now outside the wake
+    assert dx[0] == np.inf # This turbine is now outside the wake

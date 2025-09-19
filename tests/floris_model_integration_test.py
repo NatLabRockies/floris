@@ -980,7 +980,10 @@ def test_set_multidim():
     # Create a single-dimensional table
     turbine = SampleInputs().turbine_multi_dim
     turbine["power_thrust_table"]["power_thrust_data_file"] = "iea_15MW_multi_dim_TI.csv"
-    fmodel.set(turbine_type=[turbine])
+    fmodel.set(
+        turbine_type=[turbine],
+        turbine_library_path=Path(__file__).resolve().parent / "data/"
+    )
 
     with pytest.raises(ValueError):
         fmodel.set(multidim_conditions={"TI": 0.06, "Tp": 8.0})

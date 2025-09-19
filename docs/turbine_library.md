@@ -55,14 +55,3 @@ dictionary. This data should be treated as fictional and for demonstrative purpo
 This fictional turbine model is used in the following examples:
 - examples/examples_multidim/001_multi_dimensional_cp_ct.py
 - examples/examples_multidim/002_multi_dimensional_cp_ct_2Hs.py
-
-## IEA 15MW with turbulence intensity dependency
-
-FLORIS representation of the IEA 15MW reference wind turbine with multidimensional power and thrust
-coefficient data that depends on turbulence intensity. Reads in fictional multidimensional data
-from `iea_15MW_multi_dim_TI.csv` in the `turbine_library` folder. Specified as
-`"iea_15MW_multi_dim_TI"` in the `turbine_type` field of the FLORIS input dictionary. This data should
-be treated as fictional and for demonstrative purposes only.
-
-This fictional turbine model is used in the following examples:
-- examples/examples_multidim/003_multidimensional_cp_ct_TI.py

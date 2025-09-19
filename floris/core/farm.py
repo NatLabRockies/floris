@@ -154,6 +154,9 @@ class Farm(BaseClass):
                             "Please specify a unique 'turbine_type' for each turbine definition."
                         )
                 self._turbine_definition_cache[t["turbine_type"]] = t
+                self._turbine_definition_cache[t["turbine_type"]]["turbine_library_path"] = (
+                    self.turbine_library_path
+                )
 
             # If a turbine type is a string, then it is expected in the internal or external
             # turbine library
@@ -186,6 +189,9 @@ class Farm(BaseClass):
                         " external turbine library."
                     )
                 self._turbine_definition_cache[t] = load_yaml(full_path)
+                self._turbine_definition_cache[t]["turbine_library_path"] = (
+                    self.turbine_library_path
+                )
 
         # Convert any dict entries in the turbine_type list to the type string. Since the
         # definition is saved above, we can make the whole list consistent now to use it

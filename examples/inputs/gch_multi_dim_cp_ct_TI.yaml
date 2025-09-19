@@ -25,7 +25,8 @@ farm:
   - 0.0
   - 0.0
   turbine_type:
-  - iea_15MW_multi_dim_TI
+  - iea_15MW_multi_dim_TI.yaml
+  turbine_library_path: ../inputs/turbine_files/
 
 flow_field:
   multidim_conditions:

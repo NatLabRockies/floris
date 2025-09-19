@@ -10,4 +10,4 @@ power_thrust_table:
   cosine_loss_exponent_tilt: 1.88
   # Note that the multidimensional data provided here is fictional and does not represent a real
   # wind turbine.
-  power_thrust_data_file: 'iea_15MW_multi_dim_TI.csv'
+  power_thrust_data_file: './iea_15MW_multi_dim_TI.csv'

@@ -128,13 +128,6 @@ def curled_wake_solver(
         v_waked_plane = v_waked[:, i, :, :]  # noqa: F841 TODO: remove if not used
         w_waked_plane = w_waked[:, i, :, :]  # noqa: F841 TODO: remove if not used
 
-        # Compute the numerical viscosity needed for stability
-        Re = model_manager.velocity_model.Re
-
-        f = 4.  # turbulence visvosity factor
-        # TODO: is this a model parameter? Could it be assigned to velocity model?
-        # Only seems to be used there.
-
         # Extract the 2D slices for the current plane
         u_prev = u_waked[:, i-1, :, :]     # shape (n_findex, ny, nz)
         v_prev = v_waked[:, i-1, :, :]     # shape (n_findex, ny, nz)
@@ -142,8 +135,7 @@ def curled_wake_solver(
         u_fs   = u_freestream_plane     # shape (n_findex, ny, nz)
         v_fs   = v_freestream_plane     # shape (n_findex, ny, nz)
         w_fs   = w_freestream_plane     # shape (n_findex, ny, nz)
-        nu_2d = np.maximum(u_fs * flow_field.reference_wind_height / Re, 8 * 100 / Re)
-        # TODO: What is the 8*100 term? Is Re Reynolds number?
+        nu_2d = nu_t[:, i, :, :]  # shape (n_findex, ny, nz)
 
         # Run Runge-Kutta step
         u_new = model_manager.velocity_model.function(

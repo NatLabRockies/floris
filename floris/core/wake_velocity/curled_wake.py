@@ -16,7 +16,6 @@ from floris.core import (
     Grid,
     Turbine,
 )
-
 from floris.type_dec import floris_float_type
 
 
@@ -101,7 +100,6 @@ def finite_diff(arr, dy, dz):
         duwdy: Approximation of partial derivative w.r.t. y (axis 0)
         duwdz: Approximation of partial derivative w.r.t. z (axis 1)
     """
-    _, ny, nz = arr.shape  # Number of points in y and z directions
     duwdy = np.zeros_like(arr, dtype=floris_float_type)  # Partial derivative w.r.t. y
     duwdz = np.zeros_like(arr, dtype=floris_float_type)  # Partial derivative w.r.t. z
 
@@ -114,7 +112,6 @@ def finite_diff(arr, dy, dz):
 
 
 def laplacian(u, dy, dz):
-    _, ny, nz = u.shape
     lap = np.zeros_like(u, dtype=np.float64)
 
     # Compute second derivatives in y-direction (axis=1)

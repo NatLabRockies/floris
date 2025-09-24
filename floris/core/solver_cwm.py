@@ -152,7 +152,7 @@ def curled_wake_solver(
             # TODO: where does this 1.3 factor come from? Is it a user setting?
 
             u_rotor_values = u_freestream_plane[f, rotor_mask] + u_waked_plane[f, rotor_mask]
-            u_rotor_disk = np.mean(u_rotor_values) # TODO: Consider shear? Not really working as expected?
+            u_rotor_disk = np.mean(u_rotor_values) # TODO: Consider shear?
             flow_field.u_sorted[f, t, :, :] = u_rotor_disk  # or shape match if 2D needed
 
             ct = thrust_coefficient(

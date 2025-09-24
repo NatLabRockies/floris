@@ -86,6 +86,8 @@ def curled_wake_solver(
         ip = np.argmin(np.abs(x_1d.reshape(-1,1) - turbine_x.reshape(1,-1)), axis=0)
         turbine_plane_map[:, t] = ip
 
+    count_inner_loops = 0 # Temporary
+
     for i in range(1, n_x_planes):
         # Ensure freestream velocity is above 3 m/s (should really be 20% of U_inf)
         u_freestream_plane = np.maximum(u_freestream[:, i, :, :], 3) # TODO: 3 m/s minimum
@@ -129,6 +131,7 @@ def curled_wake_solver(
         # For this plane, find the findex-turbines that are present and modify the flow
         findex_turbine_indices = np.argwhere(turbine_plane_map == i)
         for fti in findex_turbine_indices:
+            count_inner_loops += 1 # Temporary
 
             f, t = fti  # f is the findex, t is the turbine index
 
@@ -215,4 +218,5 @@ def curled_wake_solver(
     # print("Solve complete.")
 
     # Result: flow_field.u_sorted.
+    #print("Inner loop ran {0} times".format(count_inner_loops))
     return None

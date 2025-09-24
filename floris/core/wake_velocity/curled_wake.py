@@ -8,7 +8,6 @@ from attrs import (
     field,
     fields,
 )
-#from numba import njit
 
 from floris.core import (
     BaseModel,
@@ -87,8 +86,6 @@ class CurledWakeVelocityDeficit(BaseModel):
         return u_new
 
 
-
-#@njit
 def finite_diff(arr, dy, dz):
     """
     Compute finite differences in a grid with 'ij' indexing:
@@ -109,63 +106,41 @@ def finite_diff(arr, dy, dz):
     duwdz = np.zeros_like(arr, dtype=floris_float_type)  # Partial derivative w.r.t. z
 
     # Central difference (interior points)
-    # TODO: Do we need these to be loops? Can we just use np diff or something?
-    for i in range(1, ny - 1):  # Iterate over y (axis 0)
-        for j in range(1, nz - 1):  # Iterate over z (axis 1)
-            # Derivative w.r.t. y (axis 0)
-            duwdy[:,i,j] = (arr[:,i+1,j] - arr[:,i-1,j]) / (2 * dy)
-            # Derivative w.r.t. z (axis 1)
-            duwdz[:,i,j] = (arr[:,i,j+1] - arr[:,i,j-1]) / (2 * dz)
-
-    # Handle edges (copy values from adjacent points)
-    duwdy[:,0,:] =  0. # duwdy[1, :]      # Edge at y = 0
-    duwdy[:,-1,:] = 0. # duwdy[-2, :]    # Edge at y = ny - 1
-    duwdz[:,0,:] = 0. # duwdz[:, 1]      # Edge at z = 0
-    duwdz[:,-1,:] = 0. # duwdz[:, -2]    # Edge at z = nz - 1
+    duwdy[:,1:-1,:] = (arr[:,2:,:] - arr[:,:-2,:]) / (2 * dy)
+    duwdz[:,:,1:-1] = (arr[:,:,2:] - arr[:,:,:-2]) / (2 * dz)
 
     return duwdy, duwdz
 
 
 
-#@njit
 def laplacian(u, dy, dz):
     _, ny, nz = u.shape
     lap = np.zeros_like(u, dtype=np.float64)
 
     # Compute second derivatives in y-direction (axis=1)
-    # TODO: Can we vectorize this instead of looping? To avoid using numba?
-    for j in range(2, ny-2):
-        for k in range(2, nz-2):
-            lap[:,j,k] = (
-                (u[:,j-2,k] - 2 * u[:,j,k] + u[:,j+2,k]) / (4 * dy * dy)
-                + (u[:,j,k-2] - 2 * u[:,j,k] + u[:,j,k+2]) / (4 * dz * dz)
-            )
+    lap[:,2:-2,2:-2] = (
+        (u[:,:-4,2:-2] - 2 * u[:,2:-2,2:-2] + u[:,4:,2:-2]) / (4 * dy * dy)  # y-direction
+        + (u[:,2:-2,:-4] - 2 * u[:,2:-2,2:-2] + u[:,2:-2,4:]) / (4 * dz * dz)  # z-direction
+    )
 
-    for k in range(nz):
-        lap[:,0,k] = lap[:,0, k] + (u[:,2, k]/2 - u[:,0, k]/2 - u[:,1, k] + u[:,0, k]) / (dy * dy)
-        lap[:,1,k] = lap[:,1, k] + (u[:,3, k]/2 - u[:,1, k]/2 - u[:,1, k] + u[:,0, k]) / (2 * dy * dy)
-        lap[:,-2,k] = lap[:,-2,k] + (u[:,-1, k] - u[:,-2, k] - u[:,-2, k]/2 + u[:,-4, k]/2) / (2 * dy * dy)
-        lap[:,-1,k] = lap[:,-1,k] + (u[:,-1, k] - u[:,-2, k] - u[:,-1, k]/2 + u[:,-3, k]/2) / (dy * dy)
+    lap[:,0,:] = lap[:,0,:] + (u[:,2,:]/2 - u[:,0,:]/2 - u[:,1,:] + u[:,0,:]) / (dy * dy)
+    lap[:,1,:] = lap[:,1,:] + (u[:,3,:]/2 - u[:,1,:]/2 - u[:,1,:] + u[:,0,:]) / (2 * dy * dy)
+    lap[:,-2,:] = lap[:,-2,:] + (u[:,-1,:] - u[:,-2,:] - u[:,-2,:]/2 + u[:,-4,:]/2) / (2 * dy * dy)
+    lap[:,-1,:] = lap[:,-1,:] + (u[:,-1,:] - u[:,-2,:] - u[:,-1,:]/2 + u[:,-3,:]/2) / (dy * dy)
 
-    for j in range(ny):
-        lap[:,j, 0] = lap[:,j, 0] + (u[:,j, 2]/2 - u[:,j, 0]/2 - u[:,j, 1] + u[:,j, 0]) / (dz * dz)
-        lap[:,j, 1] = lap[:,j, 1] + (u[:,j, 3]/2 - u[:,j, 1]/2 - u[:,j, 1] + u[:,j, 0]) / (2 * dz * dz)
-        lap[:,j, -2] = lap[:,j, -2] + (u[:,j,  -1] - u[:,j, -2] - u[:,j, -2]/2 + u[:,j, -4]/2) / (2 * dz * dz)
-        lap[:,j, -1] = lap[:,j, -1] + (u[:,j,  -1] - u[:,j, -2] - u[:,j, -1]/2 + u[:,j, -3]/2) / (dz * dz)
+    lap[:,:,0] = lap[:,:,0] + (u[:,:,2]/2 - u[:,:,0]/2 - u[:,:,1] + u[:,:,0]) / (dz * dz)
+    lap[:,:,1] = lap[:,:,1] + (u[:,:,3]/2 - u[:,:,1]/2 - u[:,:,1] + u[:,:,0]) / (2 * dz * dz)
+    lap[:,:,-2] = lap[:,:,-2] + (u[:,:,-1] - u[:,:,-2] - u[:,:,-2]/2 + u[:,:,-4]/2) / (2 * dz * dz)
+    lap[:,:,-1] = lap[:,:,-1] + (u[:,:,-1] - u[:,:,-2] - u[:,:,-1]/2 + u[:,:,-3]/2) / (dz * dz)
 
+    return lap
 
-    return lap #d2udy2 + d2udz2
-
-
-
-#@njit
 def compute_rhs_steady(u_current, U, V, W, dy, dz, C, nu):
     duwdy, duwdz = finite_diff(u_current, dy, dz)
     inv_U = 1.0 / (U + u_current)  # Precompute inverse
     rhs = inv_U * (-V * duwdy - W * duwdz + C * nu * laplacian(u_current, dy, dz))
     return rhs
 
-#@njit
 def runge_kutta_step(u_current, dx, U, V, W, dy, dz, C, nu):
     k1 = compute_rhs_steady(u_current, U, V, W, dy, dz, C, nu)
 

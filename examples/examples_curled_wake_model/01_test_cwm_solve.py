@@ -3,7 +3,7 @@ import numpy as np
 from floris import FlorisModel
 
 
-fmodel = FlorisModel("inputs/cwm.yaml")
+fmodel = FlorisModel("../inputs/cwm.yaml")
 
 # Changing the wind farm layout uses FLORIS' set method to a two-turbine layout
 fmodel.set(layout_x=[100, 500.0, 1000.0], layout_y=[0.0, 0.0, 0.0])

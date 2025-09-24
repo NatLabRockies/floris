@@ -60,7 +60,10 @@ def curled_wake_solver(
     # findices at once (can consider revising later)
     # Not yet handling heterogeneity; will work that in later.
     u_freestream = (
-        np.tile(flow_field.wind_speeds[:,None,None,None], (1, n_x_planes, n_y_planes, n_z_planes))
+        np.tile(
+            flow_field.wind_speeds[:,None,None,None],
+            (1, n_x_planes, y_1d.shape[0], z_1d.shape[0])
+        )
         * ((z_1d / flow_field.reference_wind_height) ** flow_field.wind_shear)[None, None, None, :]
     )
     u_freestream = np.maximum(u_freestream, 3)
@@ -134,6 +137,8 @@ def curled_wake_solver(
 
         # Extract the 2D slices for the current plane
         u_prev = u_waked[:, i-1, :, :]     # shape (n_findex, ny, nz)
+        v_prev = v_waked[:, i-1, :, :]     # shape (n_findex, ny, nz)
+        w_prev = w_waked[:, i-1, :, :]     # shape (n_findex, ny, nz)
         u_fs   = u_freestream_plane     # shape (n_findex, ny, nz)
         v_fs   = v_freestream_plane     # shape (n_findex, ny, nz)
         w_fs   = w_freestream_plane     # shape (n_findex, ny, nz)
@@ -174,7 +179,7 @@ def curled_wake_solver(
             # Let's get the rotor location for now (should access properly later)
             t_y = np.mean(grid.y_sorted[f,t,:,:])
             t_z = np.mean(grid.z_sorted[f,t,:,:])
-            rotor_diameter_t = farm.rotor_diameters_sorted[f, t, None, None]
+            rotor_diameter_t = farm.rotor_diameters_sorted[f, t]
 
             # Create a mask for points inside the rotor disk at this x-plane
             # mask shape: (n_findex, n_y, n_z), True where (y, z) is inside rotor
@@ -236,13 +241,13 @@ def curled_wake_solver(
             vcurl, wcurl = model_manager.velocity_model.add_curl(
                 y[:, i, :, :]-t_y, #[rotor_mask_filt],
                 z[:, i, :, :]-t_z, #[rotor_mask_filt],
-                D=rotor_diameter_i,
-                Ct=ct_i[0],
+                D=rotor_diameter_t,
+                Ct=ct,
                 Uh=u_rotor_disk,
-                alpha=np.deg2rad(farm.yaw_angles_sorted[0, t]),
-                tilt=np.deg2rad(farm.tilt_angles_sorted[0, t]),
+                alpha=np.deg2rad(farm.yaw_angles_sorted[f, t]),
+                tilt=np.deg2rad(farm.tilt_angles_sorted[f, t]),
                 ground=True,
-                th=farm.hub_heights_sorted[0, t],
+                th=farm.hub_heights_sorted[f, t],
                 N=20,
             )
             v_waked[:,i,:,:] += vcurl

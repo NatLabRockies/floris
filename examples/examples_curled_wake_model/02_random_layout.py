@@ -6,7 +6,8 @@ from floris import FlorisModel
 def main():
     # The FlorisModel class is the entry point for most usage.
     # Initialize using an input yaml file
-    fmodel = FlorisModel("inputs/cwm.yaml")
+    fmodel = FlorisModel("../inputs/cwm.yaml")
+    np.random.seed(0)
 
     # Changing the wind farm layout uses FLORIS' set method to a two-turbine layout
     #fmodel.set(layout_x=[100, 500.0], layout_y=[300.0, 100.0])

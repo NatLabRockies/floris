@@ -59,16 +59,12 @@ def curled_wake_solver(
     # Use the same number of x and y points for generality once we get to multiple
     # findices at once (can consider revising later)
     # Not yet handling heterogeneity; will work that in later.
-    u_freestream = (
-        np.tile(
-            flow_field.wind_speeds[:,None,None,None],
-            (1, n_x_planes, y_1d.shape[0], z_1d.shape[0])
-        )
-        * ((z_1d / flow_field.reference_wind_height) ** flow_field.wind_shear)[None, None, None, :]
-    )
-    u_freestream = np.maximum(u_freestream, 3)
     # TODO: what is the 3 for? Does the solve not work for lower wind speeds? We will need to handle
     # this better, if so.
+    u_freestream = (
+        np.ones_like(x, dtype=floris_float_type)
+        * flow_field.wind_speeds[:, None, None, None]
+    )
     v_freestream = np.zeros_like(x, dtype=floris_float_type) # May not be needed. Always zeros?
     w_freestream = np.zeros_like(x, dtype=floris_float_type) # May not be needed. Always zeros?
     u_waked = np.zeros_like(x, dtype=floris_float_type)

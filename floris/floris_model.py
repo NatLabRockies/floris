@@ -1368,7 +1368,11 @@ class FlorisModel(LoggingManager):
 
         return df
 
-    def sample_flow_at_points(self, x: NDArrayFloat, y: NDArrayFloat, z: NDArrayFloat, run_solver: bool = True):
+    def sample_flow_at_points(self,
+                              x: NDArrayFloat,
+                              y: NDArrayFloat,
+                              z: NDArrayFloat,
+                              run_solver: bool = True):
         """
         Extract the wind speed at points in the flow.
 
@@ -1376,7 +1380,7 @@ class FlorisModel(LoggingManager):
             x (1DArrayFloat | list): x-locations of points where flow is desired.
             y (1DArrayFloat | list): y-locations of points where flow is desired.
             z (1DArrayFloat | list): z-locations of points where flow is desired.
-            run_solver (bool): If `True` (default), run the solver. This is useful when this function is used in combination with `sample_ti_at_points`.
+            run_solver (bool): If `True` (default), run the solver.
 
         Returns:
             3DArrayFloat containing wind speed with dimensions
@@ -1393,7 +1397,11 @@ class FlorisModel(LoggingManager):
         # Remove grid dimensions and return sorted wind speed field.
         return self.core.flow_field.u_sorted[:, :, 0, 0]
 
-    def sample_ti_at_points(self, x: NDArrayFloat, y: NDArrayFloat, z: NDArrayFloat, run_solver: bool = True):
+    def sample_ti_at_points(self,
+                            x: NDArrayFloat,
+                            y: NDArrayFloat,
+                            z: NDArrayFloat,
+                            run_solver: bool = True):
         """
         Extract the turbulence intensity at points in the flow.
 
@@ -1401,7 +1409,7 @@ class FlorisModel(LoggingManager):
             x (1DArrayFloat | list): x-locations of points where TI is desired.
             y (1DArrayFloat | list): y-locations of points where TI is desired.
             z (1DArrayFloat | list): z-locations of points where TI is desired.
-            run_solver (bool): If `True` (default), run the solver. This is useful when this function is used in combination with `sample_flow_at_points`.
+            run_solver (bool): If `True` (default), run the solver.
 
         Returns:
             3DArrayFloat containing turbulence intensity with dimensions

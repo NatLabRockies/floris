@@ -1,10 +1,10 @@
 import numpy as np
 import pytest
-
 from attrs import define, field
 
 from floris import FlorisModel
 from floris.core.turbine.operation_models import BaseOperationModel
+
 
 def test_static_user_defined_op_model():
     # Establish a static class

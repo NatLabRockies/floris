@@ -559,7 +559,10 @@ class Turbine(BaseClass):
             self.power_thrust_table = floris_numeric_dict_converter(self.power_thrust_table)
 
     def _initialize_power_thrust_functions(self) -> None:
-        turbine_function_model = TURBINE_MODEL_MAP["operation_model"][self.operation_model]
+        if isinstance(self.operation_model, str):
+            turbine_function_model = TURBINE_MODEL_MAP["operation_model"][self.operation_model]
+        else:
+            turbine_function_model = self.operation_model
         self.thrust_coefficient_function = turbine_function_model.thrust_coefficient
         self.axial_induction_function = turbine_function_model.axial_induction
         self.power_function = turbine_function_model.power

@@ -35,6 +35,12 @@ Specified as `"iea_10MW"` in the `turbine_type` field of the FLORIS input dictio
 The IEA 10MW turbine is used in the following examples:
 - examples/examples_turbine/002_multiple_turbine_types.py
 
+## IEA 22MW reference wind turbine
+FLORIS representation of the IEA 22MW reference wind turbine {cite:t}`zahle_IEA22MW_2024`. Data based on # https://github.com/IEAWindSystems/IEA-22-280-RWT/blob/main/Documentation/IEA-22-280-RWT_tabular.xlsx.
+Specified as `"iea_22MW"` in the `turbine_type` field of the FLORIS input dictionary.
+
+The IEA 22MW is not currently used in the examples.
+
 ## IEA 15MW multidimensional
 
 Fictional IEA 15MW turbine model used to demonstrate the use of multidimensional power and thrust

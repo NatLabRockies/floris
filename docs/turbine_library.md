@@ -40,7 +40,7 @@ FLORIS representation of the IEA 22MW reference wind turbine {cite:t}`zahle_IEA2
 Specified as `"iea_22MW"` in the `turbine_type` field of the FLORIS input dictionary.
 
 The IEA 22MW is demonstrated, alongside other reference wind turbines, in:
-- examples/examples_turbine/002_check_turbine.py
+- examples/examples_turbine/001_reference_turbines.py
 
 ## IEA 15MW multidimensional
 

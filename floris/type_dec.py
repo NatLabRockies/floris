@@ -160,22 +160,22 @@ def convert_to_path(fn: str | Path) -> Path:
     # located (e.g., testing via pytest), and [-1] is where a direct call to the function via an
     # analysis script will be located (e.g., running an example).
     base_fn_script = Path(inspect.stack()[-1].filename).resolve().parent
-    # base_fn_sys = Path(inspect.stack()[1].filename).resolve().parent
+    base_fn_sys = Path(inspect.stack()[1].filename).resolve().parent
 
     if isinstance(fn, Path):
         absolute_fn = fn.resolve()
         relative_fn_script = (base_fn_script / fn).resolve()
-        # relative_fn_sys = (base_fn_sys / fn).resolve()
+        relative_fn_sys = (base_fn_sys / fn).resolve()
         if absolute_fn.exists():
             return absolute_fn
         if relative_fn_script.exists():
             return relative_fn_script
-        # if relative_fn_sys.exists():
-        #     return relative_fn_sys
+        if relative_fn_sys.exists():
+            return relative_fn_sys
         raise FileExistsError(
             f"{fn} could not be found as either a\n"
             f"  - relative file path from a script: {relative_fn_script}\n"
-            # f"  - relative file path from a system location: {relative_fn_sys}\n"
+            f"  - relative file path from a system location: {relative_fn_sys}\n"
             f"  - or absolute file path: {absolute_fn}"
         )
     raise TypeError(f"The passed input: {fn} could not be converted to a pathlib.Path object")

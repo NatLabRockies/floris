@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1758654574860,
+  "lastUpdate": 1761071435119,
   "repoUrl": "https://github.com/NREL/floris",
   "entries": {
     "Python Benchmark with pytest-benchmark": [
@@ -3008,6 +3008,72 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.0001536732613313067",
             "extra": "mean: 8.342950209996616 msec\nrounds: 100"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "39596329+misi9170@users.noreply.github.com",
+            "name": "misi9170",
+            "username": "misi9170"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "34de04d223b0042e8eafffcd063d1f4649fb670f",
+          "message": "Drop support for python 3.9 and add python 3.14 (#1079)\n\n* Update docs to note the end of support for python 3.9\n\n* Update docs.\n\n* Update testing matrices (drop 3.9, add 3.14, add other OSs)\n\n* Bring in file path changes for #953\n\n* Add path updates for windows, remove traling / from examples/ for mac\n\n* Remove python 3.14 as not yet released.\n\n* Set up minimal testing for windows, macos, ubuntu; run examples on ubuntu w/ oldest support python only\n\n* Remove from __future__ import annotations where possible.\n\n* Update python requirement in pyproject.toml\n\n* Add testing on python 3.14; remove minor version specifier from deploy-book action\n\n* Test examples on 3.14\n\n* Update requires-python to be explicit\n\n* Undo commented out paths",
+          "timestamp": "2025-10-21T12:06:29-06:00",
+          "tree_id": "8220536103b3daf35369956d38732c881343515d",
+          "url": "https://github.com/NREL/floris/commit/34de04d223b0042e8eafffcd063d1f4649fb670f"
+        },
+        "date": 1761071433285,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_set",
+            "value": 38.98214259461466,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0008838129428193265",
+            "extra": "mean: 25.652771588243816 msec\nrounds: 34"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_run",
+            "value": 55.83431502017193,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00011757636907217321",
+            "extra": "mean: 17.91013285716352 msec\nrounds: 28"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_set",
+            "value": 22.160678243213756,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0015735356962155772",
+            "extra": "mean: 45.124972666675 msec\nrounds: 21"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_run",
+            "value": 0.2845522762180067,
+            "unit": "iter/sec",
+            "range": "stddev: 0.02979713757925251",
+            "extra": "mean: 3.5142927454000072 sec\nrounds: 5"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_set",
+            "value": 34.0129950923658,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0003562638252934625",
+            "extra": "mean: 29.40052757142959 msec\nrounds: 35"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_run",
+            "value": 119.92131559439358,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00007049307998377929",
+            "extra": "mean: 8.338801113408989 msec\nrounds: 97"
           }
         ]
       }

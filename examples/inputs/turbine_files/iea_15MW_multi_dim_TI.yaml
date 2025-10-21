@@ -1,4 +1,4 @@
-turbine_type: 'iea_15MW_multi_dim_cp_ct'
+turbine_type: 'iea_15MW_floating'
 hub_height: 150.0
 rotor_diameter: 242.24
 TSR: 8.0
@@ -10,4 +10,4 @@ power_thrust_table:
   cosine_loss_exponent_tilt: 1.88
   # Note that the multidimensional data provided here is fictional and does not represent a real
   # wind turbine.
-  power_thrust_data_file: 'iea_15MW_multi_dim_Tp_Hs.csv'
+  power_thrust_data_file: './iea_15MW_multi_dim_TI.csv'

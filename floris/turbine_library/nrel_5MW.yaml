@@ -6,56 +6,72 @@
 
 ###
 # An ID for this type of turbine definition.
-# This is not currently used, but it will be enabled in the future. This should typically
-# match the root name of the file.
+# This is used to uniquely identify different turbines in the simulation, so should be different
+# for each different turbine definition being used in the same simulation.
+# String type.
 turbine_type: 'nrel_5MW'
 
 ###
-# Hub height.
+# Turbine hub height in meters. Float type.
 hub_height: 90.0
 
 ###
-# Rotor diameter.
+# Turbine rotor diameter in meters. Float type.
 rotor_diameter: 125.88
 
 ###
-# Tip speed ratio defined as linear blade tip speed normalized by the incoming wind speed.
+# Nominal wind turbine tip-speed ratio for below-rated operation. Only used in some wake models.
+# Float type.
 TSR: 8.0
 
 ###
-# Model for power and thrust curve interpretation.
+# Model for power and thrust curve interpretation. See floris.core.turbine.operation_models for
+# details. String type.
 operation_model: 'cosine-loss'
 
 ###
-# Parameters needed to evaluate the power and thrust produced by the turbine.
+# Group of parameters needed to evaluate the power and thrust produced by the turbine.
 power_thrust_table:
-  ### Power thrust table parameters
-  # The air density at which the power and thrust_coefficient curves are defined.
+  ###
+  # Air density at which the power and thrust_coefficient curves are defined (kg / m^3). Float type.
   ref_air_density: 1.225
   ###
-  # The tilt angle at which the Cp and Ct curves are defined. This is used to capture
-  # the effects of a floating platform on a turbine's power and wake.
+  # Tilt angle at which the power and thrust_coefficient curves are defined (degrees).
+  # Used to capture the effects of a floating platform on a turbine's power and wake.
+  # Float type.
   ref_tilt: 5.0
   ###
-  # Cosine exponent for power loss due to tilt.
+  # Cosine exponent for power loss due to tilt. Float type.
   cosine_loss_exponent_tilt: 1.88
   ###
-  # Cosine exponent for power loss due to yaw misalignment.
+  # Cosine exponent for power loss due to yaw misalignment. Float type.
   cosine_loss_exponent_yaw: 1.88
   ###
-  # Helix parameters
+  # Helix parameter a. See documentation for details. Float type.
   helix_a: 1.802
+  ###
+  # Helix parameter b for power calculation. See documentation for details. Float type.
   helix_power_b: 4.568e-03
+  ###
+  # Helix parameter c for power calculation. See documentation for details. Float type.
   helix_power_c: 1.629e-10
+  ###
+  # Helix parameter b for thrust calculation. See documentation for details. Float type.
   helix_thrust_b: 1.027e-03
+  ###
+  # Helix parameter c for thrust calculation. See documentation for details. Float type.
   helix_thrust_c: 1.378e-06
-  ### Peak shaving parameters
-  # Fraction of peak thrust by which to reduce
+  ###
+  # Fraction of peak thrust by which to reduce (specified as a decimal). Float type.
   peak_shaving_fraction: 0.2
-  # Threshold turbulence intensity above which to apply peak shaving
+  ###
+  # Threshold turbulence intensity above which to apply peak shaving (specified as a decimal).
+  # Float tpe.
   peak_shaving_TI_threshold: 0.1
 
-  ### Parameters for the 'controller-dependenter-dependent' operation model
+  ###
+  # Parameters for the 'controller-dependenter-dependent' operation model. See
+  # floris.core.turbine.controller_dependent_operation_model and documentation for details.
   controller_dependent_turbine_parameters:
     rated_rpm: 12.1
     rotor_solidity: 0.05132
@@ -67,8 +83,8 @@ power_thrust_table:
     cl_alfa: 4.275049
     cp_ct_data_file: "demo_cp_ct_surfaces/nrel_5MW_demo_cp_ct_surface.npz"
 
-  ### Power thrust table data
-  # wind speeds for look-up tables of power and thrust_coefficient
+  ###
+  # Wind speeds for look-up tables of power and thrust_coefficient. List of float type.
   wind_speed:
     - 0.0
     - 2.9
@@ -125,7 +141,7 @@ power_thrust_table:
     - 25.1
     - 50.0
   ###
-  # power values (specified in kW) for lookup by wind speed
+  # Power values (specified in kW) for lookup by wind speed. List of float type.
   power:
     - 0.0
     - 0.0
@@ -182,7 +198,7 @@ power_thrust_table:
     - 0.0
     - 0.0
   ###
-  # thrust coefficient values (unitless) for lookup by wind speed
+  # Thrust coefficient values (unitless) for lookup by wind speed. List of float type.
   thrust_coefficient:
     - 0.0
     - 0.0
@@ -240,14 +256,44 @@ power_thrust_table:
     - 0.0
 
 ###
-# A boolean flag used when the user wants FLORIS to use the user-supplied multi-dimensional
-# Cp/Ct information.
+# Boolean flag used when the user wants FLORIS to use the user-supplied multi-dimensional
+# power/thrust coefficient information information. Boolean type.
 multi_dimensional_cp_ct: False
 
 ###
-# The path to the .csv file that contains the multi-dimensional Cp/Ct data. The format of this
-# file is such that any external conditions, such as wave height or wave period, that the
-# Cp/Ct data is dependent on come first, in column format. The last three columns of the .csv
-# file must be ``ws``, ``Cp``, and ``Ct``, in that order. An example of fictional data is given
-# in ``floris/turbine_library/iea_15MW_multi_dim_Tp_Hs.csv``.
+# Path to the .csv file that contains the multi-dimensional power/thrust coefficient data.
+# The format of this file is such that any external conditions, such as wave height or wave period,
+# that the power/thrust data is dependent on come first, in column format. The last three columns
+# of the .csv file must be ``ws``, ``power``, and ``thrust_coefficient``, in that order. An example
+# of fictional data is given in ``floris/turbine_library/iea_15MW_multi_dim_Tp_Hs.csv``.
+# String type.
 power_thrust_data_file: '../floris/turbine_library/iea_15MW_multi_dim_Tp_Hs.csv'
+
+###
+# Group of parameters needed to evaluate the tilt angle of a floating turbine across wind speeds.
+floating_tilt_table:
+  ###
+  # Wind speeds at which steady tilt angles are defined (m/s). List of float type.
+  wind_speed:
+    - 4.0
+    - 6.0
+    - 8.0
+    - 10.0
+    - 12.0
+    - 14.0
+    - 16.0
+  ###
+  # Tilt angle for each wind speed (degrees, positive "tilted back"). List of float type.
+  tilt:
+    - 5.0
+    - 5.0
+    - 5.0
+    - 5.0
+    - 5.0
+    - 5.0
+    - 5.0
+
+###
+# Flag for whether to apply the floating tilt table to correct turbine power and thrust curves.
+# Boolean type.
+correct_cp_ct_for_tilt: false

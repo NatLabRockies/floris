@@ -185,8 +185,11 @@ def test_CosineLossTurbine():
         tilt_angles=tilt_angles_test,
         tilt_interp=None
     )
-    absolute_tilt = tilt_angles_test - turbine_data["power_thrust_table"]["ref_tilt"]
-    assert test_Ct == baseline_Ct * cosd(yaw_angles_test) * cosd(absolute_tilt)
+    assert test_Ct == (
+        baseline_Ct * cosd(yaw_angles_test)
+        * cosd(tilt_angles_test)
+        / cosd(turbine_data["power_thrust_table"]["ref_tilt"])
+    )
 
 
     # Check that thrust coefficient works as expected
@@ -200,7 +203,8 @@ def test_CosineLossTurbine():
     )
     baseline_misalignment_loss = (
         cosd(yaw_angles_nom)
-        * cosd(tilt_angles_nom - turbine_data["power_thrust_table"]["ref_tilt"])
+        * cosd(tilt_angles_nom)
+        / cosd(turbine_data["power_thrust_table"]["ref_tilt"])
     )
     baseline_ai = (
         1 - np.sqrt(1 - turbine_data["power_thrust_table"]["thrust_coefficient"][truth_index])
@@ -216,8 +220,13 @@ def test_CosineLossTurbine():
         tilt_angles=tilt_angles_test,
         tilt_interp=None
     )
-    absolute_tilt = tilt_angles_test - turbine_data["power_thrust_table"]["ref_tilt"]
-    assert test_Ct == baseline_Ct * cosd(yaw_angles_test) * cosd(absolute_tilt)
+
+    assert test_Ct == (
+        baseline_Ct
+        * cosd(yaw_angles_test)
+        * cosd(tilt_angles_test)
+        / cosd(turbine_data["power_thrust_table"]["ref_tilt"])
+    )
 
 
 def test_SimpleDeratingTurbine():

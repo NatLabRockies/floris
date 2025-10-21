@@ -1,9 +1,9 @@
-"""Example: Multi-dimensional Cp/Ct with 2 Hs values
+"""Example: Multi-dimensional power/thrust coefficient with 2 Hs values
 This example follows the previous example but shows the effect of changing the Hs setting.
 
-NOTE: The multi-dimensional Cp/Ct data used in this example is fictional for the purposes of
-facilitating this example. The Cp/Ct values for the different wave conditions are scaled
-values of the original Cp/Ct data for the IEA 15MW turbine.
+NOTE: The multi-dimensional power/thrust coefficient data used in this example is fictional for the
+purposes of facilitating this example. The power/thrust coefficient values for the different wave
+conditions are scaled values of the original power/thrust coefficient data for the IEA 15MW turbine.
 """
 
 

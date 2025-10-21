@@ -1,197 +1,202 @@
 
 ###
-# A name for this input file.
-# This is not currently only for the user's reference.
+# Name for the input file.
+# This is not used by FLORIS and is simply for the user's reference.
+# String type.
 name: GCH
 
 ###
-# A description of the contents of this input file.
-# This is not currently only for the user's reference.
+# Description of the contents of this input file.
+# This is not used by FLORIS and is simply for the user's reference.
+# String type.
 description: Three turbines using Gauss Curl Hybrid model
 
 ###
-# The earliest version of FLORIS this input file supports.
-# This is not currently only for the user's reference.
+# The FLORIS version that the file is defined for.
+# This is not used by FLORIS and is simply for the user's reference.
+# String type.
 floris_version: v4
 
 ###
-# Configure the logging level and where to show the logs.
+# Upper-level group of options for configuring logging.
 logging:
 
   ###
-  # Settings for logging to the console (i.e. terminal).
+  # Group of settings for logging to the console (i.e. terminal).
   console:
 
     ###
-    # Can be "true" or "false".
+    # Flag to enable console logging. Boolean type.
     enable: true
 
     ###
-    # Set the severity to show output. Messages at this level or higher will be shown.
-    # Can be one of "CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG".
+    # Severity to show output in console. Messages at this level or higher will be shown.
+    # String type. Can be one of "CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG".
     level: WARNING
 
   ###
-  # Settings for logging to a file.
+  # Group of settings for logging to a file.
   file:
 
     ###
-    # Can be "true" or "false".
+    # Flag to enable file logging. Boolean type.
     enable: false
 
     ###
-    # Set the severity to show output. Messages at this level or higher will be shown.
-    # Can be one of "CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG".
+    # Severity to show output in file. Messages at this level or higher will be shown.
+    # String type. Can be one of "CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG".
     level: WARNING
 
 ###
-# Configure the solver for the type of simulation.
+# Upper-level group of options for configuring solution grid.
 solver:
 
   ###
-  # Select the solver type.
-  # Can be one of: "turbine_grid", "flow_field_grid", "flow_field_planar_grid".
+  # Grid type for solving flow values at the turbines.
+  # String type. Can be one of: "turbine_grid", "turbine_cubature_grid".
   type: turbine_grid
 
   ###
-  # Options for the turbine type selected above. See the solver documentation for available parameters.
+  # Number of grid points per turbine for solve. For turbine_grid type solve, represents the number
+  # of points along each of the two axes. For turbine_cubature_grid type solve, represents the
+  # total number of points used in the cubature solve. Integer type.
   turbine_grid_points: 3
 
 ###
-# Configure the turbine types and their placement within the wind farm.
+# Group for setting the wind farm configuration.
 farm:
 
   ###
-  # Coordinates for the turbine locations in the x-direction which is typically considered
-  # to be the streamwise direction (left, right) when the wind is out of the west.
-  # The order of the coordinates here corresponds to the index of the turbine in the primary
-  # data structures.
+  # x-coordinates for the turbine locations, with the x axis corresponding to the
+  # "west to east" direction. The order of the coordinates corresponds to the index of the
+  # turbine in the primary data structures.
+  # List of float type.
   layout_x:
   - 0.0
   - 630.0
   - 1260.0
 
   ###
-  # Coordinates for the turbine locations in the y-direction which is typically considered
-  # to be the spanwise direction (up, down) when the wind is out of the west.
-  # The order of the coordinates here corresponds to the index of the turbine in the primary
-  # data structures.
+  # y-coordinates for the turbine locations, with the y axis corresponding to the
+  # "south to north" direction. The order of the coordinates corresponds to the index of the
+  # turbine in the primary data structures.
+  # List of float type.
   layout_y:
   - 0.0
   - 0.0
   - 0.0
 
   ###
-  # Listing of turbine types for placement at the x and y coordinates given above.
+  # Listing of turbine types for placement at the x and y coordinates.
   # The list length must be 1 or the same as ``layout_x`` and ``layout_y``. If it is a
   # single value, all turbines are of the same type. Otherwise, the turbine type
   # is mapped to the location at the same index in ``layout_x`` and ``layout_y``.
-  # The types can be either a name included in the turbine_library or
-  # a full definition of a wind turbine directly.
+  # The types can be either a string for a turbine included in the turbine_library,
+  # a string beginning with !include for a path to the user's turbine; or a full
+  # definition of a wind turbine (as a nested dictionary).
   turbine_type:
   - nrel_5MW
 
 ###
-# Configure the atmospheric conditions.
+# Group for defining the atmospheric conditions.
 flow_field:
 
   ###
-  # Air density.
+  # Air density. Float type.
   air_density: 1.225
 
   ###
-  # The height to consider the "center" of the vertical wind speed profile
+  # The height in meters to consider the "center" of the vertical wind speed profile
   # due to shear. With a shear exponent not 1, the wind speed at this height
   # will be the value given in ``wind_speeds``. Above and below this height,
   # the wind speed will change according to the shear profile; see
   # :py:meth:`.FlowField.initialize_velocity_field`.
   # For farms consisting of one wind turbine type, use ``reference_wind_height: -1``
   # to use the hub height of the wind turbine definition. For multiple wind turbine
-  # types, the reference wind height must be given explicitly.
+  # types, the reference wind height must be given explicitly. Float type (or -1).
   reference_wind_height: -1
 
   ###
-  # The turbulence intensities to include in the simulation, specified as a decimal.
+  # Turbulence intensities for the simulation, specified as a decimal value. Type list of floats.
   turbulence_intensities:
   - 0.06
 
   ###
-  # The wind directions to include in the simulation.
-  # 0 is north and 270 is west.
+  # Wind directions for the simulation, specified in degrees according to compass directions
+  # (0 is northerly, 90 is easterly, etc). Type list of floats.
   wind_directions:
   - 270.0
 
   ###
   # The exponent used to model the wind shear profile; see
-  # :py:meth:`.FlowField.initialize_velocity_field`.
+  # :py:meth:`.FlowField.initialize_velocity_field`. Float type.
   wind_shear: 0.12
 
   ###
-  # The wind speeds to include in the simulation.
+  # The wind speeds for the simulation, specified in m/s at the ``reference_wind_height``.
+  # Type list of floats.
   wind_speeds:
   - 8.0
 
   ###
-  # The wind veer as a constant value for all points in the grid.
+  # The wind veer (in degrees) as a constant value for all points in the grid. Only used in
+  # certain models. Float type.
   wind_veer: 0.0
 
   ###
-  # The conditions that are specified for use with the multi-dimensional Cp/Ct capability.
+  # Conditions that are specified for use with the multi-dimensional power/thrust capability.
   # These conditions are external to FLORIS and specified by the user. They are used internally
   # through a nearest-neighbor selection process to choose the correct Cp/Ct interpolants
-  # to use.
+  # to use. Type dictionary of string:float pairs.
   multidim_conditions:
     Tp: 2.5
     Hs: 3.01
 
 ###
-# Configure the wake model.
+# Group for defining the wake model parameters.
 wake:
 
   ###
-  # Select the models to use for the simulation.
-  # See :py:mod:`~.wake` for a list
-  # of available models and their descriptions.
+  # Group for selecting the model elements for the simulation.
+  # See :py:mod:`~.wake` for a list of available models and their descriptions.
   model_strings:
 
     ###
-    # Select the wake combination model.
+    # Wake combination model. String type..
     combination_model: sosfs
 
     ###
-    # Select the wake deflection model.
+    # Wake deflection model. String type.
     deflection_model: gauss
 
     ###
-    # Select the wake turbulence model.
+    # Wake turbulence model. String type..
     turbulence_model: crespo_hernandez
 
     ###
-    # Select the wake velocity deficit model.
+    # Wake velocity deficit model. String type.
     velocity_model: gauss
 
   ###
-  # Can be "true" or "false".
+  # Flag to include secondary steering effects. Only used in some models. Boolean type.
   enable_secondary_steering: true
 
   ###
-  # Can be "true" or "false".
+  # Flag to include yaw added recovery effects. Only used in some models. Boolean type.
   enable_yaw_added_recovery: true
 
   ###
-  # Can be "true" or "false".
+  # Flag to include active wake mixing effects. Only used in Empirical Guassian model. Boolean type.
   enable_active_wake_mixing: false
 
   ###
-  # Can be "true" or "false".
+  # Flag to compute transverse velocities across turbine rotors. Only used in some models.
+  # Boolean type.
   enable_transverse_velocities: true
 
   ###
-  # Configure the parameters for the wake deflection model
-  # selected above.
-  # Additional blocks can be provided for
-  # models that are not enabled, but the enabled model
-  # must have a corresponding parameter block.
+  # Parameters for the wake deflection model. See model descriptions and implementations for
+  # details of each parameter and its use.
   wake_deflection_parameters:
     gauss:
       ad: 0.0
@@ -207,11 +212,8 @@ wake:
       kd: 0.05
 
   ###
-  # Configure the parameters for the wake velocity deficit model
-  # selected above.
-  # Additional blocks can be provided for
-  # models that are not enabled, but the enabled model
-  # must have a corresponding parameter block.
+  # Parameters for the wake velocity deficit model. See model descriptions and implementations for
+  # details of each parameter and its use.
   wake_velocity_parameters:
     cc:
       a_s: 0.179367259
@@ -231,11 +233,8 @@ wake:
       we: 0.05
 
   ###
-  # Configure the parameters for the wake turbulence model
-  # selected above.
-  # Additional blocks can be provided for
-  # models that are not enabled, but the enabled model
-  # must have a corresponding parameter block.
+  # Parameters for the wake turbulence model. See model descriptions and implementations for
+  # details of each parameter and its use.
   wake_turbulence_parameters:
     crespo_hernandez:
       initial: 0.1

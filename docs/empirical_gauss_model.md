@@ -113,7 +113,8 @@ the empirical model, explicit dependencies on turbulence intensity are removed
 completely to aid in tuning. Instead, a non-physical "wake-induced mixing
 factor" is specified for turbine $j$ as
 
-$$ \text{WIM}_j = \sum_{i \in T^{\text{up}}(j)} \frac{A_{ij} a_i} {(x_j - x_i)/D_i} $$
+$$ \text{WIM}_j = \sqrt{\sum_{i \in T^{\text{up}}(j)} 
+\left(\frac{A_{ij} a_i} {\left((x_j - x_i)/D_i\right)^2}\right)^2} $$
 
 where $T_T^{\text{up}}(j)$ is the set of turbines upstream from the turbine
 $j$. Here, $A_{ij}$ is the area of overlap of the wake of turbine $i$
@@ -138,6 +139,12 @@ $$ \delta = \frac{k_\text{def} C_T \alpha}{1 + w_d \text{WIM}_j}\operatorname{ln
 
 where $w_d$ is the wake-induced mixing gain for deflection, provided by the
 user by setting `wim_gain_deflection`.
+
+```{note}
+The documentation previously had an erroneous form for the wake-induced mixing
+term
+$$ \text{WIM}_j = \sum_{i \in T^{\text{up}}(j)} \frac{A_{ij} a_i} {(x_j - x_i)/D_i} $$
+```
 
 ## Yaw added mixing
 
@@ -171,7 +178,8 @@ setting the amplitude of the AWC excitation using `awc_amplitudes` (see the
 The effect of AWC is represented by updating the
 wake-induced mixing term as follows:
 
-$$ \text{WIM}_j = \sum_{i \in T^{\text{up}}(j)} \frac{A_{ij} a_i} {(x_j - x_i)/D_i} +
+$$ \text{WIM}_j = \sum_{i \in T^{\text{up}}(j)} 
+\left(\frac{A_{ij} a_i} {\left((x_j - x_i)/D_i\right)^2}\right)^2 +
 \frac{\beta_{j}^{p}}{d}$$
 
 where $\beta_{j}$ is the AWC amplitude of turbine $j$, and the exponent $p$ and

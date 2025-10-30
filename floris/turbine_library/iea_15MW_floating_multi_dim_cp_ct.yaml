@@ -16,7 +16,7 @@ power_thrust_table:
 # is True. Updated values as of FLORIS v4.6, taken from
 # https://github.com/FLOWMAS-EERC/IEA15_FOWT/blob/main/iea_15MW_floating_power-from-fixed.yaml
 # generated using OpenFAST with the U-Maine floater by Sam Kaufman-Martin.
-# The floater model used to generate these values is
+# The floater model used to generate these values is the UMaine VolturnUS-S Reference Platform.
 floating_tilt_table:
   tilt:
     - 5.406938261

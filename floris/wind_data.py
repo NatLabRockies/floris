@@ -164,6 +164,10 @@ class WindRose(WindDataBase):
                 Optional.
             * 'wind_speeds': A 1D NumPy array (size num_ws) of wind speeds (m/s). Optional.
             Defaults to None.
+        multidim_conditions (dict, optional): A dictionary containing multidimensional inflow
+            conditions. Each key is the name of the condition, and each value is either a 2D NumPy
+            array of size n_wind_directions x n_wind_speeds containing the condition values,
+            or a scalar value that will be broadcast to size n_findex. Defaults to None.
 
     """
 
@@ -177,6 +181,7 @@ class WindRose(WindDataBase):
         compute_zero_freq_occurrence: bool = False,
         heterogeneous_map: HeterogeneousMap | dict | None = None,
         heterogeneous_inflow_config_by_wd: dict | None = None,
+        multidim_conditions: dict | None = None,
     ):
         if not isinstance(wind_directions, np.ndarray):
             raise TypeError("wind_directions must be a NumPy array")
@@ -294,6 +299,8 @@ class WindRose(WindDataBase):
         else:
             self.heterogeneous_map = None
 
+        # TODO: Handle multidim_conditions (check shape)
+
         # Build the gridded and flatten versions
         self._build_gridded_and_flattened_version()
 
@@ -374,6 +381,10 @@ class WindRose(WindDataBase):
             value_table_unpack,
             heterogeneous_inflow_config,
         )
+
+    def unpack_multidim_conditions(self):
+        # TODO: mask self.multidim_conditions
+        return super().unpack_multidim_conditions() # TEMPORARY
 
     def aggregate(self, wd_step=None, ws_step=None, inplace=False):
         """

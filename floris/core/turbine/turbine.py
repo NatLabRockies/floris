@@ -191,43 +191,57 @@ def power(
         else:
             correct_cp_ct_for_tilt = correct_cp_ct_for_tilt[:, ix_filter]
 
+    # Establish the main set of keyword arguments for power()
+    power_model_kwargs = {
+        "power_thrust_table": None, # Will be filled below
+        "velocities": velocities,
+        "turbulence_intensities": turbulence_intensities,
+        "air_density": air_density,
+        "yaw_angles": yaw_angles,
+        "tilt_angles": tilt_angles,
+        "power_setpoints": power_setpoints,
+        "awc_modes": awc_modes,
+        "awc_amplitudes": awc_amplitudes,
+        "tilt_interp": None, # Will be filled below
+        "average_method": average_method,
+        "cubature_weights": cubature_weights,
+        "correct_cp_ct_for_tilt": correct_cp_ct_for_tilt,
+    }
+
     # Loop over each turbine type given to get power for all turbines
     p = np.zeros(np.shape(velocities)[0:2])
     turb_types = np.unique(turbine_type_map)
     for turb_type in turb_types:
-        # Handle possible multidimensional power thrust tables
-        if "power" in turbine_power_thrust_tables[turb_type]: # normal
+        if "power" in turbine_power_thrust_tables[turb_type]:  # Not multidimensional
             power_thrust_table = turbine_power_thrust_tables[turb_type]
-        else: # assumed multidimensional, use multidim lookup
-            # Currently, only works for single mutlidim condition. May need to
-            # loop in the case where there are multiple conditions.
-            multidim_condition = _select_multidim_condition(
+
+            power_model_kwargs["power_thrust_table"] = power_thrust_table
+            power_model_kwargs["tilt_interp"] = tilt_interps[turb_type]
+
+            p += (
+                power_functions[turb_type](**power_model_kwargs)
+                * (turbine_type_map == turb_type)
+            )
+        else: # Multidimensional
+            md_conditions, md_conditions_map = _select_multidim_condition(
                 multidim_condition,
                 [k for k in turbine_power_thrust_tables[turb_type].keys() if k != "condition_keys"],
-                turbine_power_thrust_tables[turb_type]["condition_keys"]
+                turbine_power_thrust_tables[turb_type]["condition_keys"],
+                velocities.shape[0],
             )
-            power_thrust_table = turbine_power_thrust_tables[turb_type][multidim_condition]
 
-        # Construct full set of possible keyword arguments for power()
-        power_model_kwargs = {
-            "power_thrust_table": power_thrust_table,
-            "velocities": velocities,
-            "turbulence_intensities": turbulence_intensities,
-            "air_density": air_density,
-            "yaw_angles": yaw_angles,
-            "tilt_angles": tilt_angles,
-            "power_setpoints": power_setpoints,
-            "awc_modes": awc_modes,
-            "awc_amplitudes": awc_amplitudes,
-            "tilt_interp": tilt_interps[turb_type],
-            "average_method": average_method,
-            "cubature_weights": cubature_weights,
-            "correct_cp_ct_for_tilt": correct_cp_ct_for_tilt,
-        }
+            # Loop over conditions and mask onto power
+            for i, md_cond in enumerate(md_conditions):
+                power_thrust_table = turbine_power_thrust_tables[turb_type][tuple(md_cond)]
 
-        # Using a masked array, apply the power for all turbines of the current
-        # type to the main power
-        p += power_functions[turb_type](**power_model_kwargs) * (turbine_type_map == turb_type)
+                power_model_kwargs["power_thrust_table"] = power_thrust_table
+                power_model_kwargs["tilt_interp"] = tilt_interps[turb_type]
+
+                p += (
+                    power_functions[turb_type](**power_model_kwargs)
+                    * (turbine_type_map == turb_type)
+                    * (md_conditions_map[:, None] == i)
+                )
 
     return p
 
@@ -329,7 +343,7 @@ def thrust_coefficient(
     thrust_coefficient = np.zeros(np.shape(velocities)[0:2])
     turb_types = np.unique(turbine_type_map)
     for turb_type in turb_types:
-        if "thrust_coefficient" in turbine_power_thrust_tables[turb_type]:  # Not multidim
+        if "thrust_coefficient" in turbine_power_thrust_tables[turb_type]:  # Not multidimensional
             power_thrust_table = turbine_power_thrust_tables[turb_type]
 
             thrust_model_kwargs["power_thrust_table"] = power_thrust_table
@@ -337,7 +351,7 @@ def thrust_coefficient(
 
             thrust_coefficient += (
                 thrust_coefficient_functions[turb_type](**thrust_model_kwargs)
-                * (turbine_type_map == turb_type) # TODO: Masking is slow, presumably; but easy to do.
+                * (turbine_type_map == turb_type)
             )
         else: # Multidimensional
             md_conditions, md_conditions_map = _select_multidim_condition(
@@ -435,45 +449,57 @@ def axial_induction(
         else:
             correct_cp_ct_for_tilt = correct_cp_ct_for_tilt[:, ix_filter]
 
+    # Establish the main set of keyword arguments for axial_induction()
+    axial_induction_model_kwargs = {
+        "power_thrust_table": None, # Will be filled below
+        "velocities": velocities,
+        "turbulence_intensities": turbulence_intensities,
+        "air_density": air_density,
+        "yaw_angles": yaw_angles,
+        "tilt_angles": tilt_angles,
+        "power_setpoints": power_setpoints,
+        "awc_modes": awc_modes,
+        "awc_amplitudes": awc_amplitudes,
+        "tilt_interp": None, # Will be filled below
+        "average_method": average_method,
+        "cubature_weights": cubature_weights,
+        "correct_cp_ct_for_tilt": correct_cp_ct_for_tilt,
+    }
+
     # Loop over each turbine type given to get axial induction for all turbines
     axial_induction = np.zeros(np.shape(velocities)[0:2])
     turb_types = np.unique(turbine_type_map)
     for turb_type in turb_types:
-        # Handle possible multidimensional power thrust tables
-        if "thrust_coefficient" in turbine_power_thrust_tables[turb_type]: # normal
+        if "thrust_coefficient" in turbine_power_thrust_tables[turb_type]:  # Not multidimensional
             power_thrust_table = turbine_power_thrust_tables[turb_type]
-        else: # assumed multidimensional, use multidim lookup
-            # Currently, only works for single mutlidim condition. May need to
-            multidim_condition = _select_multidim_condition(
+
+            axial_induction_model_kwargs["power_thrust_table"] = power_thrust_table
+            axial_induction_model_kwargs["tilt_interp"] = tilt_interps[turb_type]
+
+            axial_induction += (
+                axial_induction_functions[turb_type](**axial_induction_model_kwargs)
+                * (turbine_type_map == turb_type)
+            )
+        else: # Multidimensional
+            md_conditions, md_conditions_map = _select_multidim_condition(
                 multidim_condition,
                 [k for k in turbine_power_thrust_tables[turb_type].keys() if k != "condition_keys"],
-                turbine_power_thrust_tables[turb_type]["condition_keys"]
+                turbine_power_thrust_tables[turb_type]["condition_keys"],
+                velocities.shape[0],
             )
-            power_thrust_table = turbine_power_thrust_tables[turb_type][multidim_condition]
 
-        # Construct full set of possible keyword arguments for thrust_coefficient()
-        axial_induction_model_kwargs = {
-            "power_thrust_table": power_thrust_table,
-            "velocities": velocities,
-            "turbulence_intensities": turbulence_intensities,
-            "air_density": air_density,
-            "yaw_angles": yaw_angles,
-            "tilt_angles": tilt_angles,
-            "power_setpoints": power_setpoints,
-            "awc_modes": awc_modes,
-            "awc_amplitudes": awc_amplitudes,
-            "tilt_interp": tilt_interps[turb_type],
-            "average_method": average_method,
-            "cubature_weights": cubature_weights,
-            "correct_cp_ct_for_tilt": correct_cp_ct_for_tilt,
-        }
+            # Loop over conditions and mask onto axial_induction
+            for i, md_cond in enumerate(md_conditions):
+                power_thrust_table = turbine_power_thrust_tables[turb_type][tuple(md_cond)]
 
-        # Using a masked array, apply the thrust coefficient for all turbines of the current
-        # type to the main thrust coefficient array
-        axial_induction += (
-            axial_induction_functions[turb_type](**axial_induction_model_kwargs)
-            * (turbine_type_map == turb_type)
-        )
+                axial_induction_model_kwargs["power_thrust_table"] = power_thrust_table
+                axial_induction_model_kwargs["tilt_interp"] = tilt_interps[turb_type]
+
+                axial_induction += (
+                    axial_induction_functions[turb_type](**axial_induction_model_kwargs)
+                    * (turbine_type_map == turb_type)
+                    * (md_conditions_map[:, None] == i)
+                )
 
     return axial_induction
 

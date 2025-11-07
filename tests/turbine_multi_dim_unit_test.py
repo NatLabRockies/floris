@@ -281,3 +281,78 @@ def test_asdict(sample_inputs_fixture: SampleInputs):
     dict2 = new_turb.as_dict()
 
     assert dict1 == dict2
+
+def test_multiple_conditions():
+
+    N_TURBINES = 4
+    N_CONDITIONS = 2
+
+    turbine_data = SampleInputs().turbine_multi_dim
+    turbine = Turbine.from_dict(turbine_data)
+    turbine_type_map = np.array(N_TURBINES * [turbine.turbine_type])
+    turbine_type_map = turbine_type_map[None, :]
+
+    # First, test the same condition repeated
+    conditions = {"Tp":[2, 2], "Hs":[1, 1]}
+
+    # Single turbine
+    wind_speed = 10.0
+    thrust = thrust_coefficient(
+        velocities=wind_speed * np.ones((N_CONDITIONS, N_TURBINES, 3, 3)),
+        turbulence_intensities=0.06 * np.ones((N_CONDITIONS, N_TURBINES, 3, 3)),
+        air_density=None,
+        yaw_angles=np.zeros((N_CONDITIONS, N_TURBINES)),
+        tilt_angles=np.ones((N_CONDITIONS, N_TURBINES)) * 5.0,
+        power_setpoints=np.ones((N_CONDITIONS, N_TURBINES)) * POWER_SETPOINT_DEFAULT,
+        awc_modes=np.array([["baseline"]*N_TURBINES]*N_CONDITIONS),
+        awc_amplitudes=np.zeros((N_CONDITIONS, N_TURBINES)),
+        thrust_coefficient_functions={turbine.turbine_type: turbine.thrust_coefficient_function},
+        tilt_interps={turbine.turbine_type: None},
+        correct_cp_ct_for_tilt=np.array([[False]]),
+        turbine_type_map=turbine_type_map[:,0], # TODO CHECK
+        turbine_power_thrust_tables={turbine.turbine_type: turbine.power_thrust_table},
+        multidim_condition=conditions
+    )
+
+    assert np.allclose(thrust, 0.77958497)
+
+    # Next, test different conditions (one which must be inferred)
+    conditions = {"Tp":[2, 4], "Hs":[1, 4]}
+    thrust = thrust_coefficient(
+        velocities=wind_speed * np.ones((N_CONDITIONS, N_TURBINES, 3, 3)),
+        turbulence_intensities=0.06 * np.ones((N_CONDITIONS, N_TURBINES, 3, 3)),
+        air_density=None,
+        yaw_angles=np.zeros((N_CONDITIONS, N_TURBINES)),
+        tilt_angles=np.ones((N_CONDITIONS, N_TURBINES)) * 5.0,
+        power_setpoints=np.ones((N_CONDITIONS, N_TURBINES)) * POWER_SETPOINT_DEFAULT,
+        awc_modes=np.array([["baseline"]*N_TURBINES]*N_CONDITIONS),
+        awc_amplitudes=np.zeros((N_CONDITIONS, N_TURBINES)),
+        thrust_coefficient_functions={turbine.turbine_type: turbine.thrust_coefficient_function},
+        tilt_interps={turbine.turbine_type: None},
+        correct_cp_ct_for_tilt=np.array([[False]]),
+        turbine_type_map=turbine_type_map[:,0], # TODO CHECK
+        turbine_power_thrust_tables={turbine.turbine_type: turbine.power_thrust_table},
+        multidim_condition=conditions
+    )
+    assert np.allclose(thrust, np.array([[0.77958497], [0.09744812]]))
+
+    # Multiple findices with broadcast multidim conditions
+    conditions = {"Tp":2, "Hs":1}
+    thrust = thrust_coefficient(
+        velocities=np.tile(np.array([10., 11.])[:,None,None,None], (1, N_TURBINES, 3, 3)),
+        turbulence_intensities=0.06 * np.ones((N_CONDITIONS, N_TURBINES, 3, 3)),
+        air_density=None,
+        yaw_angles=np.zeros((N_CONDITIONS, N_TURBINES)),
+        tilt_angles=np.ones((N_CONDITIONS, N_TURBINES)) * 5.0,
+        power_setpoints=np.ones((N_CONDITIONS, N_TURBINES)) * POWER_SETPOINT_DEFAULT,
+        awc_modes=np.array([["baseline"]*N_TURBINES]*N_CONDITIONS),
+        awc_amplitudes=np.zeros((N_CONDITIONS, N_TURBINES)),
+        thrust_coefficient_functions={turbine.turbine_type: turbine.thrust_coefficient_function},
+        tilt_interps={turbine.turbine_type: None},
+        correct_cp_ct_for_tilt=np.array([[False]]),
+        turbine_type_map=turbine_type_map[:,0], # TODO CHECK
+        turbine_power_thrust_tables={turbine.turbine_type: turbine.power_thrust_table},
+        multidim_condition=conditions
+    )
+
+    assert np.allclose(thrust, np.array([[0.77958497], [0.66749069]]))

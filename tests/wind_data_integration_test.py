@@ -177,6 +177,55 @@ def test_wind_rose_unpack():
     # In this case n_findex is the total number of wind combinations
     assert wind_rose.n_findex == 6
 
+    # Adding tests of unpack_multidim_conditions here, since these will be included in unpack()
+    # in a future release
+    multidim_conditions_scalar = {"TI": 0.06, "Hs": 3.1}
+    wind_rose = WindRose(
+        wind_directions,
+        wind_speeds,
+        0.06,
+        freq_table,
+        multidim_conditions=multidim_conditions_scalar
+    )
+    multidim_conditions_unpacked = wind_rose.unpack_multidim_conditions()
+
+    for k, v in multidim_conditions_unpacked.items():
+        np.testing.assert_allclose(v, [multidim_conditions_scalar[k]] * wind_rose.n_findex)
+
+    # Array multi-dimensional conditions that are not the correct shape (n_wd x n_ws)
+    multidim_conditions_array_bad_shape = {"TI": np.array([1, 2, 3, 4, 5, 6])}
+    with pytest.raises(ValueError):
+        WindRose(
+            wind_directions,
+            wind_speeds,
+            0.06,
+            freq_table,
+            multidim_conditions=multidim_conditions_array_bad_shape
+        )
+    # Correct shape multi-dimensional conditions, wrong number of values
+    multidim_conditions_array_wrong_size = {"TI": np.array([[0.06, 0.07], [0.08, 0.09]])}
+    with pytest.raises(ValueError):
+        WindRose(
+            wind_directions,
+            wind_speeds,
+            0.06,
+            freq_table,
+            multidim_conditions=multidim_conditions_array_wrong_size
+        )
+    # Correct shape and size
+    multidim_conditions_array = {"TI": np.array([[0.06, 0.07], [0.08, 0.09], [0.10, 0.11]])}
+    wind_rose = WindRose(
+        wind_directions,
+        wind_speeds,
+        0.06,
+        freq_table,
+        multidim_conditions=multidim_conditions_array
+    )
+    multidim_conditions_unpacked = wind_rose.unpack_multidim_conditions()
+
+    for k, v in multidim_conditions_unpacked.items():
+        assert k in multidim_conditions_array.keys()
+        assert v.shape == (2,) # 2 remaining conditions after frequency filtering
 
 def test_unpack_for_reinitialize():
     wind_directions = np.array([270, 280, 290])
@@ -974,24 +1023,24 @@ def test_heterogeneous_inflow_config_by_wd():
     }
 
     # Using heterogeneous_map input
-    time_series = WindRose(
+    wind_rose = WindRose(
         wind_directions,
         wind_speeds,
         ti_table=0.06,
         heterogeneous_map=heterogeneous_map_config,
     )
 
-    (_, _, _, _, _, heterogeneous_inflow_config_a) = time_series.unpack()
+    (_, _, _, _, _, heterogeneous_inflow_config_a) = wind_rose.unpack()
 
     # Using heterogeneous_inflow_config_by_wd input
-    time_series = WindRose(
+    wind_rose = WindRose(
         wind_directions,
         wind_speeds,
         ti_table=0.06,
         heterogeneous_inflow_config_by_wd=heterogeneous_map_config,
     )
 
-    (_, _, _, _, _, heterogeneous_inflow_config_b) = time_series.unpack()
+    (_, _, _, _, _, heterogeneous_inflow_config_b) = wind_rose.unpack()
 
     np.testing.assert_allclose(
         heterogeneous_inflow_config_a["speed_multipliers"],
@@ -1110,3 +1159,57 @@ def test_read_csv_long_ti():
 
     expected_result = np.array([0.06, 0.07])
     np.testing.assert_allclose(wind_ti_rose.turbulence_intensities, expected_result)
+
+def test_time_series_multidim():
+    # Test that TimeSeries can handle multidimensional wind speeds and turbulence intensities
+
+    wind_directions = np.array([270.0, 280.0, 290.0])
+    wind_speeds = np.array([5.0, 6.0, 7.0])
+    turbulence_intensities = np.array([0.06, 0.07, 0.06])
+
+    # Test scalar multidimensional conditions
+    multidim_conditions_scalar = {"TI": 0.06, "Hs": 3.1}
+    time_series = TimeSeries(
+        wind_directions,
+        wind_speeds,
+        turbulence_intensities,
+        multidim_conditions=copy.deepcopy(multidim_conditions_scalar),
+    )
+    multidim_conditions_unpacked = time_series.unpack_multidim_conditions()
+
+    for k, v in multidim_conditions_unpacked.items():
+        assert np.allclose(v, [multidim_conditions_scalar[k]] * len(wind_directions))
+
+    # Array multi-dimensional conditions that are not the correct length (n_findex)
+    multidim_conditions_array_bad_size = {"TI": np.array([1, 2, 3, 4])}
+    with pytest.raises(ValueError):
+        TimeSeries(
+            wind_directions,
+            wind_speeds,
+            turbulence_intensities,
+            multidim_conditions=multidim_conditions_array_bad_size
+        )
+    # Incorrect shape
+    multidim_conditions_array_bad_shape = {
+        "TI": np.array([[0.06, 0.07], [0.08, 0.09], [0.10, 0.11]])
+    }
+    with pytest.raises(ValueError):
+        TimeSeries(
+            wind_directions,
+            wind_speeds,
+            turbulence_intensities,
+            multidim_conditions=multidim_conditions_array_bad_shape
+        )
+    # Correct size and shape
+    multidim_conditions_array = {"TI": np.array([0.06, 0.07, 0.08])}
+    time_series = TimeSeries(
+        wind_directions,
+        wind_speeds,
+        turbulence_intensities,
+        multidim_conditions=copy.deepcopy(multidim_conditions_array),
+    )
+    multidim_conditions_unpacked = time_series.unpack_multidim_conditions()
+
+    for k, v in multidim_conditions_unpacked.items():
+        assert k in multidim_conditions_array.keys()
+        assert v.shape == (len(wind_directions),)

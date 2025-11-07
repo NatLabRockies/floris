@@ -2268,7 +2268,7 @@ class TimeSeries(WindDataBase):
             # or a scalar value
             for key, value in multidim_conditions.items():
                 if isinstance(value, np.ndarray):
-                    if len(value) != self.n_findex:
+                    if value.shape != (self.n_findex,):
                         raise ValueError(
                             f"multidim_conditions[{key}] must be of size n_findex ({self.n_findex})"
                         )

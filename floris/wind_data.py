@@ -71,6 +71,16 @@ class WindDataBase:
 
         return self.unpack()[4]
 
+    def unpack_multidim_conditions(self):
+        """Unpack multidimensional conditions
+
+        NOTE: This is a temporary method for backwards compatibility and will be removed in a
+        future release, when multidim_conditions are included in the unpack() method of child
+        classes.
+        """
+
+        return getattr(self, "multidim_conditions", None)
+
     def check_heterogeneous_inflow_config(self, heterogeneous_inflow_config):
         """
         Check that the heterogeneous_inflow_config dictionary is properly formatted
@@ -2088,6 +2098,10 @@ class TimeSeries(WindDataBase):
                     of speed multipliers.
             * 'x': A 1D NumPy array (size num_points) of x-coordinates (meters).
             * 'y': A 1D NumPy array (size num_points) of y-coordinates (meters).
+        multidim_conditions (dict, optional): A dictionary containing multidimensional inflow
+            conditions. Each key is the name of the condition, and each value is either a 1D NumPy
+            array of size n_findex containing the condition values, or a scalar value that will be
+            broadcast to size n_findex. Defaults to None.
     """
 
     def __init__(
@@ -2099,6 +2113,7 @@ class TimeSeries(WindDataBase):
         heterogeneous_map: HeterogeneousMap | dict | None = None,
         heterogeneous_inflow_config_by_wd: dict | None = None,
         heterogeneous_inflow_config: dict | None = None,
+        multidim_conditions: dict | None = None,
     ):
         # Check that wind_directions, wind_speeds, and turbulence_intensities are either numpy array
         # of floats
@@ -2164,6 +2179,9 @@ class TimeSeries(WindDataBase):
                 turbulence_intensities = np.full(len(wind_directions), turbulence_intensities)
             elif isinstance(wind_speeds, np.ndarray):
                 turbulence_intensities = np.full(len(wind_speeds), turbulence_intensities)
+
+        # Record findex
+        self.n_findex = len(wind_directions)
 
         # If values is not None, must be same length as wind_directions/wind_speeds/
         if values is not None:
@@ -2233,8 +2251,27 @@ class TimeSeries(WindDataBase):
         else:
             self.heterogeneous_map = None
 
-        # Record findex
-        self.n_findex = len(self.wind_directions)
+        # Hanlde the multidim_conditions
+        if multidim_conditions is not None:
+            # Check that each value in the dictionary is either a 1D NumPy array of size n_findex
+            # or a scalar value
+            for key, value in multidim_conditions.items():
+                if isinstance(value, np.ndarray):
+                    if len(value) != self.n_findex:
+                        raise ValueError(
+                            f"multidim_conditions[{key}] must be of size n_findex ({self.n_findex})"
+                        )
+                elif np.isscalar(value):
+                    # TODO: This will mean more time spent in identifying neighboring conditions;
+                    # is that problematic?
+                    multidim_conditions[key] = np.full(self.n_findex, value)
+                else:
+                    raise ValueError(
+                        f"multidim_conditions[{key}] must be a 1D NumPy array of size n_findex "
+                        "or a scalar value."
+                    )
+
+        self.multidim_conditions = multidim_conditions
 
     def unpack(self):
         """

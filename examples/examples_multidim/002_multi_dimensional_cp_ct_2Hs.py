@@ -21,15 +21,16 @@ fmodel.set(layout_x=[0.0, 500.0, 1000.0], layout_y=[0.0, 0.0, 0.0])
 n_wind_speeds = 16
 wind_speeds = np.tile(np.linspace(5, 20, n_wind_speeds), 2) # Sweep wind speeds
 multidim_conditions = {
-    "Tp": [2.5]*n_wind_speeds*2,
-    "Hs": [3.1]*n_wind_speeds + [1.0]*n_wind_speeds,
+    "Tp": np.array([2.5]*n_wind_speeds*2),
+    "Hs": np.array([3.1]*n_wind_speeds + [1.0]*n_wind_speeds),
 }
 time_series = TimeSeries(
-    wind_directions=270.0, wind_speeds=wind_speeds, turbulence_intensities=0.06
+    wind_directions=270.0, wind_speeds=wind_speeds, turbulence_intensities=0.06,
+    multidim_conditions=multidim_conditions
 )
 
 # Set wind, multidim conditios onto the FlorisModel
-fmodel.set(wind_data=time_series, multidim_conditions=multidim_conditions)
+fmodel.set(wind_data=time_series)
 
 # Calculate wakes
 fmodel.run()

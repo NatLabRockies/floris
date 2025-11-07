@@ -54,10 +54,10 @@ else:
     time_series = TimeSeries(
         wind_directions=270.0,
         wind_speeds=np.tile(wind_speeds, 2),
-        turbulence_intensities=0.06 # This value will be used for wake calculations only
+        turbulence_intensities=0.06, # This value will be used for wake calculations only
+        multidim_conditions={"TI": np.array([0.06]*len(wind_speeds) + [0.10]*len(wind_speeds))},
     )
-    multidim_conditions = {"TI": [0.06]*len(wind_speeds) + [0.10]*len(wind_speeds)}
-    fmodel.set(wind_data=time_series, multidim_conditions=multidim_conditions)
+    fmodel.set(wind_data=time_series)
     fmodel.run()
     turbine_powers = fmodel.get_turbine_powers() / 1000.0
 

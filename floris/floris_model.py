@@ -229,6 +229,19 @@ class FlorisModel(LoggingManager):
                 turbulence_intensities,
                 heterogeneous_inflow_config,
             ) = wind_data.unpack_for_reinitialize()
+
+            # For backwards compatibility, multidim_conditions are unpacked separately.
+            # multidim_conditions may be included in unpack_for_reinitialize in a future release.
+            if (multidim_conditions is not None
+                and wind_data.unpack_multidim_conditions() is not None):
+                self.logger.warning(
+                    "multidim_conditions passed to reinitialize() and also found in "
+                    "wind_data. Using multidim_conditions from wind_data."
+                )
+                multidim_conditions = wind_data.unpack_multidim_conditions()
+            elif wind_data.unpack_multidim_conditions() is not None:
+                multidim_conditions = wind_data.unpack_multidim_conditions()
+
             self._wind_data = wind_data
 
         ## FlowField

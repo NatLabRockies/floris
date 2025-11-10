@@ -264,14 +264,14 @@ def test_wind_data_objects(sample_inputs_fixture):
 
 def test_control_setpoints(sample_inputs_fixture):
     """
-    Check that the ParFlorisModel is compatible with yaw angles.
+    Check that the ParFlorisModel is compatible with control set points.
     """
 
     sample_inputs_fixture.core["wake"]["model_strings"]["velocity_model"] = VELOCITY_MODEL
     sample_inputs_fixture.core["wake"]["model_strings"]["deflection_model"] = DEFLECTION_MODEL
 
     fmodel = FlorisModel(sample_inputs_fixture.core)
-    pfmodel = ParFlorisModel(sample_inputs_fixture.core, max_workers=2)
+    pfmodel = ParFlorisModel(sample_inputs_fixture.core, n_wind_condition_splits=2)
 
     # Set yaw angles
     yaw_angles = np.tile(np.array([[10.0, 20.0, 30.0]]), (fmodel.n_findex,1))
@@ -291,8 +291,11 @@ def test_control_setpoints(sample_inputs_fixture):
     power_setpoints = np.tile(np.array([[1.0e6, 2.0e6, 1.0e12]]), (fmodel.n_findex,1))
     fmodel.set_operation_model("simple-derating")
     pfmodel.set_operation_model("simple-derating")
-    fmodel.set(power_setpoints=power_setpoints, yaw_angles=np.zeros_like(yaw_angles))
-    pfmodel.set(power_setpoints=power_setpoints, yaw_angles=np.zeros_like(yaw_angles))
+    fmodel.reset_operation()
+    pfmodel.reset_operation()
+
+    fmodel.set(power_setpoints=power_setpoints)
+    pfmodel.set(power_setpoints=power_setpoints)
     fmodel.run()
     powers_fmodel = fmodel.get_turbine_powers()
     pfmodel.run()
@@ -303,20 +306,43 @@ def test_control_setpoints(sample_inputs_fixture):
 
     # Reset power setpoints and test disable_turbines
     disable_turbines = np.tile(np.array([[False, True, False]]), (fmodel.n_findex,1))
-    fmodel.set(
-        disable_turbines=disable_turbines,
-        power_setpoints=1e12*np.ones_like(power_setpoints)
-    )
-    pfmodel.set(
-        disable_turbines=disable_turbines,
-        power_setpoints=1e12*np.ones_like(power_setpoints)
-    )
+    fmodel.reset_operation()
+    pfmodel.reset_operation()
+
+    fmodel.set(disable_turbines=disable_turbines)
+    pfmodel.set(disable_turbines=disable_turbines)
     fmodel.run()
     powers_fmodel = fmodel.get_turbine_powers()
     pfmodel.run()
     powers_pfmodel = pfmodel.get_turbine_powers()
     assert powers_fmodel.shape == powers_pfmodel.shape
     assert np.allclose(powers_fmodel, powers_pfmodel)
+
+    # Test AWC set points
+    awc_modes = np.tile([["helix", "helix", "baseline"]], (fmodel.n_findex,1))
+    awc_amplitudes = np.tile([[0.0, 2.0, 0.0]], (fmodel.n_findex,1))
+    fmodel.set_operation_model("awc")
+    pfmodel.set_operation_model("awc")
+    fmodel.reset_operation()
+    pfmodel.reset_operation()
+
+    # Run once without AWC as a check
+    fmodel.run()
+    powers_base = fmodel.get_turbine_powers()
+
+    # Now run with AWC
+    fmodel.set(awc_modes=awc_modes, awc_amplitudes=awc_amplitudes)
+    pfmodel.set(awc_modes=awc_modes, awc_amplitudes=awc_amplitudes)
+    fmodel.run()
+    powers_fmodel = fmodel.get_turbine_powers()
+    pfmodel.run()
+    powers_pfmodel = pfmodel.get_turbine_powers()
+    assert powers_fmodel.shape == powers_pfmodel.shape
+    assert np.allclose(powers_fmodel, powers_pfmodel)
+
+    # Confirm that AWC changed the powers from baseline
+    assert np.allclose(powers_base[:, 0], powers_fmodel[:, 0]) # 0 amplitude
+    assert not np.isclose(powers_base[:, 1], powers_fmodel[:, 1]).any() # Helix applied
 
 def test_sample_flow_at_points(sample_inputs_fixture):
 

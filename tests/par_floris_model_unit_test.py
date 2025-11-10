@@ -471,3 +471,17 @@ def test_heterogeneous_inflow_config(sample_inputs_fixture):
 
     # Confirm that the powers computed using the ParFlorisModel match those from the FlorisModel
     assert np.allclose(powers_fmodel, powers_pfmodel)
+
+    # Repeat test with z component added
+    heterogeneous_inflow_config["z"] = np.array([0.0, 0.0, 0.0, 1000.0])
+
+    fmodel.set(heterogeneous_inflow_config=heterogeneous_inflow_config, wind_shear=0.0)
+    pfmodel.set(heterogeneous_inflow_config=heterogeneous_inflow_config, wind_shear=0.0)
+    fmodel.run()
+    pfmodel.run()
+
+    powers_fmodel = fmodel.get_turbine_powers()
+    assert (powers_fmodel != baseline_powers).any()  # Check no overlap to ensure test is valid
+    powers_pfmodel = pfmodel.get_turbine_powers()
+    # Confirm that the powers computed using the ParFlorisModel match those from the FlorisModel
+    assert np.allclose(powers_fmodel, powers_pfmodel)

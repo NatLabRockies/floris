@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import copy
 from pathlib import Path
 from time import perf_counter as timerpc

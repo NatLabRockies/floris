@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1761076142635,
+  "lastUpdate": 1762798196509,
   "repoUrl": "https://github.com/NREL/floris",
   "entries": {
     "Python Benchmark with pytest-benchmark": [
@@ -3272,6 +3272,72 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.0001881560875130764",
             "extra": "mean: 8.473680484541415 msec\nrounds: 97"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "39596329+misi9170@users.noreply.github.com",
+            "name": "misi9170",
+            "username": "misi9170"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "68fff0132bc2eca725c8d7a469510458064c28d4",
+          "message": "Update floating tilt table for floating IEA 15MW model (#1151)\n\n* Update floating tilt tables and model description\n\n* Formatting fix.\n\n* Update floater documentation (pending review)",
+          "timestamp": "2025-11-10T10:44:22-07:00",
+          "tree_id": "a212e4607c4ce36c9c336d5bed4d594ca4ff39a9",
+          "url": "https://github.com/NREL/floris/commit/68fff0132bc2eca725c8d7a469510458064c28d4"
+        },
+        "date": 1762798194531,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_set",
+            "value": 37.05833955149481,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0011065112769311624",
+            "extra": "mean: 26.98447939391454 msec\nrounds: 33"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_run",
+            "value": 51.41907799767706,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0015154958700936256",
+            "extra": "mean: 19.448034444436686 msec\nrounds: 27"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_set",
+            "value": 23.224094747892217,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0012478874674328368",
+            "extra": "mean: 43.05872891302936 msec\nrounds: 23"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_run",
+            "value": 0.2790476802391113,
+            "unit": "iter/sec",
+            "range": "stddev: 0.013318949355699196",
+            "extra": "mean: 3.5836169615999554 sec\nrounds: 5"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_set",
+            "value": 34.0141650970322,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0005182217999541152",
+            "extra": "mean: 29.39951626468856 msec\nrounds: 34"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_run",
+            "value": 113.15581709174424,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00042680193036679346",
+            "extra": "mean: 8.837371561633654 msec\nrounds: 73"
           }
         ]
       }

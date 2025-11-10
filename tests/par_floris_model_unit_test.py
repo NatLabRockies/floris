@@ -287,6 +287,37 @@ def test_control_setpoints(sample_inputs_fixture):
     assert powers_fmodel.shape == powers_pfmodel.shape
     assert np.allclose(powers_fmodel, powers_pfmodel)
 
+    # Reset yaw angles and test power setpoints
+    power_setpoints = np.tile(np.array([[1.0e6, 2.0e6, 1.0e12]]), (fmodel.n_findex,1))
+    fmodel.set_operation_model("simple-derating")
+    pfmodel.set_operation_model("simple-derating")
+    fmodel.set(power_setpoints=power_setpoints, yaw_angles=np.zeros_like(yaw_angles))
+    pfmodel.set(power_setpoints=power_setpoints, yaw_angles=np.zeros_like(yaw_angles))
+    fmodel.run()
+    powers_fmodel = fmodel.get_turbine_powers()
+    pfmodel.run()
+    powers_pfmodel = pfmodel.get_turbine_powers()
+
+    assert powers_fmodel.shape == powers_pfmodel.shape
+    assert np.allclose(powers_fmodel, powers_pfmodel)
+
+    # Reset power setpoints and test disable_turbines
+    disable_turbines = np.tile(np.array([[False, True, False]]), (fmodel.n_findex,1))
+    fmodel.set(
+        disable_turbines=disable_turbines,
+        power_setpoints=1e12*np.ones_like(power_setpoints)
+    )
+    pfmodel.set(
+        disable_turbines=disable_turbines,
+        power_setpoints=1e12*np.ones_like(power_setpoints)
+    )
+    fmodel.run()
+    powers_fmodel = fmodel.get_turbine_powers()
+    pfmodel.run()
+    powers_pfmodel = pfmodel.get_turbine_powers()
+    assert powers_fmodel.shape == powers_pfmodel.shape
+    assert np.allclose(powers_fmodel, powers_pfmodel)
+
 def test_sample_flow_at_points(sample_inputs_fixture):
 
     sample_inputs_fixture.core["wake"]["model_strings"]["velocity_model"] = VELOCITY_MODEL
@@ -352,3 +383,65 @@ def test_copy(sample_inputs_fixture):
     pfmodel_copy = pfmodel.copy()
     assert isinstance(pfmodel_copy, ParFlorisModel)
     assert pfmodel_copy.max_workers == 2
+
+def test_heterogeneous_inflow_config(sample_inputs_fixture):
+    """
+    Check that the ParFlorisModel works with heterogeneous_inflow_config set.
+    """
+
+    sample_inputs_fixture.core["wake"]["model_strings"]["velocity_model"] = VELOCITY_MODEL
+    sample_inputs_fixture.core["wake"]["model_strings"]["deflection_model"] = DEFLECTION_MODEL
+
+    heterogeneous_inflow_config = {
+        "x": np.array([-200.0, 2000.0, -200.0, 2000.0]),
+        "y": np.array([-200.0, -200.0, 200.0, 200.0]),
+        "speed_multipliers": np.array(
+            [
+                [1.0, 1.1, 1.2, 1.2],
+                [1.1, 1.1, 1.1, 1.1],
+                [1.0, 1.1, 1.2, 1.1],
+            ]
+        ),
+    }
+    wind_directions = np.array([270.0, 270.0, 270.0])
+    wind_speeds = np.array([8.0, 8.0, 9.0])
+    turbulence_intensities = 0.06 * np.ones_like(wind_speeds)
+
+    fmodel = FlorisModel(sample_inputs_fixture.core)
+    pfmodel = ParFlorisModel(
+        sample_inputs_fixture.core,
+        interface="multiprocessing",
+        n_wind_condition_splits=2,
+    )
+
+    # Temporarily, run fmodel without heterogeneous_inflow_config to get baseline
+    fmodel.set(
+        wind_directions=wind_directions,
+        wind_speeds=wind_speeds,
+        turbulence_intensities=turbulence_intensities,
+    )
+    fmodel.run()
+    baseline_powers = fmodel.get_turbine_powers()
+
+    # Set heterogeneous_flow_config cases and run
+    fmodel.set(
+        wind_directions=wind_directions,
+        wind_speeds=wind_speeds,
+        turbulence_intensities=turbulence_intensities,
+        heterogeneous_inflow_config=heterogeneous_inflow_config,
+    )
+    pfmodel.set(
+        wind_directions=wind_directions,
+        wind_speeds=wind_speeds,
+        turbulence_intensities=turbulence_intensities,
+        heterogeneous_inflow_config=heterogeneous_inflow_config,
+    )
+    fmodel.run()
+    pfmodel.run()
+
+    powers_fmodel = fmodel.get_turbine_powers()
+    assert (powers_fmodel != baseline_powers).any()  # Check no overlap to ensure test is valid
+    powers_pfmodel = pfmodel.get_turbine_powers()
+
+    # Confirm that the powers computed using the ParFlorisModel match those from the FlorisModel
+    assert np.allclose(powers_fmodel, powers_pfmodel)

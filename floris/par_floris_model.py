@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import copy
 from pathlib import Path
 from time import perf_counter as timerpc
@@ -247,8 +245,8 @@ class ParFlorisModel(FlorisModel):
             self.core.initialize_domain()
             parallel_run_inputs = self._preprocessing()
             parallel_sample_flow_at_points_inputs = [
-                (fmodel_dict, control_setpoints, x, y, z)
-                for fmodel_dict, control_setpoints in parallel_run_inputs
+                (fmodel_dict, set_args, x, y, z)
+                for fmodel_dict, set_args in parallel_run_inputs
             ]
             t1 = timerpc()
             if value == "velocity":
@@ -304,24 +302,36 @@ class ParFlorisModel(FlorisModel):
         for wc_id_split in wind_condition_id_splits:
             # for ws_id_split in wind_speed_id_splits:
             fmodel_dict_split = copy.deepcopy(fmodel_dict)
-            wind_directions = self.core.flow_field.wind_directions[wc_id_split]
-            wind_speeds = self.core.flow_field.wind_speeds[wc_id_split]
-            turbulence_intensities = self.core.flow_field.turbulence_intensities[wc_id_split]
 
-            # Extract and format all control setpoints as a dict that can be unpacked later
-            control_setpoints_subset = {
+            # Extract and format all arguments that are per-findex
+            # (scalar arguments are already broadcast on fmodel_dict_split)
+            set_args_subset = {
+                "wind_directions": self.core.flow_field.wind_directions[wc_id_split],
+                "wind_speeds": self.core.flow_field.wind_speeds[wc_id_split],
+                "turbulence_intensities": self.core.flow_field.turbulence_intensities[wc_id_split],
                 "yaw_angles": self.core.farm.yaw_angles[wc_id_split, :],
                 "power_setpoints": self.core.farm.power_setpoints[wc_id_split, :],
                 "awc_modes": self.core.farm.awc_modes[wc_id_split, :],
                 "awc_amplitudes": self.core.farm.awc_amplitudes[wc_id_split, :],
                 "awc_frequencies": self.core.farm.awc_frequencies[wc_id_split, :],
+                # disable_turbines is not saved on core, but passed through power_setpoints
             }
-            fmodel_dict_split["flow_field"]["wind_directions"] = wind_directions
-            fmodel_dict_split["flow_field"]["wind_speeds"] = wind_speeds
-            fmodel_dict_split["flow_field"]["turbulence_intensities"] = turbulence_intensities
+
+            # Handle heterogeneous_inflow_config
+            if self.core.flow_field.heterogeneous_inflow_config is not None:
+                heterogeneous_inflow_config_subset = {
+                    "x": self.core.flow_field.heterogeneous_inflow_config["x"],
+                    "y": self.core.flow_field.heterogeneous_inflow_config["y"],
+                    "speed_multipliers": self.core.flow_field.heterogeneous_inflow_config\
+                        ["speed_multipliers"][wc_id_split, :]
+                }
+                if "z" in self.core.flow_field.heterogeneous_inflow_config.keys():
+                    heterogeneous_inflow_config_subset["z"] = \
+                        self.core.flow_field.heterogeneous_inflow_config["z"]
+                set_args_subset["heterogeneous_inflow_config"] = heterogeneous_inflow_config_subset
 
             # Prepare lightweight data to pass along
-            multiargs.append((fmodel_dict_split, control_setpoints_subset))
+            multiargs.append((fmodel_dict_split, set_args_subset))
 
         return multiargs
 

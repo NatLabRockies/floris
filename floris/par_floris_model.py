@@ -303,7 +303,8 @@ class ParFlorisModel(FlorisModel):
             # for ws_id_split in wind_speed_id_splits:
             fmodel_dict_split = copy.deepcopy(fmodel_dict)
 
-            # Extract and format all control setpoints as a dict that can be unpacked later
+            # Extract and format all arguments that are per-findex
+            # (scalar arguments are already broadcast on fmodel_dict_split)
             set_args_subset = {
                 "wind_directions": self.core.flow_field.wind_directions[wc_id_split],
                 "wind_speeds": self.core.flow_field.wind_speeds[wc_id_split],
@@ -313,13 +314,21 @@ class ParFlorisModel(FlorisModel):
                 "awc_modes": self.core.farm.awc_modes[wc_id_split, :],
                 "awc_amplitudes": self.core.farm.awc_amplitudes[wc_id_split, :],
                 "awc_frequencies": self.core.farm.awc_frequencies[wc_id_split, :],
+                # disable_turbines is not saved on core, but passed through power_setpoints
             }
 
-            # TODO: handle heterogeneous background?
+            # Handle heterogeneous_inflow_config
             if self.core.flow_field.heterogeneous_inflow_config is not None:
-                raise NotImplementedError(
-                    "Heterogeneous background conditions are not yet supported in ParFlorisModel."
-                )
+                heterogeneous_inflow_config_subset = {
+                    "x": self.core.flow_field.heterogeneous_inflow_config["x"],
+                    "y": self.core.flow_field.heterogeneous_inflow_config["y"],
+                    "speed_multipliers": self.core.flow_field.heterogeneous_inflow_config\
+                        ["speed_multipliers"][wc_id_split, :]
+                }
+                if "z" in self.core.flow_field.heterogeneous_inflow_config.keys():
+                    heterogeneous_inflow_config_subset["z"] = \
+                        self.core.flow_field.heterogeneous_inflow_config["z"]
+                set_args_subset["heterogeneous_inflow_config"] = heterogeneous_inflow_config_subset
 
             # Handle multidim_conditions
             if self.core.flow_field.multidim_conditions is not None:

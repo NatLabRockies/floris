@@ -137,7 +137,7 @@ class FlorisModel(LoggingManager):
         turbine_type: list | None = None,
         turbine_library_path: str | Path | None = None,
         solver_settings: dict | None = None,
-        heterogeneous_inflow_config=None,
+        heterogeneous_inflow_config: dict | None = None,
         wind_data: type[WindDataBase] | None = None,
         multidim_conditions: dict | None = None,
     ):
@@ -167,7 +167,7 @@ class FlorisModel(LoggingManager):
             turbine_library_path (str | Path | None, optional): Path to the turbine library.
                 Defaults to None.
             solver_settings (dict | None, optional): Solver settings. Defaults to None.
-            heterogeneous_inflow_config (None, optional): heterogeneous inflow configuration.
+            heterogeneous_inflow_config (dict | None, optional): heterogeneous inflow configuration.
                 Defaults to None.
             wind_data (type[WindDataBase] | None, optional): Wind data. Defaults to None.
         """
@@ -406,7 +406,7 @@ class FlorisModel(LoggingManager):
         turbine_type: list | None = None,
         turbine_library_path: str | Path | None = None,
         solver_settings: dict | None = None,
-        heterogeneous_inflow_config=None,
+        heterogeneous_inflow_config: dict | None = None,
         wind_data: type[WindDataBase] | None = None,
         yaw_angles: NDArrayFloat | list[float] | None = None,
         power_setpoints: NDArrayFloat | list[float] | list[float, None] | None = None,
@@ -438,7 +438,7 @@ class FlorisModel(LoggingManager):
             turbine_library_path (str | Path | None, optional): Path to the turbine library.
                 Defaults to None.
             solver_settings (dict | None, optional): Solver settings. Defaults to None.
-            heterogeneous_inflow_config (None, optional): heterogeneous inflow configuration.
+            heterogeneous_inflow_config (dict | None, optional): heterogeneous inflow configuration.
                 Defaults to None.
             wind_data (type[WindDataBase] | None, optional): Wind data. Defaults to None.
             yaw_angles (NDArrayFloat | list[float] | None, optional): Turbine yaw angles.

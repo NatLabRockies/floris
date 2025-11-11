@@ -47,10 +47,12 @@ This fictional turbine model is not currently used in examples.
 
 ## IEA 15MW floating, multidimensional
 
-The same as the multidimensional IEA 15MW turbine model above, but with an additional fictional
-floating platform tilt table. This model is used to demonstrate the floating wind turbine capabilities
+The same as the multidimensional IEA 15MW turbine model above, but with an additional floating
+platform tilt table. This model is used to demonstrate the floating wind turbine capabilities
 in FLORIS. Specified as `"iea_15MW_floating_multi_dim"` in the `turbine_type` field of the FLORIS input
-dictionary. This data should be treated as fictional and for demonstrative purposes only.
+dictionary. The data for the floating tilt table was generated using OpenFAST with the UMaine
+VolturnUS-S Reference Platform by Sam Kaufman-Martin, as seen
+[here](https://github.com/FLOWMAS-EERC/IEA15_FOWT/blob/main/iea_15MW_floating_power-from-fixed.yaml).
 
 This fictional turbine model is used in the following examples:
 - examples/examples_multidim/001_multi_dimensional_cp_ct.py

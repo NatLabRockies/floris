@@ -828,7 +828,7 @@ turbine_library_path (str | Path | None, optional): Path to the turbine library.
 <div><p>Defaults to None.</p>
 </div></blockquote>
 <p>solver_settings (dict | None, optional): Solver settings. Defaults to None.
-heterogeneous_inflow_config (None, optional): heterogeneous inflow configuration.</p>
+heterogeneous_inflow_config (dict | None, optional): heterogeneous inflow configuration.</p>
 <blockquote>
 <div><p>Defaults to None.</p>
 </div></blockquote>
@@ -861,6 +861,7 @@ and the power setpoint at that position is set to 0. Defaults to None.</p>
 <li><p><strong>turbine_type</strong> (<em>list</em><em> | </em><em>None</em>)</p></li>
 <li><p><strong>turbine_library_path</strong> (<em>str</em><em> | </em><em>Path</em><em> | </em><em>None</em>)</p></li>
 <li><p><strong>solver_settings</strong> (<em>dict</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>heterogeneous_inflow_config</strong> (<em>dict</em><em> | </em><em>None</em>)</p></li>
 <li><p><strong>wind_data</strong> (<em>type</em><em>[</em><a class="reference internal" href="floris.wind_data.html#floris.wind_data.WindDataBase" title="floris.wind_data.WindDataBase"><em>WindDataBase</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
 <li><p><strong>yaw_angles</strong> (<em>ndarray</em><em>[</em><em>tuple</em><em>[</em><em>Any</em><em>, </em><em>...</em><em>]</em><em>, </em><em>dtype</em><em>[</em><em>float64</em><em>]</em><em>] </em><em>| </em><em>list</em><em>[</em><em>float</em><em>] </em><em>| </em><em>None</em>)</p></li>
 <li><p><strong>power_setpoints</strong> (<em>ndarray</em><em>[</em><em>tuple</em><em>[</em><em>Any</em><em>, </em><em>...</em><em>]</em><em>, </em><em>dtype</em><em>[</em><em>float64</em><em>]</em><em>] </em><em>| </em><em>list</em><em>[</em><em>float</em><em>] </em><em>| </em><em>list</em><em>[</em><em>float</em><em>, </em><em>None</em><em>] </em><em>| </em><em>None</em>)</p></li>

@@ -743,7 +743,7 @@ document.write(`
         <span class="n">turbine_type</span><span class="p">:</span> <span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">turbine_library_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">solver_settings</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">heterogeneous_inflow_config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">heterogeneous_inflow_config</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">wind_data</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">WindDataBase</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">multidim_conditions</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
@@ -773,7 +773,7 @@ document.write(`
 <span class="sd">            turbine_library_path (str | Path | None, optional): Path to the turbine library.</span>
 <span class="sd">                Defaults to None.</span>
 <span class="sd">            solver_settings (dict | None, optional): Solver settings. Defaults to None.</span>
-<span class="sd">            heterogeneous_inflow_config (None, optional): heterogeneous inflow configuration.</span>
+<span class="sd">            heterogeneous_inflow_config (dict | None, optional): heterogeneous inflow configuration.</span>
 <span class="sd">                Defaults to None.</span>
 <span class="sd">            wind_data (type[WindDataBase] | None, optional): Wind data. Defaults to None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1004,7 +1004,7 @@ document.write(`
         <span class="n">turbine_type</span><span class="p">:</span> <span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">turbine_library_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">solver_settings</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">heterogeneous_inflow_config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">heterogeneous_inflow_config</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">wind_data</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">WindDataBase</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">yaw_angles</span><span class="p">:</span> <span class="n">NDArrayFloat</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">power_setpoints</span><span class="p">:</span> <span class="n">NDArrayFloat</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1036,7 +1036,7 @@ document.write(`
 <span class="sd">            turbine_library_path (str | Path | None, optional): Path to the turbine library.</span>
 <span class="sd">                Defaults to None.</span>
 <span class="sd">            solver_settings (dict | None, optional): Solver settings. Defaults to None.</span>
-<span class="sd">            heterogeneous_inflow_config (None, optional): heterogeneous inflow configuration.</span>
+<span class="sd">            heterogeneous_inflow_config (dict | None, optional): heterogeneous inflow configuration.</span>
 <span class="sd">                Defaults to None.</span>
 <span class="sd">            wind_data (type[WindDataBase] | None, optional): Wind data. Defaults to None.</span>
 <span class="sd">            yaw_angles (NDArrayFloat | list[float] | None, optional): Turbine yaw angles.</span>

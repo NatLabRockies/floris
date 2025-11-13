@@ -114,12 +114,12 @@ completely to aid in tuning. Instead, a non-physical "wake-induced mixing
 factor" is specified for turbine $j$ as
 
 $$ \text{WIM}_j = \sqrt{\sum_{i \neq j} 
-\left(\frac{A_{ij} a_i} {\left((x_j - x_i)/D_i\right)^2}\right)^2} $$
+\left(\frac{A_{ij} a_i} {\bar{d}_{ij}^2}\right)^2} $$
 
 where $A_{ij}$ is the area of overlap of the wake of turbine $i$
 onto turbine $j$; $a_i$ is the axial induction factor of the
 turbine $i$;
-and $(x_j - x_i)/D_i$ is the downstream distance of turbine $j$ from
+and $\bar{d}_{ij} = (x_j - x_i)/D_i$ is the downstream distance of turbine $j$ from
 the turbine $i$, normalized by turbine $i$'s rotor diameter. Here, $A_{ij} = 1$ if turbine $j$ is fully covered by turbine $i$'s wake; $A_{ij} = 0$ if turbine $j$ is not covered at all by turbine $i$'s wake; and $0 < A_{ij} < 1$ if turbine $j$ is partially covered by turbine $i$'s wake. By convention, $A_{ii} = 0$ and $A_{ij} = 0$ if $x_j \leq x_i$ (turbine $j$ is upstream of turbine $i$).
 
 Wake-induced mixing can affect both the velocity deficit and wake deflection.
@@ -154,7 +154,7 @@ is activated by setting
 `enable_yaw_added_recovery` to `true`. Yaw-added mixing is represented
 by updating the wake-induced mixing term as follows:
 
-$$ \text{WIM}_j = \sqrt{\sum_{i \\neq j} \left(\frac{A_{ij} a_i (1 + g_\text{YAM} (1-\cos(\gamma_i)))}{\left((x_j - x_i)/D_i\right)^2}\right)^2 + \left(a_j g_\text{YAM} (1-\cos(\gamma_j))\right)^2}$$
+$$ \text{WIM}_j = \sqrt{\sum_{i \neq j} \left(\frac{A_{ij} a_i (1 + g_\text{YAM} (1-\cos(\gamma_i)))}{\bar{d}_{ij}^2}\right)^2 + \left(a_j g_\text{YAM} (1-\cos(\gamma_j))\right)^2}$$
 
 Note that the second term means that, unlike when `enable_yaw_added_recovery`
 is `false`, a turbine may affect the recovery of its own wake by yawing.
@@ -178,11 +178,10 @@ setting the amplitude of the AWC excitation using `awc_amplitudes` (see the
 The effect of AWC is represented by updating the
 wake-induced mixing term as follows:
 
-$$ \text{WIM}_j = \sqrt{\sum_{i \neq j} \left(\frac{A_{ij} a_i}{\left((x_j - x_i)/D_i\right)^2}\right)^2 +
-\left(\frac{\beta_{j}^{p}}{d}\right)^2}$$
+$$ \text{WIM}_j = \sqrt{\sum_{i \neq j} \left(\frac{A_{ij} a_i}{\bar{d}_{ij}^2}\right)^2 + \left(\frac{\beta_{j}^{p_\text{AWC}}}{d_\text{AWC}}\right)^2}$$
 
-where $\beta_{j}$ is the AWC amplitude of turbine $j$, and the exponent $p$ and
-denominator $d$ are tuning parameters that can be set in the `emgauss.yaml` file with
+where $\beta_{j}$ is the AWC amplitude of turbine $j$, and the exponent $p_\text{AWC}$ and
+denominator $d_\text{AWC}$ are tuning parameters that can be set in the `emgauss.yaml` file with
 the fields `awc_wake_exp` and `awc_wake_denominator`, respectively.
 Note that, in contrast to the yaw added mixing case, a turbine currently affects _only_ its own
 wake by applying AWC.

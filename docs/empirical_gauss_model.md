@@ -113,15 +113,14 @@ the empirical model, explicit dependencies on turbulence intensity are removed
 completely to aid in tuning. Instead, a non-physical "wake-induced mixing
 factor" is specified for turbine $j$ as
 
-$$ \text{WIM}_j = \sqrt{\sum_{i \in T^{\text{up}}(j)} 
+$$ \text{WIM}_j = \sqrt{\sum_{i \neq j} 
 \left(\frac{A_{ij} a_i} {\left((x_j - x_i)/D_i\right)^2}\right)^2} $$
 
-where $T_T^{\text{up}}(j)$ is the set of turbines upstream from the turbine
-$j$. Here, $A_{ij}$ is the area of overlap of the wake of turbine $i$
+where $A_{ij}$ is the area of overlap of the wake of turbine $i$
 onto turbine $j$; $a_i$ is the axial induction factor of the
 turbine $i$;
 and $(x_j - x_i)/D_i$ is the downstream distance of turbine $j$ from
-the turbine $i$, normalized by turbine $i$'s rotor diameter.
+the turbine $i$, normalized by turbine $i$'s rotor diameter. Here, $A_{ij} = 1$ if turbine $j$ is fully covered by turbine $i$'s wake; $A_{ij} = 0$ if turbine $j$ is not covered at all by turbine $i$'s wake; and $0 < A_{ij} < 1$ if turbine $j$ is partially covered by turbine $i$'s wake. By convention, $A_{ii} = 0$ and $A_{ij} = 0$ if $x_j \leq x_i$ (turbine $j$ is upstream of turbine $i$).
 
 Wake-induced mixing can affect both the velocity deficit and wake deflection.
 To account for wake-induced mixing, the wake width of turbine $j$ is adjusted
@@ -129,7 +128,7 @@ to
 
 $$ \sigma_{y}(x) = \int_{0}^x \sum_{i=0}^n k_i \ell_{[b_{i}, b_{i+1})}(x') + w_v \text{WIM}_j   dx' + \sigma_{y0} $$
 
-Here, $w_v$ is the velocity deficit wake-induced mixing gain, which the
+where $w_v$ is the velocity deficit wake-induced mixing gain, which the
 user can vary by setting `wim_gain_velocity` to represent different levels of
 mixing caused by the turbines.
 
@@ -144,6 +143,7 @@ user by setting `wim_gain_deflection`.
 The documentation previously had an erroneous form for the wake-induced mixing
 term
 $$ \text{WIM}_j = \sum_{i \in T^{\text{up}}(j)} \frac{A_{ij} a_i} {(x_j - x_i)/D_i} $$
+This has been corrected to the form shown above, which is consistent with the implementation. The implementation has not changed; only the documentation has been corrected.
 ```
 
 ## Yaw added mixing
@@ -154,7 +154,7 @@ is activated by setting
 `enable_yaw_added_recovery` to `true`. Yaw-added mixing is represented
 by updating the wake-induced mixing term as follows:
 
-$$ \text{WIM}_j = \sum_{i \in T^{\text{up}}(j)} \frac{A_{ij} a_i (1 + g_\text{YAM} (1-\cos(\gamma_i)))}{(x_j - x_i)/D_i} + a_j g_\text{YAM} (1-\cos(\gamma_j))$$
+$$ \text{WIM}_j = \sqrt{\sum_{i \\neq j} \left(\frac{A_{ij} a_i (1 + g_\text{YAM} (1-\cos(\gamma_i)))}{\left((x_j - x_i)/D_i\right)^2}\right)^2 + \left(a_j g_\text{YAM} (1-\cos(\gamma_j))\right)^2}$$
 
 Note that the second term means that, unlike when `enable_yaw_added_recovery`
 is `false`, a turbine may affect the recovery of its own wake by yawing.
@@ -178,9 +178,8 @@ setting the amplitude of the AWC excitation using `awc_amplitudes` (see the
 The effect of AWC is represented by updating the
 wake-induced mixing term as follows:
 
-$$ \text{WIM}_j = \sum_{i \in T^{\text{up}}(j)} 
-\left(\frac{A_{ij} a_i} {\left((x_j - x_i)/D_i\right)^2}\right)^2 +
-\frac{\beta_{j}^{p}}{d}$$
+$$ \text{WIM}_j = \sqrt{\sum_{i \neq j} \left(\frac{A_{ij} a_i}{\left((x_j - x_i)/D_i\right)^2}\right)^2 +
+\left(\frac{\beta_{j}^{p}}{d}\right)^2}$$
 
 where $\beta_{j}$ is the AWC amplitude of turbine $j$, and the exponent $p$ and
 denominator $d$ are tuning parameters that can be set in the `emgauss.yaml` file with

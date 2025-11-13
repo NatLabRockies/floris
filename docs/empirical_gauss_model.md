@@ -113,7 +113,7 @@ the empirical model, explicit dependencies on turbulence intensity are removed
 completely to aid in tuning. Instead, a non-physical "wake-induced mixing
 factor" is specified for turbine $j$ as
 
-$$ \text{WIM}_j = \sqrt{\sum_{i \neq j} 
+$$ \text{WIM}_j = \sqrt{\sum_{i \neq j}
 \left(\frac{A_{ij} a_i} {\bar{d}_{ij}^2}\right)^2} $$
 
 where $A_{ij}$ is the area of overlap of the wake of turbine $i$

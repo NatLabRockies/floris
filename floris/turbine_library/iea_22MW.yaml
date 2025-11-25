@@ -1,6 +1,4 @@
-# Data based on:
-# https://github.com/IEAWindSystems/IEA-22-280-RWT/blob/main/Documentation/
-# IEA-22-280-RWT_tabular.xlsx
+# Data generated using OpenFAST v4.1.2 and ROSCO v2.10.2
 turbine_type: 'iea_22MW'
 hub_height: 170.0
 rotor_diameter: 284.0

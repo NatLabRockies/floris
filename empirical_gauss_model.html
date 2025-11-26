@@ -777,19 +777,19 @@ the empirical model, explicit dependencies on turbulence intensity are removed
 completely to aid in tuning. Instead, a non-physical &quot;wake-induced mixing
 factor&quot; is specified for turbine <span class="math notranslate nohighlight">\(j\)</span> as</p>
 <div class="math notranslate nohighlight">
-\[ \text{WIM}_j = \sum_{i \in T^{\text{up}}(j)} \frac{A_{ij} a_i} {(x_j - x_i)/D_i} \]</div>
-<p>where <span class="math notranslate nohighlight">\(T_T^{\text{up}}(j)\)</span> is the set of turbines upstream from the turbine
-<span class="math notranslate nohighlight">\(j\)</span>. Here, <span class="math notranslate nohighlight">\(A_{ij}\)</span> is the area of overlap of the wake of turbine <span class="math notranslate nohighlight">\(i\)</span>
+\[ \text{WIM}_j = \sqrt{\sum_{i \neq j}
+\left(\frac{A_{ij} a_i} {\bar{d}_{ij}^2}\right)^2} \]</div>
+<p>where <span class="math notranslate nohighlight">\(A_{ij}\)</span> is the area of overlap of the wake of turbine <span class="math notranslate nohighlight">\(i\)</span>
 onto turbine <span class="math notranslate nohighlight">\(j\)</span>; <span class="math notranslate nohighlight">\(a_i\)</span> is the axial induction factor of the
 turbine <span class="math notranslate nohighlight">\(i\)</span>;
-and <span class="math notranslate nohighlight">\((x_j - x_i)/D_i\)</span> is the downstream distance of turbine <span class="math notranslate nohighlight">\(j\)</span> from
-the turbine <span class="math notranslate nohighlight">\(i\)</span>, normalized by turbine <span class="math notranslate nohighlight">\(i\)</span>'s rotor diameter.</p>
+and <span class="math notranslate nohighlight">\(\bar{d}_{ij} = (x_j - x_i)/D_i\)</span> is the downstream distance of turbine <span class="math notranslate nohighlight">\(j\)</span> from
+the turbine <span class="math notranslate nohighlight">\(i\)</span>, normalized by turbine <span class="math notranslate nohighlight">\(i\)</span>'s rotor diameter. Here, <span class="math notranslate nohighlight">\(A_{ij} = 1\)</span> if turbine <span class="math notranslate nohighlight">\(j\)</span> is fully covered by turbine <span class="math notranslate nohighlight">\(i\)</span>'s wake; <span class="math notranslate nohighlight">\(A_{ij} = 0\)</span> if turbine <span class="math notranslate nohighlight">\(j\)</span> is not covered at all by turbine <span class="math notranslate nohighlight">\(i\)</span>'s wake; and <span class="math notranslate nohighlight">\(0 &lt; A_{ij} &lt; 1\)</span> if turbine <span class="math notranslate nohighlight">\(j\)</span> is partially covered by turbine <span class="math notranslate nohighlight">\(i\)</span>'s wake. By convention, <span class="math notranslate nohighlight">\(A_{ii} = 0\)</span> and <span class="math notranslate nohighlight">\(A_{ij} = 0\)</span> if <span class="math notranslate nohighlight">\(x_j \leq x_i\)</span> (turbine <span class="math notranslate nohighlight">\(j\)</span> is upstream of turbine <span class="math notranslate nohighlight">\(i\)</span>).</p>
 <p>Wake-induced mixing can affect both the velocity deficit and wake deflection.
 To account for wake-induced mixing, the wake width of turbine <span class="math notranslate nohighlight">\(j\)</span> is adjusted
 to</p>
 <div class="math notranslate nohighlight">
 \[ \sigma_{y}(x) = \int_{0}^x \sum_{i=0}^n k_i \ell_{[b_{i}, b_{i+1})}(x') + w_v \text{WIM}_j   dx' + \sigma_{y0} \]</div>
-<p>Here, <span class="math notranslate nohighlight">\(w_v\)</span> is the velocity deficit wake-induced mixing gain, which the
+<p>where <span class="math notranslate nohighlight">\(w_v\)</span> is the velocity deficit wake-induced mixing gain, which the
 user can vary by setting <code class="docutils literal notranslate"><span class="pre">wim_gain_velocity</span></code> to represent different levels of
 mixing caused by the turbines.</p>
 <p>The wake deflection model is similarly adjusted to</p>
@@ -797,6 +797,13 @@ mixing caused by the turbines.</p>
 \[ \delta = \frac{k_\text{def} C_T \alpha}{1 + w_d \text{WIM}_j}\operatorname{ln}\left(\frac{x/D - c}{x/D + c} + 2\right)\]</div>
 <p>where <span class="math notranslate nohighlight">\(w_d\)</span> is the wake-induced mixing gain for deflection, provided by the
 user by setting <code class="docutils literal notranslate"><span class="pre">wim_gain_deflection</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The documentation previously had an erroneous form for the wake-induced mixing
+term
+$<span class="math notranslate nohighlight">\( \text{WIM}_j = \sum_{i \in T^{\text{up}}(j)} \frac{A_{ij} a_i} {(x_j - x_i)/D_i} \)</span>$
+This has been corrected to the form shown above, which is consistent with the implementation. The implementation has not changed; only the documentation has been corrected.</p>
+</div>
 </section>
 <section id="yaw-added-mixing">
 <h2>Yaw added mixing<a class="headerlink" href="#yaw-added-mixing" title="Link to this heading">#</a></h2>
@@ -806,7 +813,7 @@ is activated by setting
 <code class="docutils literal notranslate"><span class="pre">enable_yaw_added_recovery</span></code> to <code class="docutils literal notranslate"><span class="pre">true</span></code>. Yaw-added mixing is represented
 by updating the wake-induced mixing term as follows:</p>
 <div class="math notranslate nohighlight">
-\[ \text{WIM}_j = \sum_{i \in T^{\text{up}}(j)} \frac{A_{ij} a_i (1 + g_\text{YAM} (1-\cos(\gamma_i)))}{(x_j - x_i)/D_i} + a_j g_\text{YAM} (1-\cos(\gamma_j))\]</div>
+\[ \text{WIM}_j = \sqrt{\sum_{i \neq j} \left(\frac{A_{ij} a_i (1 + g_\text{YAM} (1-\cos(\gamma_i)))}{\bar{d}_{ij}^2}\right)^2 + \left(a_j g_\text{YAM} (1-\cos(\gamma_j))\right)^2}\]</div>
 <p>Note that the second term means that, unlike when <code class="docutils literal notranslate"><span class="pre">enable_yaw_added_recovery</span></code>
 is <code class="docutils literal notranslate"><span class="pre">false</span></code>, a turbine may affect the recovery of its own wake by yawing.</p>
 </section>
@@ -829,10 +836,9 @@ setting the amplitude of the AWC excitation using <code class="docutils literal 
 The effect of AWC is represented by updating the
 wake-induced mixing term as follows:</p>
 <div class="math notranslate nohighlight">
-\[ \text{WIM}_j = \sum_{i \in T^{\text{up}}(j)} \frac{A_{ij} a_i} {(x_j - x_i)/D_i} +
-\frac{\beta_{j}^{p}}{d}\]</div>
-<p>where <span class="math notranslate nohighlight">\(\beta_{j}\)</span> is the AWC amplitude of turbine <span class="math notranslate nohighlight">\(j\)</span>, and the exponent <span class="math notranslate nohighlight">\(p\)</span> and
-denominator <span class="math notranslate nohighlight">\(d\)</span> are tuning parameters that can be set in the <code class="docutils literal notranslate"><span class="pre">emgauss.yaml</span></code> file with
+\[ \text{WIM}_j = \sqrt{\sum_{i \neq j} \left(\frac{A_{ij} a_i}{\bar{d}_{ij}^2}\right)^2 + \left(\frac{\beta_{j}^{p_\text{AWC}}}{d_\text{AWC}}\right)^2}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\beta_{j}\)</span> is the AWC amplitude of turbine <span class="math notranslate nohighlight">\(j\)</span>, and the exponent <span class="math notranslate nohighlight">\(p_\text{AWC}\)</span> and
+denominator <span class="math notranslate nohighlight">\(d_\text{AWC}\)</span> are tuning parameters that can be set in the <code class="docutils literal notranslate"><span class="pre">emgauss.yaml</span></code> file with
 the fields <code class="docutils literal notranslate"><span class="pre">awc_wake_exp</span></code> and <code class="docutils literal notranslate"><span class="pre">awc_wake_denominator</span></code>, respectively.
 Note that, in contrast to the yaw added mixing case, a turbine currently affects <em>only</em> its own
 wake by applying AWC.</p>

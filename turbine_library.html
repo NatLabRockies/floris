@@ -408,7 +408,7 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples - Turbine</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="examples/examples_turbine/001_check_turbine.html">Example: Check turbine power curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/examples_turbine/001_reference_turbines.html">Example: Check turbine power curves</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples/examples_turbine/002_multiple_turbine_types.html">Example: Multiple turbine types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples/examples_turbine/003_specify_turbine_power_curve.html">Example: Specify turbine power curve</a></li>
 </ul>
@@ -657,6 +657,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nrel-5mw-reference-wind-turbine">NREL 5MW reference wind turbine</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#iea-15mw-reference-wind-turbine">IEA 15MW reference wind turbine</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#iea-10mw-reference-wind-turbine">IEA 10MW reference wind turbine</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#iea-22mw-reference-wind-turbine">IEA 22MW reference wind turbine</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#iea-15mw-multidimensional">IEA 15MW multidimensional</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#iea-15mw-floating-multidimensional">IEA 15MW floating, multidimensional</a></li>
 </ul>
@@ -703,6 +704,17 @@ Specified as <code class="docutils literal notranslate"><span class="pre">&quot;
 <p>The IEA 10MW turbine is used in the following examples:</p>
 <ul class="simple">
 <li><p>examples/examples_turbine/002_multiple_turbine_types.py</p></li>
+</ul>
+</section>
+<section id="iea-22mw-reference-wind-turbine">
+<h2>IEA 22MW reference wind turbine<a class="headerlink" href="#iea-22mw-reference-wind-turbine" title="Link to this heading">#</a></h2>
+<p>FLORIS representation of the IEA 22MW reference wind turbine <span id="id5">Zahle <em>et al.</em> [<a class="reference internal" href="bibliography.html#id36" title="Frederik Zahle, Athanasios Barlas, Kenneth Loenbaek, Pietro Bortolotti, Daniel Zalkind, Lu Wang, Casper Labuschagne, Latha Sethuraman, and Garrett Barter. Definition of the IEA Wind 22-Megawatt offshore reference wind turbine. Technical Report, International Energy Agency, 2024. URL: https://orbit.dtu.dk/en/publications/definition-of-the-iea-wind-22-megawatt-offshore-reference-wind-tu.">7</a>]</span>. Data
+generated using OpenFAST v4.1.2 and ROSCO v2.10.2. See
+<a class="reference external" href="https://github.com/NREL/floris/pull/1146">pull request</a> for full OpenFAST and ROSCO input files.
+Specified as <code class="docutils literal notranslate"><span class="pre">&quot;iea_22MW&quot;</span></code> in the <code class="docutils literal notranslate"><span class="pre">turbine_type</span></code> field of the FLORIS input dictionary.</p>
+<p>The IEA 22MW is demonstrated, alongside other reference wind turbines, in:</p>
+<ul class="simple">
+<li><p>examples/examples_turbine/001_reference_turbines.py</p></li>
 </ul>
 </section>
 <section id="iea-15mw-multidimensional">
@@ -797,6 +809,7 @@ VolturnUS-S Reference Platform by Sam Kaufman-Martin, as seen
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nrel-5mw-reference-wind-turbine">NREL 5MW reference wind turbine</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#iea-15mw-reference-wind-turbine">IEA 15MW reference wind turbine</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#iea-10mw-reference-wind-turbine">IEA 10MW reference wind turbine</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#iea-22mw-reference-wind-turbine">IEA 22MW reference wind turbine</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#iea-15mw-multidimensional">IEA 15MW multidimensional</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#iea-15mw-floating-multidimensional">IEA 15MW floating, multidimensional</a></li>
 </ul>

@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1764193913328,
+  "lastUpdate": 1764195336838,
   "repoUrl": "https://github.com/NREL/floris",
   "entries": {
     "Python Benchmark with pytest-benchmark": [
@@ -3470,6 +3470,72 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.00014188117666563905",
             "extra": "mean: 8.284702701031193 msec\nrounds: 97"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "39596329+misi9170@users.noreply.github.com",
+            "name": "misi9170",
+            "username": "misi9170"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "17efe3c62045f3db4474f1bc301d286bf986f6e4",
+          "message": "[DOCS] Fix Empirical Gaussian wake-induced mixing term definition (#1158)\n\n* Partial fix; but still need to work on yaw, awc versions\n\n* All terms updated\n\n* Clarity improvements\n\n* Formatting",
+          "timestamp": "2025-11-26T14:29:43-07:00",
+          "tree_id": "cbcf3bb37ecc217330d81120b9baa725e1b36ce1",
+          "url": "https://github.com/NREL/floris/commit/17efe3c62045f3db4474f1bc301d286bf986f6e4"
+        },
+        "date": 1764195334079,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_set",
+            "value": 42.65055669238131,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00015842939901277497",
+            "extra": "mean: 23.44635281580347 msec\nrounds: 38"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_run",
+            "value": 56.53152831841533,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00017118461418148066",
+            "extra": "mean: 17.689244033302508 msec\nrounds: 30"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_set",
+            "value": 25.74463202129406,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0011627819163409236",
+            "extra": "mean: 38.84304887997132 msec\nrounds: 25"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_run",
+            "value": 0.29347311455118635,
+            "unit": "iter/sec",
+            "range": "stddev: 0.014811993169197011",
+            "extra": "mean: 3.4074671593999937 sec\nrounds: 5"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_set",
+            "value": 36.652173112945206,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00025161577415827086",
+            "extra": "mean: 27.28351186486155 msec\nrounds: 37"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_run",
+            "value": 121.50138361367682,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0000891277288913164",
+            "extra": "mean: 8.230358949488002 msec\nrounds: 99"
           }
         ]
       }

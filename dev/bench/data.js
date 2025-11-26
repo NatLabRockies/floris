@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1762901995014,
+  "lastUpdate": 1764193913328,
   "repoUrl": "https://github.com/NREL/floris",
   "entries": {
     "Python Benchmark with pytest-benchmark": [
@@ -3404,6 +3404,72 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.00009496087324088673",
             "extra": "mean: 8.475766306121711 msec\nrounds: 98"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "39596329+misi9170@users.noreply.github.com",
+            "name": "misi9170",
+            "username": "misi9170"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "cba3274abc0d0320cb206f1a77eb3526fc94a1c1",
+          "message": "Add IEA 22MW reference wind turbine to turbine library (#1146)\n\n* Data and docs for 22MW reference turbine\n\n* List example\n\n* Formatting\n\n* Fixed above-rated power output\n\n* Rename example for clarity\n\n* Updated values using higher-fidelity simulations (missing very low speeds)\n\n* Updates; wind speeds down to cut in specified\n\n* Update documentation\n\n* Remove forced capitalization",
+          "timestamp": "2025-11-26T14:23:30-07:00",
+          "tree_id": "65f28daa0a9a5eb85159ac307392ea660fb4c76e",
+          "url": "https://github.com/NREL/floris/commit/cba3274abc0d0320cb206f1a77eb3526fc94a1c1"
+        },
+        "date": 1764193911501,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_set",
+            "value": 39.69126716390712,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00077673764216803",
+            "extra": "mean: 25.19445891889641 msec\nrounds: 37"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_run",
+            "value": 56.266919568285324,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000336051601711788",
+            "extra": "mean: 17.77243196664434 msec\nrounds: 30"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_set",
+            "value": 24.945327792788763,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0009554637286014914",
+            "extra": "mean: 40.08766725002033 msec\nrounds: 24"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_run",
+            "value": 0.2886378548045975,
+            "unit": "iter/sec",
+            "range": "stddev: 0.011978607126593396",
+            "extra": "mean: 3.464549030399985 sec\nrounds: 5"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_set",
+            "value": 35.83408376037921,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0008056784436311952",
+            "extra": "mean: 27.906392324328753 msec\nrounds: 37"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_run",
+            "value": 120.70439170684188,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00014188117666563905",
+            "extra": "mean: 8.284702701031193 msec\nrounds: 97"
           }
         ]
       }

@@ -141,8 +141,10 @@ user by setting `wim_gain_deflection`.
 
 ```{note}
 The documentation previously had an erroneous form for the wake-induced mixing
-term
-$$ \text{WIM}_j = \sum_{i \in T^{\text{up}}(j)} \frac{A_{ij} a_i} {(x_j - x_i)/D_i} $$
+term,
+
+$$ \text{WIM}_j = \sum_{i \in T^{\text{up}}(j)} \frac{A_{ij} a_i} {(x_j - x_i)/D_i} \:.$$
+
 This has been corrected to the form shown above, which is consistent with the implementation. The implementation has not changed; only the documentation has been corrected.
 ```
 

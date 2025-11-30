@@ -145,6 +145,60 @@ def test_rotor_velocity_tilt_cosine_correction():
 
     np.testing.assert_allclose(tilt_corrected_velocities, wind_speed_N_TURBINES)
 
+    ## Test angles that are not the same as the reference tilt
+
+    # Test tilted "back" from reference tilt of 5 degrees
+    tilt_angle = 10.0 # Greater than the reference tilt
+    tilt_corrected_velocities = rotor_velocity_tilt_cosine_correction(
+        tilt_angles=tilt_angle*np.ones((1, N_TURBINES)),
+        ref_tilt=np.array([turbine_floating.power_thrust_table["ref_tilt"]] * N_TURBINES),
+        cosine_loss_exponent_tilt=np.array(
+            [turbine_floating.power_thrust_table["cosine_loss_exponent_tilt"]] * N_TURBINES
+        ),
+        tilt_interp=None, # Override wind-speed-based tilt interpolation
+        correct_cp_ct_for_tilt=np.array([[True] * N_TURBINES]),
+        rotor_effective_velocities=wind_speed_N_TURBINES,
+    )
+    assert (tilt_corrected_velocities < wind_speed_N_TURBINES).all()
+
+    # Test tilted "forward" from reference tilt of 5 degrees
+    tilt_angle = 0.0 # Less than the reference tilt
+    tilt_corrected_velocities = rotor_velocity_tilt_cosine_correction(
+        tilt_angles=tilt_angle*np.ones((1, N_TURBINES)),
+        ref_tilt=np.array([turbine_floating.power_thrust_table["ref_tilt"]] * N_TURBINES),
+        cosine_loss_exponent_tilt=np.array(
+            [turbine_floating.power_thrust_table["cosine_loss_exponent_tilt"]] * N_TURBINES
+        ),
+        tilt_interp=None, # Override wind-speed-based tilt interpolation
+        correct_cp_ct_for_tilt=np.array([[True] * N_TURBINES]),
+        rotor_effective_velocities=wind_speed_N_TURBINES,
+    )
+    assert (tilt_corrected_velocities > wind_speed_N_TURBINES).all()
+
+    # Test symmetry around zero tilt
+    tilt_angle = 3.0
+    tilt_negative = rotor_velocity_tilt_cosine_correction(
+        tilt_angles=-tilt_angle*np.ones((1, N_TURBINES)),
+        ref_tilt=np.array([turbine_floating.power_thrust_table["ref_tilt"]] * N_TURBINES),
+        cosine_loss_exponent_tilt=np.array(
+            [turbine_floating.power_thrust_table["cosine_loss_exponent_tilt"]] * N_TURBINES
+        ),
+        tilt_interp=None, # Override wind-speed-based tilt interpolation
+        correct_cp_ct_for_tilt=np.array([[True] * N_TURBINES]),
+        rotor_effective_velocities=wind_speed_N_TURBINES,
+    )
+    tilt_positive = rotor_velocity_tilt_cosine_correction(
+        tilt_angles=tilt_angle*np.ones((1, N_TURBINES)),
+        ref_tilt=np.array([turbine_floating.power_thrust_table["ref_tilt"]] * N_TURBINES),
+        cosine_loss_exponent_tilt=np.array(
+            [turbine_floating.power_thrust_table["cosine_loss_exponent_tilt"]] * N_TURBINES
+        ),
+        tilt_interp=None, # Override wind-speed-based tilt interpolation
+        correct_cp_ct_for_tilt=np.array([[True] * N_TURBINES]),
+        rotor_effective_velocities=wind_speed_N_TURBINES,
+    )
+    np.testing.assert_allclose(tilt_negative, tilt_positive)
+
 def test_compute_tilt_angles_for_floating_turbines():
     N_TURBINES = 4
 

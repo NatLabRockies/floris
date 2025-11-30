@@ -78,6 +78,9 @@ wake:
       kb: 0.004
     jensen:
       we: 0.05
+    turboparkgauss:
+      A: 0.04
+      include_mirror_wake: True
 
   wake_turbulence_parameters:
     crespo_hernandez:

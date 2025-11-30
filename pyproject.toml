@@ -2,6 +2,78 @@
 requires = ["setuptools >= 40.6.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[project]
+name = "floris"
+version = "4.5.1"
+description = "A controls-oriented engineering wake model."
+readme = "README.md"
+requires-python = ">=3.10, <=3.14"
+authors = [
+    { name = "Rafael Mudafort", email = "Rafael.Mudafort@nrel.gov" },
+    { name = "Paul Fleming", email = "Paul.Fleming@nrel.gov" },
+    { name = "Michael (Misha) Sinner", email = "Michael.Sinner@nrel.gov" },
+    { name = "Eric Simley", email = "Eric.Simley@nrel.gov" },
+    { name = "Christopher Bay", email = "Christopher.Bay@nrel.gov" },
+]
+license = { file = "LICENSE.txt" }
+keywords = ["floris"]
+classifiers = [
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy"
+]
+dependencies = [
+    "attrs",
+    "pyyaml~=6.0",
+    "numexpr~=2.0",
+    "numpy~=2.0",
+    "scipy~=1.1",
+    "matplotlib~=3.0",
+    "pandas~=2.0",
+    "shapely~=2.0",
+    "coloredlogs~=15.0",
+    "pathos~=0.3",
+]
+
+[project.optional-dependencies]
+docs = [
+    "jupyter-book~=1.0",
+    "sphinx-book-theme~=1.0",
+    "sphinx-autodoc-typehints~=2.0",
+    "sphinxcontrib-autoyaml~=1.0",
+    "sphinxcontrib.mermaid~=1.0",
+    "bokeh~=3.7",
+]
+develop = [
+    "pytest~=8.0",
+    "pytest-benchmark~=5.1",
+    "pre-commit~=4.0",
+    "ruff~=0.9",
+    "isort~=5.0"
+]
+
+[tool.setuptools.packages.find]
+include = ["floris*"]
+
+[tool.setuptools.package-data]
+floris = [
+    "turbine_library/*.yaml",
+    "turbine_library/*.csv",
+    "turbine_library/demo_cp_ct_surfaces/*.npz",
+    "core/wake_velocity/turbopark_lookup_table.mat",
+    "default_inputs.yaml"
+]
+
+[project.urls]
+Homepage = "https://github.com/NREL/floris"
+Documentation = "https://nrel.github.io/floris/"
 
 [coverage.run]
 # Coverage.py configuration file
@@ -9,8 +81,8 @@ build-backend = "setuptools.build_meta"
 branch = true
 source = "floris/*"
 omit = [
-    "setup.py",
-    "tests/*"
+    "tests/*",
+    "benchmarks/*"
 ]
 
 
@@ -72,20 +144,20 @@ filterwarnings = [
 [tool.ruff]
 src = ["floris", "tests"]
 line-length = 100
-target-version = "py310"
+target-version = "py313"
 
 # See https://github.com/charliermarsh/ruff#supported-rules
 # for rules included and matching to prefix.
-select = ["F", "E", "W", "C4", ] #"T20", "I"
+lint.select = ["F", "E", "W", "C4", ] #"T20", "I"
 # I - isort is not fully implemented in ruff so there is not parity. Consider disabling I.
 
 # F401 unused-import: Ignore until all used isort flags are adopted in ruff
-ignore = ["F401"]
+lint.ignore = ["F401"]
 
 # Allow autofix for all enabled rules (when `--fix`) is provided.
 # fixable = ["A", "B", "C", "D", "E", "F"]
-fixable = ["F", "E", "W", "C4"] #"T20", "I"
-unfixable = []
+lint.fixable = ["F", "E", "W", "C4"] #"T20", "I"
+lint.unfixable = []
 
 # Exclude a variety of commonly ignored directories.
 exclude = [
@@ -109,12 +181,13 @@ exclude = [
     "dist",
     "node_modules",
     "venv",
+    "docs",
 ]
 
 # Allow unused variables when underscore-prefixed.
-dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+lint.dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 # F841 unused-variable: ignore since this file uses numexpr and many variables look unused
 "floris/core/wake_deflection/jimenez.py" = ["F841"]
 "floris/core/wake_turbulence/crespo_hernandez.py" = ["F841"]
@@ -129,7 +202,7 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 # import dependencies
 "floris/core/__init__.py" = ["I001"]
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 combine-as-imports = true
 known-first-party = ["floris"]
 order-by-type = false

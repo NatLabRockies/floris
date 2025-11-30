@@ -16,14 +16,14 @@ from time import perf_counter as timerpc
 import numpy as np
 
 from floris import (
-    FlorisModel,
-    ParallelFlorisModel,
+    ParFlorisModel,
     TimeSeries,
     WindRose,
 )
+from floris.optimization.yaw_optimization.yaw_optimizer_sr import YawOptimizationSR
 
 
-# When using parallel optimization it is importat the "root" script include this
+# When using parallel optimization it is important the "root" script include this
 # if __name__ == "__main__": block to avoid problems
 if __name__ == "__main__":
 
@@ -33,19 +33,26 @@ if __name__ == "__main__":
         ti_col_or_value=0.06
     )
 
-    # Load FLORIS
-    fmodel = FlorisModel("../inputs/gch.yaml")
+    # Load FLORIS as a parallel model
+    max_workers = 16
+    pfmodel = ParFlorisModel(
+        "../inputs/gch.yaml",
+        max_workers=max_workers,
+        n_wind_condition_splits=max_workers,
+        interface="pathos",
+        print_timings=True,
+    )
 
     # Specify wind farm layout and update in the floris object
     N = 2  # number of turbines per row and per column
     X, Y = np.meshgrid(
-        5.0 * fmodel.core.farm.rotor_diameters_sorted[0][0] * np.arange(0, N, 1),
-        5.0 * fmodel.core.farm.rotor_diameters_sorted[0][0] * np.arange(0, N, 1),
+        5.0 * pfmodel.core.farm.rotor_diameters_sorted[0][0] * np.arange(0, N, 1),
+        5.0 * pfmodel.core.farm.rotor_diameters_sorted[0][0] * np.arange(0, N, 1),
     )
-    fmodel.set(layout_x=X.flatten(), layout_y=Y.flatten())
+    pfmodel.set(layout_x=X.flatten(), layout_y=Y.flatten())
 
     # Get the number of turbines
-    n_turbines = len(fmodel.layout_x)
+    n_turbines = len(pfmodel.layout_x)
 
     # Optimize the yaw angles.  This could be done for every wind direction and wind speed
     # but in practice it is much faster to optimize only for one speed and infer the rest
@@ -53,46 +60,25 @@ if __name__ == "__main__":
     time_series = TimeSeries(
         wind_directions=wind_rose.wind_directions, wind_speeds=8.0, turbulence_intensities=0.06
     )
-    fmodel.set(wind_data=time_series)
+    pfmodel.set(wind_data=time_series)
 
-    # Set up the parallel model
-    parallel_interface = "concurrent"
-    max_workers = 16
-    pfmodel = ParallelFlorisModel(
-        fmodel=fmodel,
-        max_workers=max_workers,
-        n_wind_condition_splits=max_workers,
-        interface=parallel_interface,
-        print_timings=True,
-    )
-
-    # Get the optimal angles using the parallel interface
     start_time = timerpc()
-    # Now optimize the yaw angles using the Serial Refine method
-    df_opt = pfmodel.optimize_yaw_angles(
-        minimum_yaw_angle=0.0,
-        maximum_yaw_angle=20.0,
+    yaw_opt = YawOptimizationSR(
+        fmodel=pfmodel,
+        minimum_yaw_angle=0.0,  # Allowable yaw angles lower bound
+        maximum_yaw_angle=20.0,  # Allowable yaw angles upper bound
         Ny_passes=[5, 4],
-        exclude_downstream_turbines=False,
+        exclude_downstream_turbines=True,
     )
+    df_opt = yaw_opt.optimize()
     end_time = timerpc()
     t_tot = end_time - start_time
     print("Optimization finished in {:.2f} seconds.".format(t_tot))
 
-
     # Calculate the AEP in the baseline case, using the parallel interface
-    fmodel.set(wind_data=wind_rose)
-    pfmodel = ParallelFlorisModel(
-        fmodel=fmodel,
-        max_workers=max_workers,
-        n_wind_condition_splits=max_workers,
-        interface=parallel_interface,
-        print_timings=True,
-    )
-
-    # Note the pfmodel does not use run() but instead uses the get_farm_power() and get_farm_AEP()
-    # directly, this is necessary for the parallel interface
-    aep_baseline = pfmodel.get_farm_AEP(freq=wind_rose.unpack_freq())
+    pfmodel.set(wind_data=wind_rose)
+    pfmodel.run()
+    aep_baseline = pfmodel.get_farm_AEP()
 
     # Now need to apply the optimal yaw angles to the wind rose to get the optimized AEP
     # do this by applying a rule of thumb where the optimal yaw is applied between 6 and 12 m/s
@@ -102,9 +88,10 @@ if __name__ == "__main__":
     # yaw angles will need to be n_findex long, and accounting for the fact that some wind
     # directions and wind speeds may not be present in the wind rose (0 frequency) and aren't
     # included in the fmodel
-    wind_directions = fmodel.wind_directions
-    wind_speeds = fmodel.wind_speeds
-    n_findex = fmodel.n_findex
+    # TODO: add operation wind rose to example, once built
+    wind_directions = pfmodel.wind_directions
+    wind_speeds = pfmodel.wind_speeds
+    n_findex = pfmodel.n_findex
 
 
     # Now define how the optimal yaw angles for 8 m/s are applied over the other wind speeds
@@ -133,15 +120,9 @@ if __name__ == "__main__":
 
 
     # Now apply the optimal yaw angles and get the AEP
-    fmodel.set(yaw_angles=yaw_angles_wind_rose)
-    pfmodel = ParallelFlorisModel(
-        fmodel=fmodel,
-        max_workers=max_workers,
-        n_wind_condition_splits=max_workers,
-        interface=parallel_interface,
-        print_timings=True,
-    )
-    aep_opt = pfmodel.get_farm_AEP(freq=wind_rose.unpack_freq(), yaw_angles=yaw_angles_wind_rose)
+    pfmodel.set(yaw_angles=yaw_angles_wind_rose)
+    pfmodel.run()
+    aep_opt = pfmodel.get_farm_AEP()
     aep_uplift = 100.0 * (aep_opt / aep_baseline - 1)
 
     print("Baseline AEP: {:.2f} GWh.".format(aep_baseline/1E9))

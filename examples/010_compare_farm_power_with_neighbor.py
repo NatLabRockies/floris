@@ -1,4 +1,4 @@
-"""Example 9: Compare farm power with neighboring farm
+"""Example 10: Compare farm power with neighboring farm
 
 This example demonstrates how to use turbine_weights to define a set of turbines belonging
 to a neighboring farm which impacts the power production of the farm under consideration

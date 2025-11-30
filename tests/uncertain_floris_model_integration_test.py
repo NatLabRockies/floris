@@ -4,7 +4,11 @@ import numpy as np
 import pytest
 import yaml
 
-from floris import FlorisModel, TimeSeries
+from floris import (
+    FlorisModel,
+    ParFlorisModel,
+    TimeSeries,
+)
 from floris.core.turbine.operation_models import POWER_SETPOINT_DEFAULT
 from floris.uncertain_floris_model import (
     ApproxFlorisModel,
@@ -233,7 +237,7 @@ def test_get_powers_with_wind_data():
         wind_directions=wind_directions,
         turbulence_intensities=turbulence_intensities,
         layout_x=[0, 1000, 2000, 3000],
-        layout_y=[0, 0, 0, 0]
+        layout_y=[0, 0, 0, 0],
     )
     ufmodel.run()
     farm_power_simple = ufmodel.get_farm_power()
@@ -243,7 +247,7 @@ def test_get_powers_with_wind_data():
     wind_rose = WindRose(
         wind_directions=np.unique(wind_directions),
         wind_speeds=np.unique(wind_speeds),
-        ti_table=0.06
+        ti_table=0.06,
     )
 
     # Set this wind rose, run
@@ -265,18 +269,45 @@ def test_get_powers_with_wind_data():
     turbine_weights = np.array([1.0, 1.0, 1.0, 0.0])
     farm_power_weighted = ufmodel.get_farm_power(turbine_weights=turbine_weights)
 
-    assert np.allclose(farm_power_weighted, ufmodel.get_turbine_powers()[:,:,:-1].sum(axis=2))
+    assert np.allclose(farm_power_weighted, ufmodel.get_turbine_powers()[:, :, :-1].sum(axis=2))
+
+def test_AEP_with_wind_data():
+    wind_speeds = np.array([8.0, 10.0])
+    wind_directions = np.array([270.0, 280.0])
+    frequencies = np.array([[0.25, 0.25], [0.1, 0.4]])
+    wind_rose = WindRose(
+        wind_directions=np.unique(wind_directions),
+        wind_speeds=np.unique(wind_speeds),
+        freq_table=frequencies,
+        ti_table=0.06,
+    )
+
+    # Set wind_data on UncertainFlorisModel directly
+    ufmodel = UncertainFlorisModel(configuration=YAML_INPUT)
+    ufmodel.set(wind_data=wind_rose)
+    ufmodel.run()
+    aep_1 = ufmodel.get_farm_AEP()
+
+    # Set wind_data on FlorisModel and then set on UncertainFlorisModel
+    fmodel = FlorisModel(configuration=YAML_INPUT)
+    fmodel.set(wind_data=wind_rose)
+    ufmodel = UncertainFlorisModel(fmodel)
+    ufmodel.run()
+    aep_2 = ufmodel.get_farm_AEP()
+
+    # Check AEPs match
+    assert np.allclose(aep_1, aep_2)
 
 def test_approx_floris_model():
-
     afmodel = ApproxFlorisModel(configuration=YAML_INPUT, wd_resolution=1.0)
 
     time_series = TimeSeries(
-        wind_directions = np.array([270.0, 270.1,271.0, 271.1]),
+        wind_directions=np.array([270.0, 270.1, 271.0, 271.1]),
         wind_speeds=8.0,
-        turbulence_intensities=0.06)
+        turbulence_intensities=0.06,
+    )
 
-    afmodel.set(layout_x = np.array([0, 500]), layout_y = np.array([0, 0]), wind_data = time_series)
+    afmodel.set(layout_x=np.array([0, 500]), layout_y=np.array([0, 0]), wind_data=time_series)
 
     # Test that 0th and 1th values are the same, as are the 2nd and 3rd
     afmodel.run()
@@ -287,14 +318,307 @@ def test_approx_floris_model():
     # Test with wind direction and wind speed varying
     afmodel = ApproxFlorisModel(configuration=YAML_INPUT, wd_resolution=1.0, ws_resolution=1.0)
     time_series = TimeSeries(
-        wind_directions = np.array([270.0, 270.1,271.0, 271.1]),
+        wind_directions=np.array([270.0, 270.1, 271.0, 271.1]),
         wind_speeds=np.array([8.0, 8.1, 8.0, 9.0]),
-        turbulence_intensities=0.06)
+        turbulence_intensities=0.06,
+    )
 
-    afmodel.set(layout_x = np.array([0, 500]), layout_y = np.array([0, 0]), wind_data = time_series)
+    afmodel.set(layout_x=np.array([0, 500]), layout_y=np.array([0, 0]), wind_data=time_series)
     afmodel.run()
 
     # In this case the 0th and 1st should be the same, but not the 2nd and 3rd
     power = afmodel.get_farm_power()
     np.testing.assert_almost_equal(power[0], power[1])
     assert not np.allclose(power[2], power[3])
+
+    # Test copy method
+    assert isinstance(afmodel.copy(), ApproxFlorisModel)
+
+
+def test_expected_farm_power_regression():
+    ufmodel = UncertainFlorisModel(
+        configuration=YAML_INPUT,
+        wd_sample_points=[0],
+    )  # Force equal to nominal
+
+    wind_speeds = np.array([8.0, 8.0, 8.0])
+    wind_directions = np.array([270.0, 270.0, 270.0])
+    turbulence_intensities = np.array([0.06, 0.06, 0.06])
+
+    layout_x = np.array([0, 0])
+    layout_y = np.array([0, 1000])
+
+    ufmodel.set(
+        wind_speeds=wind_speeds,
+        wind_directions=wind_directions,
+        turbulence_intensities=turbulence_intensities,
+        layout_x=layout_x,
+        layout_y=layout_y,
+    )
+
+    ufmodel.run()
+
+    expected_farm_power = ufmodel.get_expected_farm_power()
+
+    # Assert the expected farm power has not inadvetently changed
+    np.testing.assert_allclose(expected_farm_power, 3507908.918358342, atol=1e-1)
+
+
+def test_expected_farm_power_equals_sum_of_expected_turbine_powers():
+    ufmodel = UncertainFlorisModel(configuration=YAML_INPUT)
+
+    wind_speeds = np.array([8.0, 8.0, 8.0])
+    wind_directions = np.array([270.0, 270.0, 270.0])
+    turbulence_intensities = np.array([0.06, 0.06, 0.06])
+
+    layout_x = np.array([0, 0])
+    layout_y = np.array([0, 1000])
+
+    ufmodel.set(
+        wind_speeds=wind_speeds,
+        wind_directions=wind_directions,
+        turbulence_intensities=turbulence_intensities,
+        layout_x=layout_x,
+        layout_y=layout_y,
+    )
+
+    ufmodel.run()
+
+    expected_farm_power = ufmodel.get_expected_farm_power()
+    expected_turbine_powers = ufmodel.get_expected_turbine_powers()
+
+    # Assert the expected farm power is the sum of the expected turbine powers
+    np.testing.assert_allclose(expected_farm_power, np.sum(expected_turbine_powers))
+
+
+def test_expected_farm_value_regression():
+    # Ensure this calculation hasn't changed unintentionally
+
+    ufmodel = UncertainFlorisModel(
+        configuration=YAML_INPUT,
+        wd_sample_points=[0],
+    )  # Force equal to nominal
+
+    wind_speeds = np.array([8.0, 8.0, 9.0])
+    wind_directions = np.array([270.0, 270.0, 270.0])
+    values = np.array([30.0, 20.0, 10.0])
+    time_series = TimeSeries(
+        wind_directions=wind_directions,
+        wind_speeds=wind_speeds,
+        turbulence_intensities=0.06,
+        values=values,
+    )
+
+    layout_x = np.array([0, 0])
+    layout_y = np.array([0, 1000])
+    ufmodel.set(layout_x=layout_x, layout_y=layout_y, wind_data=time_series)
+    ufmodel.run()
+
+    expected_farm_value = ufmodel.get_expected_farm_value()
+    assert np.allclose(expected_farm_value, 75108001.05154414, atol=1e-1)
+
+
+def test_get_and_set_param():
+    ufmodel = UncertainFlorisModel(configuration=YAML_INPUT)
+
+    # Set the wake parameter
+    ufmodel.set_param(["wake", "wake_velocity_parameters", "gauss", "alpha"], 0.1)
+    alpha = ufmodel.get_param(["wake", "wake_velocity_parameters", "gauss", "alpha"])
+    assert alpha == 0.1
+
+    # Confirm also correct in expanded floris model
+    alpha_e = ufmodel.fmodel_expanded.get_param(
+        ["wake", "wake_velocity_parameters", "gauss", "alpha"]
+    )
+    assert alpha_e == 0.1
+
+
+def test_get_operation_model():
+    ufmodel = UncertainFlorisModel(configuration=YAML_INPUT)
+    assert ufmodel.get_operation_model() == "cosine-loss"
+
+
+def test_set_operation_model():
+    # Define a reference wind height for cases when there are changes to
+    # turbine_type
+
+    ufmodel = UncertainFlorisModel(configuration=YAML_INPUT)
+    ufmodel.set_operation_model("simple-derating")
+    assert ufmodel.get_operation_model() == "simple-derating"
+
+    reference_wind_height = ufmodel.reference_wind_height
+
+    # Check multiple turbine types works
+    ufmodel.set(layout_x=[0, 0], layout_y=[0, 1000])
+    ufmodel.set_operation_model(["simple-derating", "cosine-loss"])
+    assert ufmodel.get_operation_model() == ["simple-derating", "cosine-loss"]
+
+    # Confirm this passed through to expanded model
+    assert ufmodel.fmodel_expanded.get_operation_model() == ["simple-derating", "cosine-loss"]
+
+    # Check that setting a single turbine type, and then altering the operation model works
+    ufmodel.set(layout_x=[0, 0], layout_y=[0, 1000])
+    ufmodel.set(turbine_type=["nrel_5MW"], reference_wind_height=reference_wind_height)
+    ufmodel.set_operation_model("simple-derating")
+    assert ufmodel.get_operation_model() == "simple-derating"
+
+    # Check that setting over mutliple turbine types works
+    ufmodel.set(turbine_type=["nrel_5MW", "iea_15MW"], reference_wind_height=reference_wind_height)
+    ufmodel.set_operation_model("simple-derating")
+    assert ufmodel.get_operation_model() == "simple-derating"
+    ufmodel.set_operation_model(["simple-derating", "cosine-loss"])
+    assert ufmodel.get_operation_model() == ["simple-derating", "cosine-loss"]
+
+    # Check setting over single turbine type; then updating layout works
+    ufmodel.set(turbine_type=["nrel_5MW"], reference_wind_height=reference_wind_height)
+    ufmodel.set_operation_model("simple-derating")
+    ufmodel.set(layout_x=[0, 0, 0], layout_y=[0, 1000, 2000])
+    assert ufmodel.get_operation_model() == "simple-derating"
+
+    # Check that setting for multiple turbine types and then updating layout breaks
+    ufmodel.set(layout_x=[0, 0], layout_y=[0, 1000])
+    ufmodel.set(turbine_type=["nrel_5MW"], reference_wind_height=reference_wind_height)
+    ufmodel.set_operation_model(["simple-derating", "cosine-loss"])
+    assert ufmodel.get_operation_model() == ["simple-derating", "cosine-loss"]
+    with pytest.raises(ValueError):
+        ufmodel.set(layout_x=[0, 0, 0], layout_y=[0, 1000, 2000])
+
+    # Check one more variation
+    ufmodel.set(layout_x=[0, 0], layout_y=[0, 1000])
+    ufmodel.set(turbine_type=["nrel_5MW", "iea_15MW"], reference_wind_height=reference_wind_height)
+    ufmodel.set_operation_model("simple-derating")
+    ufmodel.set(layout_x=[0, 0], layout_y=[0, 1000])
+    with pytest.raises(ValueError):
+        ufmodel.set(layout_x=[0, 0, 0], layout_y=[0, 1000, 2000])
+
+def test_parallel_uncertain_model():
+
+    ufmodel = UncertainFlorisModel(FlorisModel(configuration=YAML_INPUT))
+    pufmodel = UncertainFlorisModel(ParFlorisModel(configuration=YAML_INPUT))
+    assert isinstance(ufmodel.fmodel_expanded, FlorisModel)
+    assert isinstance(pufmodel.fmodel_expanded, ParFlorisModel)
+
+    # Run the models and compare outputs
+    ufmodel.run()
+    pufmodel.run()
+    powers_unc = ufmodel.get_turbine_powers()
+    powers_punc = pufmodel.get_turbine_powers()
+
+    assert np.allclose(powers_unc, powers_punc)
+
+def test_copy():
+    """
+    Check that the UncertainFlorisModel copy method works as expected for
+    both FlorisModel and ParFlorisModel.
+    """
+    ufmodel = UncertainFlorisModel(FlorisModel(configuration=YAML_INPUT))
+
+    ufmodel_copy = ufmodel.copy()
+    assert isinstance(ufmodel_copy, UncertainFlorisModel)
+    assert isinstance(ufmodel_copy.fmodel_expanded, FlorisModel)
+
+    pufmodel = UncertainFlorisModel(ParFlorisModel(configuration=YAML_INPUT))
+    pufmodel_copy = pufmodel.copy()
+    assert isinstance(pufmodel_copy, UncertainFlorisModel)
+    assert isinstance(pufmodel_copy.fmodel_expanded, ParFlorisModel)
+
+def test_invalid_wd_std():
+    """
+    Test that the UncertainFlorisModel raises asn error with a wd_std of 0 or negative.
+    """
+    with pytest.raises(ValueError):
+        UncertainFlorisModel(configuration=YAML_INPUT, wd_std=0.0)
+
+    with pytest.raises(ValueError):
+        UncertainFlorisModel(configuration=YAML_INPUT, wd_std=-1.0)
+
+def test_turbine_average_velocities_shape_and_type():
+    """
+    Test that turbine_average_velocities returns the correct shape and type.
+    """
+    ufmodel = UncertainFlorisModel(configuration=YAML_INPUT)
+
+    # Set up a simple 2-turbine wind farm
+    ufmodel.set(
+        layout_x=[0, 500],
+        layout_y=[0, 0],
+        wind_speeds=[8.0, 10.0],
+        wind_directions=[270.0, 280.0],
+        turbulence_intensities=[0.06, 0.06],
+    )
+
+    ufmodel.run()
+
+    # Get turbine average velocities
+    velocities = ufmodel.turbine_average_velocities
+
+    # Check type
+    assert isinstance(velocities, np.ndarray)
+
+    # Check shape: should be (n_findex, n_turbines)
+    expected_shape = (ufmodel.n_findex, ufmodel.n_turbines)
+    assert velocities.shape == expected_shape
+
+    # Check that values are positive and reasonable
+    assert np.all(velocities > 0)
+    assert np.all(velocities < 20)  # Reasonable upper bound for wind speeds
+
+
+def test_turbine_average_velocities_free_stream():
+    """
+    Test that turbine_average_velocities returns the correct shape and type.
+    """
+    ufmodel = UncertainFlorisModel(configuration=YAML_INPUT)
+
+    # Set up a simple 2-turbine wind farm with no wake interactions
+    ufmodel.set(
+        layout_x=[0, 0],
+        layout_y=[0, 1000],
+        wind_speeds=[8.0, 10.0],
+        wind_directions=[270.0, 280.0],
+        turbulence_intensities=[0.06, 0.06],
+        wind_shear=0.0,  # Turn off shear to simplify the test
+    )
+
+    ufmodel.run()
+
+    # Get turbine average velocities
+    velocities = ufmodel.turbine_average_velocities
+
+    # Velocities should be the same as the wind speeds but n_turbines columns repeated
+    assert np.allclose(velocities, np.array([[8.0, 8.0], [10.0, 10.0]]))
+
+def test_turbine_average_velocities_uncertain_vs_certain():
+    """
+    Test that turbine_average_velocities returns the same values for uncertain and certain models.
+    """
+
+    # Set up (certain) FlorisModel
+    fmodel = FlorisModel(configuration=YAML_INPUT)
+    fmodel.set(
+        layout_x=[0, 500],
+        layout_y=[0, 0],
+        wind_speeds=[8.0, 10.0],
+        wind_directions=[270.0, 270.0],
+        turbulence_intensities=[0.06, 0.06],
+    )
+    fmodel.run()
+    velocities_certain = fmodel.turbine_average_velocities
+
+    # Create equivalent uncertain model
+    ufmodel = UncertainFlorisModel(configuration=fmodel)
+    ufmodel.run()
+    velocities_uncertain = ufmodel.turbine_average_velocities
+
+    # Check that the upstream turbine matches
+    assert np.allclose(velocities_uncertain[:, 0], velocities_certain[:, 0])
+    # Downstream turbine higher than certain when aligned
+    assert np.all(velocities_uncertain[:, 1] > velocities_certain[:, 1])
+
+    # Create a near 0-std uncertain model
+    ufmodel_zero_std = UncertainFlorisModel(configuration=fmodel, wd_std=1e-5)
+    ufmodel_zero_std.run()
+    velocities_uncertain_zero_std = ufmodel_zero_std.turbine_average_velocities
+
+    # Check that the uncertain model with 0 std matches the certain model
+    assert np.allclose(velocities_uncertain_zero_std, velocities_certain)

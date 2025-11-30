@@ -9,13 +9,19 @@ import pandas as pd
 from floris.floris_model import FlorisModel
 from floris.logging_manager import LoggingManager
 from floris.optimization.yaw_optimization.yaw_optimizer_sr import YawOptimizationSR
-from floris.uncertain_floris_model import map_turbine_powers_uncertain, UncertainFlorisModel
+from floris.uncertain_floris_model import map_turbine_values_uncertain, UncertainFlorisModel
 
 
 def _get_turbine_powers_serial(fmodel_information, yaw_angles=None):
     fmodel = FlorisModel(fmodel_information)
     fmodel.set(yaw_angles=yaw_angles)
     fmodel.run()
+    return (fmodel.get_turbine_powers(), fmodel.core.flow_field)
+
+def _get_turbine_powers_serial_no_wake(fmodel_information, yaw_angles=None):
+    fmodel = FlorisModel(fmodel_information)
+    fmodel.set(yaw_angles=yaw_angles)
+    fmodel.run_no_wake()
     return (fmodel.get_turbine_powers(), fmodel.core.flow_field)
 
 
@@ -64,9 +70,8 @@ class ParallelFlorisModel(LoggingManager):
         parallel computing to common FlorisModel properties.
 
         Args:
-        fmodel (FlorisModel or UncertainFlorisModel object): Interactive FLORIS object used to
-            perform the wake and turbine calculations. Can either be a regular FlorisModel
-            object or can be an UncertainFlorisModel object.
+        fmodel (FlorisModel object): Interactive FLORIS object used to
+            perform the wake and turbine calculations.
         max_workers (int): Number of parallel workers, typically equal to the number of cores
             you have on your system or HPC.
         n_wind_condition_splits (int): Number of sectors to split the wind findex array over.
@@ -82,6 +87,11 @@ class ParallelFlorisModel(LoggingManager):
             to False.
         print_timings (bool): Print the computation time to the console. Defaults to False.
         """
+
+        self.logger.warning((
+            "ParallelFlorisModel is deprecated and will be removed in a future version. "
+            "Please switch to ParFlorisModel instead."
+        ))
 
         # Set defaults for backward compatibility
         if use_mpi4py is not None:
@@ -106,9 +116,17 @@ class ParallelFlorisModel(LoggingManager):
             from concurrent.futures import ProcessPoolExecutor
             self._PoolExecutor = ProcessPoolExecutor
         else:
-            raise UserWarning(
+            raise ValueError(
                 f"Interface '{interface}' not recognized. "
                 "Please use 'concurrent', 'multiprocessing' or 'mpi4py'."
+            )
+
+        # Raise error if uncertain model is passed in and refer to new parallel_floris_model_2
+        if isinstance(fmodel, UncertainFlorisModel):
+            raise ValueError(
+                "UncertainFlorisModel is not supported in this version of ParallelFlorisModel. "
+                "Please use the new version ParFlorisModel (par_floris_model) "
+                "for UncertainFlorisModel compatibility."
             )
 
         # Initialize floris object and copy common properties
@@ -157,11 +175,52 @@ class ParallelFlorisModel(LoggingManager):
         layout_x=None,
         layout_y=None,
         turbine_type=None,
+        turbine_library_path=None,
         solver_settings=None,
+        heterogeneous_inflow_config=None,
+        wind_data=None,
+        yaw_angles=None,
+        power_setpoints=None,
+        awc_modes=None,
+        awc_amplitudes=None,
+        awc_frequencies=None,
+        disable_turbines=None,
     ):
         """Pass to the FlorisModel set function. To allow users
         to directly replace a FlorisModel object with this
-        UncertainFlorisModel object, this function is required."""
+        UncertainFlorisModel object, this function is required
+
+        Args:
+            wind_speeds (NDArrayFloat | list[float] | None, optional): Wind speeds at each findex.
+                Defaults to None.
+            wind_directions (NDArrayFloat | list[float] | None, optional): Wind directions at each
+                findex. Defaults to None.
+            wind_shear (float | None, optional): Wind shear exponent. Defaults to None.
+            wind_veer (float | None, optional): Wind veer. Defaults to None.
+            reference_wind_height (float | None, optional): Reference wind height. Defaults to None.
+            turbulence_intensities (NDArrayFloat | list[float] | None, optional): Turbulence
+                intensities at each findex. Defaults to None.
+            air_density (float | None, optional): Air density. Defaults to None.
+            layout_x (NDArrayFloat | list[float] | None, optional): X-coordinates of the turbines.
+                Defaults to None.
+            layout_y (NDArrayFloat | list[float] | None, optional): Y-coordinates of the turbines.
+                Defaults to None.
+            turbine_type (list | None, optional): Turbine type. Defaults to None.
+            turbine_library_path (str | Path | None, optional): Path to the turbine library.
+                Defaults to None.
+            solver_settings (dict | None, optional): Solver settings. Defaults to None.
+            heterogeneous_inflow_config (None, optional): heterogeneous inflow configuration.
+                Defaults to None.
+            wind_data (type[WindDataBase] | None, optional): Wind data. Defaults to None.
+            yaw_angles (NDArrayFloat | list[float] | None, optional): Turbine yaw angles.
+                Defaults to None.
+            power_setpoints (NDArrayFloat | list[float] | list[float, None] | None, optional):
+                Turbine power setpoints.
+            disable_turbines (NDArrayBool | list[bool] | None, optional): NDArray with dimensions
+                n_findex x n_turbines. True values indicate the turbine is disabled at that findex
+                and the power setpoint at that position is set to 0. Defaults to None.
+
+        """
 
         if layout is not None:
             msg = "Use the `layout_x` and `layout_y` parameters in place of `layout` "
@@ -183,7 +242,16 @@ class ParallelFlorisModel(LoggingManager):
             layout_x=layout_x,
             layout_y=layout_y,
             turbine_type=turbine_type,
+            turbine_library_path=turbine_library_path,
             solver_settings=solver_settings,
+            heterogeneous_inflow_config=heterogeneous_inflow_config,
+            wind_data=wind_data,
+            yaw_angles=yaw_angles,
+            power_setpoints=power_setpoints,
+            awc_modes=awc_modes,
+            awc_amplitudes=awc_amplitudes,
+            awc_frequencies=awc_frequencies,
+            disable_turbines=disable_turbines,
         )
 
         # Reinitialize settings
@@ -269,20 +337,26 @@ class ParallelFlorisModel(LoggingManager):
             "'get_turbine_powers' or 'get_farm_power' directly."
         )
 
-    def get_turbine_powers(self, yaw_angles=None):
+    def get_turbine_powers(self, yaw_angles=None, no_wake=False):
         # Retrieve multiargs: preprocessing
         t0 = timerpc()
         multiargs = self._preprocessing(yaw_angles)
         t_preparation = timerpc() - t0
 
+        # Set the function based on whether wake is disabled
+        if not no_wake:
+            turbine_power_function = _get_turbine_powers_serial
+        else:
+            turbine_power_function = _get_turbine_powers_serial_no_wake
+
         # Perform parallel calculation
         t1 = timerpc()
         with self._PoolExecutor(self.max_workers) as p:
             if (self.interface == "mpi4py") or (self.interface == "multiprocessing"):
-                out = p.starmap(_get_turbine_powers_serial, multiargs)
+                out = p.starmap(turbine_power_function, multiargs)
             else:
                 out = p.map(
-                    _get_turbine_powers_serial,
+                    turbine_power_function,
                     [j[0] for j in multiargs],
                     [j[1] for j in multiargs]
                 )
@@ -293,8 +367,8 @@ class ParallelFlorisModel(LoggingManager):
         t2 = timerpc()
         turbine_powers = self._postprocessing(out)
         if self._is_uncertain:
-            turbine_powers = map_turbine_powers_uncertain(
-                unique_turbine_powers=turbine_powers,
+            turbine_powers = map_turbine_values_uncertain(
+                unique_turbine_values=turbine_powers,
                 map_to_expanded_inputs=self._map_to_expanded_inputs,
                 weights=self._weights,
                 n_unexpanded=self._n_unexpanded,
@@ -316,7 +390,7 @@ class ParallelFlorisModel(LoggingManager):
 
         return turbine_powers
 
-    def get_farm_power(self, yaw_angles=None, turbine_weights=None):
+    def get_farm_power(self, yaw_angles=None, turbine_weights=None, no_wake=False):
         if turbine_weights is None:
             # Default to equal weighing of all turbines when turbine_weights is None
             turbine_weights = np.ones(
@@ -338,7 +412,7 @@ class ParallelFlorisModel(LoggingManager):
             )
 
         # Calculate all turbine powers and apply weights
-        turbine_powers = self.get_turbine_powers(yaw_angles=yaw_angles)
+        turbine_powers = self.get_turbine_powers(yaw_angles=yaw_angles, no_wake=no_wake)
         turbine_powers = np.multiply(turbine_weights, turbine_powers)
 
         return np.sum(turbine_powers, axis=1)
@@ -392,16 +466,17 @@ class ParallelFlorisModel(LoggingManager):
                 watt-hours.
         """
 
-        # If no_wake==True, ignore parallelization because it's fast enough
-        if no_wake:
-            return self.fmodel.get_farm_AEP(
-                freq=freq,
-                cut_in_wind_speed=cut_in_wind_speed,
-                cut_out_wind_speed=cut_out_wind_speed,
-                yaw_angles=yaw_angles,
-                turbine_weights=turbine_weights,
-                no_wake=no_wake
-            )
+        # This code is out of date, let's just thread it through
+        # # If no_wake==True, ignore parallelization because it's fast enough
+        # if no_wake:
+        #     return self.fmodel.get_farm_AEP(
+        #         freq=freq,
+        #         cut_in_wind_speed=cut_in_wind_speed,
+        #         cut_out_wind_speed=cut_out_wind_speed,
+        #         yaw_angles=yaw_angles,
+        #         turbine_weights=turbine_weights,
+        #         no_wake=no_wake
+        #     )
 
         # Verify dimensions of the variable "freq"
         if ((self._is_uncertain and np.shape(freq)[0] != self._n_unexpanded) or
@@ -438,7 +513,9 @@ class ParallelFlorisModel(LoggingManager):
             )
 
         farm_power = (
-            self.get_farm_power(yaw_angles=yaw_angles, turbine_weights=turbine_weights)
+            self.get_farm_power(yaw_angles=yaw_angles,
+                                turbine_weights=turbine_weights,
+                                  no_wake=no_wake)
         )
 
         # Finally, calculate AEP in GWh
@@ -523,6 +600,67 @@ class ParallelFlorisModel(LoggingManager):
 
         return df_opt
 
+    def get_operation_model(self):
+        """Get the operation model of underlying fmodel.
+
+        Returns:
+            str: The operation_model.
+        """
+        return self.fmodel.get_operation_model()
+
+    def set_operation_model(self, operation_model):
+        """Set the operation model of underlying fmodel.
+
+        Args:
+            operation_model (str): The operation model to set.
+        """
+        self.fmodel.set_operation_model(operation_model)
+
+        # Reinitialize settings
+        self.__init__(
+            fmodel=self.fmodel,
+            max_workers=self._max_workers,
+            n_wind_condition_splits=self._n_wind_condition_splits,
+            interface=self.interface,
+            propagate_flowfield_from_workers=self.propagate_flowfield_from_workers,
+            print_timings=self.print_timings,
+        )
+
+    def get_param(self, param, param_idx=None):
+        """Get the parameter of underlying fmodel.
+
+        Args:
+            param (List[str]): A list of keys to traverse the FlorisModel dictionary.
+            param_idx (Optional[int], optional): The index to get the value at. Defaults to None.
+                If None, the entire parameter is returned.
+
+        Returns:
+            Any: The value of the parameter.
+        """
+        return self.fmodel.get_param(param, param_idx)
+
+    def set_param(self, param, value, param_idx=None):
+        """Set the parameter of underlying fmodel.
+
+        Args:
+            param (List[str]): A list of keys to traverse the FlorisModel dictionary.
+            value (Any): The value to set.
+            param_idx (Optional[int], optional): The index to set the value at. Defaults to None.
+        """
+        self.fmodel.set_param(param, value, param_idx)
+
+        # Reinitialize settings
+        self.__init__(
+            fmodel=self.fmodel,
+            max_workers=self._max_workers,
+            n_wind_condition_splits=self._n_wind_condition_splits,
+            interface=self.interface,
+            propagate_flowfield_from_workers=self.propagate_flowfield_from_workers,
+            print_timings=self.print_timings,
+        )
+
+
+
     @property
     def layout_x(self):
         return self.fmodel.layout_x
@@ -550,8 +688,3 @@ class ParallelFlorisModel(LoggingManager):
     @property
     def n_turbines(self):
         return self.fmodel.n_turbines
-
-
-    # @property
-    # def floris(self):
-    #     return self.fmodel.core

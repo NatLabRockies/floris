@@ -161,8 +161,8 @@ def test_numeric_dict_converter():
         floris_numeric_dict_converter(test_dict)
 
 def test_convert_to_path():
-    str_input = "../tests"
-    expected_path = (Path(__file__).parent / str_input).resolve()
+    str_input = Path(__file__)
+    expected_path = str_input.resolve()
 
     # Test that a string works
     test_str_input = convert_to_path(str_input)

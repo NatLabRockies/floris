@@ -1,0 +1,59 @@
+name: Case TwinPark FLORIS v4.0
+description: Two aligned wind turbines with 5D spacing as currently implemented in v4.0
+
+floris_version: v4.0
+
+logging:
+  console:
+    enable: true
+    # Can be one of "CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG".
+    level: WARNING
+  file:
+    enable: false
+    # Can be one of "CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG".
+    level: WARNING
+
+solver:
+  type: turbine_cubature_grid # turbine_grid
+  turbine_grid_points: 6
+
+farm:
+  layout_x:
+    - 0.0
+  layout_y:
+    - 0.0
+  turbine_type: # Constant CT turbine (TODO: implement in script?)
+    - nrel_5MW # Will be replaced in script
+
+# Configure the atmospheric conditions.
+flow_field:
+  air_density: 1.225
+  reference_wind_height: -1
+  turbulence_intensities:
+    - 0.06
+  wind_directions:
+    - 270.0
+  wind_speeds:
+    - 8.0
+  wind_shear: 0.0 # Needed to reproduce Pedersen et al's results with new model
+  wind_veer: 0.0
+
+# Configure the wake model.
+wake:
+  model_strings:
+    combination_model: sosfs
+    deflection_model: none
+    turbulence_model: none
+    velocity_model: turbopark # current TurboPark model in FLORIS
+  enable_secondary_steering: false
+  enable_yaw_added_recovery: false
+  enable_active_wake_mixing: false
+  enable_transverse_velocities: false
+  wake_velocity_parameters: # Parameters for the wake velocity deficit model
+    turbopark:
+      A: 0.04
+      sigma_max_rel: 4.0
+  wake_deflection_parameters:
+    none:
+  wake_turbulence_parameters:
+    none:

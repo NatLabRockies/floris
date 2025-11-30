@@ -51,8 +51,8 @@ class LayoutOptimization(LoggingManager):
         b_depth = list_depth(boundaries)
 
         boundary_specification_error_msg = (
-            "boundaries should be a list of coordinates (specifed as (x,y) "+\
-            "tuples) or as a list of list of tuples (for seperable regions)."
+            "boundaries should be a list of coordinates (specified as (x,y) "+\
+            "tuples) or as a list of list of tuples (for separable regions)."
         )
 
         if b_depth == 1:
@@ -130,7 +130,14 @@ class LayoutOptimization(LoggingManager):
         sol = self._optimize()
         return sol
 
-    def plot_layout_opt_results(self, plot_boundary_dict={}, ax=None, fontsize=16):
+    def plot_layout_opt_results(
+            self,
+            plot_boundary_dict={},
+            initial_locs_plotting_dict={},
+            final_locs_plotting_dict={},
+            ax=None,
+            fontsize=16
+        ):
 
         x_initial, y_initial, x_opt, y_opt = self._get_initial_and_final_locs()
 
@@ -140,6 +147,7 @@ class LayoutOptimization(LoggingManager):
             ax = fig.add_subplot(111)
             ax.set_aspect("equal")
 
+        # Handle default boundary plotting
         default_plot_boundary_dict = {
             "color":"None",
             "alpha":1,
@@ -148,9 +156,30 @@ class LayoutOptimization(LoggingManager):
         }
         plot_boundary_dict = {**default_plot_boundary_dict, **plot_boundary_dict}
 
+        # Handle default initial location plotting
+        default_initial_locs_plotting_dict = {
+            "marker":"o",
+            "color":"b",
+            "linestyle":"None",
+            "label":"Initial locations",
+        }
+        initial_locs_plotting_dict = {
+            **default_initial_locs_plotting_dict,
+            **initial_locs_plotting_dict
+        }
+
+        # Handle default final location plotting
+        default_final_locs_plotting_dict = {
+            "marker":"o",
+            "color":"r",
+            "linestyle":"None",
+            "label":"New locations",
+        }
+        final_locs_plotting_dict = {**default_final_locs_plotting_dict, **final_locs_plotting_dict}
+
         self.plot_layout_opt_boundary(plot_boundary_dict, ax=ax)
-        ax.plot(x_initial, y_initial, "ob", label="Initial locations")
-        ax.plot(x_opt, y_opt, "or", label="New locations")
+        ax.plot(x_initial, y_initial, **initial_locs_plotting_dict)
+        ax.plot(x_opt, y_opt, **final_locs_plotting_dict)
         ax.set_xlabel("x (m)", fontsize=fontsize)
         ax.set_ylabel("y (m)", fontsize=fontsize)
         ax.grid(True)

@@ -53,7 +53,7 @@ wind_rose = time_series.to_WindRose()
 
 # Plot the wind rose
 fig, ax = plt.subplots(subplot_kw={"polar": True})
-wind_rose.plot(ax=ax, ws_step=5, wd_step=15, legend_kwargs={"title": "WS"})
+wind_rose.plot(ax=ax, ws_step=5, wd_step=15, legend_kwargs={"label": "WS"})
 fig.suptitle("WindRose Plot")
 plt.show()
 plt.close()
@@ -62,9 +62,9 @@ wind_ti_rose = time_series.to_WindTIRose()
 
 # Plot the wind rose with TI
 fig, axs = plt.subplots(2, 1, figsize=(6, 8), subplot_kw={"polar": True})
-wind_ti_rose.plot(ax=axs[0], wind_rose_var="ws", legend_kwargs={"title": "WS"})
+wind_ti_rose.plot(ax=axs[0], wind_rose_var="ws", legend_kwargs={"label": "WS"})
 axs[0].set_title("Wind Direction and Wind Speed Frequencies")
-wind_ti_rose.plot(ax=axs[1], wind_rose_var="ti", legend_kwargs={"title": "TI"})
+wind_ti_rose.plot(ax=axs[1], wind_rose_var="ti", legend_kwargs={"label": "WS"})
 axs[1].set_title("Wind Direction and Turbulence Intensity Frequencies")
 fig.suptitle("WindTIRose Plots")
 plt.tight_layout()

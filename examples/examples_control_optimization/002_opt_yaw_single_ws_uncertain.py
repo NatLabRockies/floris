@@ -74,8 +74,7 @@ for tindex in range(3):
         color="r",
         marker="x",
     )
-    ax.set_title(f"Turbine {tindex}")
-    ax.set_ylabel("Yaw Offset (deg)")
+    ax.set_ylabel("Yaw Offset T{0:03d} (deg)".format(tindex))
     ax.legend()
     ax.grid()
 

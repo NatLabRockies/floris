@@ -1,0 +1,63 @@
+
+name: TurbOParkGauss
+description: Three turbines using TurbOParkGauss model
+floris_version: v4
+
+logging:
+  console:
+    enable: false
+    level: WARNING
+  file:
+    enable: false
+    level: WARNING
+
+solver:
+  type: turbine_cubature_grid # turboparkgauss does not work with type: turbine_grid
+  turbine_grid_points: 4      # 4 is sufficient in nearly all cases
+
+farm:
+  layout_x:
+  - 0.0
+  - 630.0
+  - 1260.0
+  layout_y:
+  - 0.0
+  - 0.0
+  - 0.0
+  turbine_type:
+  - nrel_5MW
+
+flow_field:
+  air_density: 1.225
+  reference_wind_height: -1
+  turbulence_intensities:
+  - 0.06
+  wind_directions:
+  - 270.0
+  wind_shear: 0.12
+  wind_speeds:
+  - 8.0
+  wind_veer: 0.0
+
+wake:
+  model_strings:
+    combination_model: sosfs
+    deflection_model: none
+    turbulence_model: none
+    velocity_model: turboparkgauss
+
+  enable_secondary_steering: false
+  enable_yaw_added_recovery: false
+  enable_transverse_velocities: false
+  enable_active_wake_mixing: false
+
+  wake_deflection_parameters:
+    none:
+
+  wake_velocity_parameters:
+    turboparkgauss:
+      A: 0.04
+      include_mirror_wake: true
+
+  wake_turbulence_parameters:
+    none:

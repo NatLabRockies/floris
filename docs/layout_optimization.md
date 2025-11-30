@@ -79,3 +79,27 @@ shading indicating wind speed heterogeneity (lighter shade is lower wind speed, 
 higher wind speed). The progress of each of the genetic individuals in the optimization process is
 shown in the right-hand plot.
 ![](plot_complex_docs.png)
+
+## Gridded layout optimization
+The `LayoutOptimizationGridded` class allows users to quickly find a layout that fits the most
+turbines possible into the specified boundary area, given that the turbines are arranged in a
+gridded layout.
+To do so, a range of different rotations and translations of a generic gridded arrangement are
+tried, and the one that fits the most turbines into the boundary area is selected. No AEP
+evaluations are performed; rather, the cost function $f$ to be maximized is simply $N$, the number
+of turbines, and there is an additional constraint that the turbines are arranged in a gridded
+fashion. Note that in other layout optimizers, $N$ is fixed.
+
+We envisage that this will be useful for users that want to quickly generate a layout to
+"fill" a boundary region in a gridded manner. By default, the gridded arrangement is a square grid
+with spacing of `min_dist` (or `min_dist_D`); however, instantiating with the `hexagonal_packing`
+keyword argument set to `True` will provide a grid that offsets the rows to enable tighter packing
+of turbines while still satisfying the `min_dist`.
+
+As with the `LayoutOptimizationRandomSearch` class, the boundaries specified can be complex (and
+may contain separate areas).
+User settings include `rotation_step`, which specifies the step size for rotating the grid
+(in degrees); `rotation_range`, which specifies the range of rotation angles; `translation_step` or
+`translation_step_D`, which specifies the step size for translating the grid in meters or rotor
+diameters, respectively; and `translation_range`, which specifies the range of possible
+translations. All come with default values, which we expect to be suitable for many or most users.

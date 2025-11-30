@@ -1,21 +1,31 @@
-from __future__ import annotations
-
 from pathlib import Path
+from typing import (
+    Any,
+    List,
+    Optional,
+)
 
 import numpy as np
 
 from floris import FlorisModel
+from floris.core import average_velocity, State
 from floris.logging_manager import LoggingManager
+from floris.par_floris_model import ParFlorisModel
 from floris.type_dec import (
     floris_array_converter,
     NDArrayBool,
     NDArrayFloat,
 )
-from floris.utilities import wrap_180
+from floris.utilities import (
+    nested_get,
+    nested_set,
+    wrap_180,
+)
 from floris.wind_data import (
     TimeSeries,
     WindDataBase,
     WindRose,
+    WindRoseWRG,
     WindTIRose,
 )
 
@@ -35,13 +45,10 @@ class UncertainFlorisModel(LoggingManager):
     conditions from within the expanded set of conditions are run.
 
     Args:
-        configuration (:py:obj:`dict`): The Floris configuration dictionary or YAML file.
-            The configuration should have the following inputs specified.
-                - **flow_field**: See `floris.simulation.flow_field.FlowField` for more details.
-                - **farm**: See `floris.simulation.farm.Farm` for more details.
-                - **turbine**: See `floris.simulation.turbine.Turbine` for more details.
-                - **wake**: See `floris.simulation.wake.WakeManager` for more details.
-                - **logging**: See `floris.simulation.core.Core` for more details.
+        configuration (dict | str | Path | FlorisModel | ParFlorisModel):  The configuration
+            for the wind farm.  This can be a dictionary, a path to a yaml file, or a FlorisModel
+            or ParFlorisModel object.  If dict, str or Path, a new FlorisModel object is
+            created.  If a FlorisModel or ParFlorisModel object a copy of the object is made.
         wd_resolution (float, optional): The resolution of wind direction for generating
             gaussian blends, in degrees.  Defaults to 1.0.
         ws_resolution (float, optional): The resolution of wind speed, in m/s. Defaults to 1.0.
@@ -64,7 +71,7 @@ class UncertainFlorisModel(LoggingManager):
 
     def __init__(
         self,
-        configuration: dict | str | Path,
+        configuration: dict | str | Path | FlorisModel | ParFlorisModel,
         wd_resolution=1.0,  # Degree
         ws_resolution=1.0,  # m/s
         ti_resolution=0.01,
@@ -76,6 +83,10 @@ class UncertainFlorisModel(LoggingManager):
         fix_yaw_to_nominal_direction=False,
         verbose=False,
     ):
+        # Check validity of inputs
+        if wd_std <= 0:
+            raise ValueError("wd_std must be strictly greater than 0.")
+
         # Save these inputs
         self.wd_resolution = wd_resolution
         self.ws_resolution = ws_resolution
@@ -98,13 +109,27 @@ class UncertainFlorisModel(LoggingManager):
         self.weights = self._get_weights(self.wd_std, self.wd_sample_points)
 
         # Instantiate the un-expanded FlorisModel
-        self.fmodel_unexpanded = FlorisModel(configuration)
+        if isinstance(configuration, (FlorisModel, ParFlorisModel)):
+            self.fmodel_unexpanded = configuration.copy()
+            # Copy over any control setpoints, wind data, if not already done.
+            self.fmodel_unexpanded.set(
+                yaw_angles=configuration.core.farm.yaw_angles,
+                power_setpoints=configuration.core.farm.power_setpoints,
+                awc_modes=configuration.core.farm.awc_modes,
+                awc_amplitudes=configuration.core.farm.awc_amplitudes,
+                awc_frequencies=configuration.core.farm.awc_frequencies,
+                wind_data=configuration.wind_data,
+            )
+        elif isinstance(configuration, (dict, str, Path)):
+            self.fmodel_unexpanded = FlorisModel(configuration)
+        else:
+            raise ValueError(
+                "configuration must be a FlorisModel, ParFlorisModel, dict, str, or Path"
+            )
 
         # Call set at this point with no arguments so ready to run
         self.set()
 
-        # Instantiate the expanded FlorisModel
-        # self.core_interface = FlorisModel(configuration)
 
     def set(
         self,
@@ -249,8 +274,8 @@ class UncertainFlorisModel(LoggingManager):
         """
 
         # Pass to off-class function
-        result = map_turbine_powers_uncertain(
-            unique_turbine_powers=self.fmodel_expanded._get_turbine_powers(),
+        result = map_turbine_values_uncertain(
+            unique_turbine_values=self.fmodel_expanded._get_turbine_powers(),
             map_to_expanded_inputs=self.map_to_expanded_inputs,
             weights=self.weights,
             n_unexpanded=self.n_unexpanded,
@@ -272,7 +297,7 @@ class UncertainFlorisModel(LoggingManager):
         turbine_powers = self._get_turbine_powers()
 
         if self.fmodel_unexpanded.wind_data is not None:
-            if type(self.fmodel_unexpanded.wind_data) is WindRose:
+            if isinstance(self.fmodel_unexpanded.wind_data, (WindRose, WindRoseWRG)):
                 turbine_powers_rose = np.full(
                     (
                         len(self.fmodel_unexpanded.wind_data.wd_flat),
@@ -280,9 +305,9 @@ class UncertainFlorisModel(LoggingManager):
                     ),
                     np.nan,
                 )
-                turbine_powers_rose[
-                    self.fmodel_unexpanded.wind_data.non_zero_freq_mask, :
-                ] = turbine_powers
+                turbine_powers_rose[self.fmodel_unexpanded.wind_data.non_zero_freq_mask, :] = (
+                    turbine_powers
+                )
                 turbine_powers = turbine_powers_rose.reshape(
                     len(self.fmodel_unexpanded.wind_data.wind_directions),
                     len(self.fmodel_unexpanded.wind_data.wind_speeds),
@@ -296,15 +321,89 @@ class UncertainFlorisModel(LoggingManager):
                     ),
                     np.nan,
                 )
-                turbine_powers_rose[
-                    self.fmodel_unexpanded.wind_data.non_zero_freq_mask, :
-                ] = turbine_powers
+                turbine_powers_rose[self.fmodel_unexpanded.wind_data.non_zero_freq_mask, :] = (
+                    turbine_powers
+                )
                 turbine_powers = turbine_powers_rose.reshape(
                     len(self.fmodel_unexpanded.wind_data.wind_directions),
                     len(self.fmodel_unexpanded.wind_data.wind_speeds),
                     len(self.fmodel_unexpanded.wind_data.turbulence_intensities),
                     self.fmodel_unexpanded.core.farm.n_turbines,
                 )
+
+        return turbine_powers
+
+    def get_expected_turbine_powers(self, freq=None):
+        """
+        Compute the expected (mean) power of each turbine.
+
+        Args:
+            freq (NDArrayFloat): NumPy array with shape
+                with the frequencies of each wind direction and
+                wind speed combination.  freq is either a 1D array,
+                in which case the same frequencies are used for all
+                turbines, or a 2D array with shape equal to
+                (n_findex, n_turbines), in which case each turbine has a unique
+                set of frequencies (this is the case for example using
+                WindRoseByTurbine).
+
+                    These frequencies should typically sum across rows
+                up to 1.0 and are used to weigh the wind farm power for every
+                condition in calculating the wind farm's AEP. Defaults to None.
+                If None and a WindData object was supplied, the WindData object's
+                frequencies will be used. Otherwise, uniform frequencies are assumed
+                (i.e., a simple mean over the findices is computed).
+        """
+
+        turbine_powers = self._get_turbine_powers()
+
+        if freq is None:
+            if self.fmodel_unexpanded.wind_data is None:
+                freq = np.array([1.0 / self.fmodel_unexpanded.core.flow_field.n_findex])
+            else:
+                freq = self.fmodel_unexpanded.wind_data.unpack_freq()
+
+        # If freq is 2d, then use the per turbine frequencies
+        if len(np.shape(freq)) == 2:
+            return np.nansum(np.multiply(freq, turbine_powers), axis=0)
+        else:
+            return np.nansum(np.multiply(freq.reshape(-1, 1), turbine_powers), axis=0)
+
+    def _get_weighted_turbine_powers(
+        self,
+        turbine_weights=None,
+        use_turbulence_correction=False,
+    ):
+        if use_turbulence_correction:
+            raise NotImplementedError(
+                "Turbulence correction is not yet implemented in the power calculation."
+            )
+
+        # Confirm run() has been run on the expanded fmodel
+        if self.fmodel_expanded.core.state is not State.USED:
+            raise RuntimeError(
+                "Can't run function `FlorisModel.get_farm_power` without "
+                "first running `FlorisModel.run`."
+            )
+
+        if turbine_weights is None:
+            # Default to equal weighing of all turbines when turbine_weights is None
+            turbine_weights = np.ones(
+                (
+                    self.fmodel_unexpanded.core.flow_field.n_findex,
+                    self.fmodel_unexpanded.core.farm.n_turbines,
+                )
+            )
+        elif len(np.shape(turbine_weights)) == 1:
+            # Deal with situation when 1D array is provided
+            turbine_weights = np.tile(
+                turbine_weights,
+                (self.fmodel_unexpanded.core.flow_field.n_findex, 1),
+            )
+
+        # Calculate all turbine powers and apply weights
+        turbine_powers = self._get_turbine_powers()
+        turbine_powers = np.multiply(turbine_weights, turbine_powers)
 
         return turbine_powers
 
@@ -337,29 +436,9 @@ class UncertainFlorisModel(LoggingManager):
         Returns:
             float: Sum of wind turbine powers in W.
         """
-        if use_turbulence_correction:
-            raise NotImplementedError(
-                "Turbulence correction is not yet implemented in the power calculation."
-            )
-
-        if turbine_weights is None:
-            # Default to equal weighing of all turbines when turbine_weights is None
-            turbine_weights = np.ones(
-                (
-                    self.n_unexpanded,
-                    self.fmodel_unexpanded.core.farm.n_turbines,
-                )
-            )
-        elif len(np.shape(turbine_weights)) == 1:
-            # Deal with situation when 1D array is provided
-            turbine_weights = np.tile(
-                turbine_weights,
-                (self.n_unexpanded, 1),
-            )
-
-        # Calculate all turbine powers and apply weights
-        turbine_powers = self._get_turbine_powers()
-        turbine_powers = np.multiply(turbine_weights, turbine_powers)
+        turbine_powers = self._get_weighted_turbine_powers(
+            turbine_weights=turbine_weights, use_turbulence_correction=use_turbulence_correction
+        )
 
         return np.sum(turbine_powers, axis=1)
 
@@ -399,7 +478,7 @@ class UncertainFlorisModel(LoggingManager):
         farm_power = self._get_farm_power(turbine_weights, use_turbulence_correction)
 
         if self.fmodel_unexpanded.wind_data is not None:
-            if type(self.fmodel_unexpanded.wind_data) is WindRose:
+            if isinstance(self.fmodel_unexpanded.wind_data, (WindRose, WindRoseWRG)):
                 farm_power_rose = np.full(len(self.fmodel_unexpanded.wind_data.wd_flat), np.nan)
                 farm_power_rose[self.fmodel_unexpanded.wind_data.non_zero_freq_mask] = farm_power
                 farm_power = farm_power_rose.reshape(
@@ -449,15 +528,23 @@ class UncertainFlorisModel(LoggingManager):
                 n_turbines). Defaults to None.
         """
 
-        farm_power = self._get_farm_power(turbine_weights=turbine_weights)
-
         if freq is None:
             if self.fmodel_unexpanded.wind_data is None:
-                freq = np.array([1.0 / self.core.flow_field.n_findex])
+                freq = np.array([1.0 / self.fmodel_unexpanded.core.flow_field.n_findex])
             else:
                 freq = self.fmodel_unexpanded.wind_data.unpack_freq()
 
-        return np.nansum(np.multiply(freq, farm_power))
+        farm_power = self._get_farm_power(turbine_weights=turbine_weights)
+
+        # If freq is 1d
+        if len(np.shape(freq)) == 1:
+            farm_power = self._get_farm_power(turbine_weights=turbine_weights)
+            return np.nansum(np.multiply(freq, farm_power))
+        else:
+            weighted_turbine_powers = self._get_weighted_turbine_powers(
+                turbine_weights=turbine_weights,
+            )
+            return np.nansum(np.multiply(freq, weighted_turbine_powers))
 
     def get_farm_AEP(
         self,
@@ -497,10 +584,8 @@ class UncertainFlorisModel(LoggingManager):
                 The Annual Energy Production (AEP) for the wind farm in
                 watt-hours.
         """
-        if (
-            freq is None
-            and not isinstance(self.fmodel_unexpanded.wind_data, WindRose)
-            and not isinstance(self.fmodel_unexpanded.wind_data, WindTIRose)
+        if freq is None and not isinstance(
+            self.fmodel_unexpanded.wind_data, (WindRose, WindRoseWRG, WindTIRose)
         ):
             self.logger.warning(
                 "Computing AEP with uniform frequencies. Results results may not reflect annual "
@@ -509,6 +594,146 @@ class UncertainFlorisModel(LoggingManager):
 
         return (
             self.get_expected_farm_power(freq=freq, turbine_weights=turbine_weights)
+            * hours_per_year
+        )
+
+    def get_expected_farm_value(
+        self,
+        freq=None,
+        values=None,
+        turbine_weights=None,
+    ) -> float:
+        """
+        Compute the expected (mean) value produced by the wind farm. This is
+        computed by multiplying the wind farm power for each wind condition by
+        the corresponding value of the power generated (e.g., electricity
+        market price per unit of energy), then weighting by frequency and
+        summing over all conditions.
+
+        Args:
+            freq (NDArrayFloat): NumPy array with shape (n_findex)
+                with the frequencies of each wind condition combination.
+                These frequencies should typically sum up to 1.0 and are used
+                to weigh the wind farm value for every condition in calculating
+                the wind farm's expected value. Defaults to None. If None and a
+                WindData object is supplied, the WindData object's frequencies
+                will be used. Otherwise, uniform frequencies are assumed (i.e.,
+                a simple mean over the findices is computed).
+            values (NDArrayFloat): NumPy array with shape (n_findex)
+                with the values corresponding to the power generated for each
+                wind condition combination. The wind farm power is multiplied
+                by the value for every condition in calculating the wind farm's
+                expected value. Defaults to None. If None and a WindData object
+                is supplied, the WindData object's values will be used.
+                Otherwise, a value of 1 for all conditions is assumed (i.e.,
+                the expected farm value will be equivalent to the expected farm
+                power).
+            turbine_weights (NDArrayFloat | list[float] | None, optional):
+                weighing terms that allow the user to emphasize power at
+                particular turbines and/or completely ignore the power
+                from other turbines. This is useful when, for example, you are
+                modeling multiple wind farms in a single floris object. If you
+                only want to calculate the value production for one of those
+                farms and include the wake effects of the neighboring farms,
+                you can set the turbine_weights for the neighboring farms'
+                turbines to 0.0. The array of turbine powers from floris
+                is multiplied with this array in the calculation of the
+                expected value. If None, this is an array with all values 1.0
+                and with shape equal to (n_findex, n_turbines). Defaults to None.
+
+        Returns:
+            float:
+                The expected value produced by the wind farm in units of value.
+        """
+        if freq is None:
+            if self.fmodel_unexpanded.wind_data is None:
+                freq = np.array([1.0 / self.fmodel_unexpanded.core.flow_field.n_findex])
+            else:
+                freq = self.fmodel_unexpanded.wind_data.unpack_freq()
+        # If freq is 1d
+        if len(np.shape(freq)) == 1:
+            farm_power = self._get_farm_power(turbine_weights=turbine_weights)
+            farm_power = np.multiply(freq, farm_power)
+        else:
+            weighted_turbine_powers = self._get_weighted_turbine_powers(
+                turbine_weights=turbine_weights
+            )
+            farm_power = np.nansum(np.multiply(freq, weighted_turbine_powers), axis=1)
+        if values is None:
+            if self.fmodel_unexpanded.wind_data is None:
+                values = np.array([1.0])
+            else:
+                values = self.fmodel_unexpanded.wind_data.unpack_value()
+        return np.nansum(np.multiply(values, farm_power))
+
+    def get_farm_AVP(
+        self,
+        freq=None,
+        values=None,
+        turbine_weights=None,
+        hours_per_year=8760,
+    ) -> float:
+        """
+        Estimate annual value production (AVP) for distribution of wind
+        conditions, frequencies of occurrence, and corresponding values of
+        power generated (e.g., electricity price per unit of energy).
+
+        Args:
+            freq (NDArrayFloat): NumPy array with shape (n_findex)
+                with the frequencies of each wind condition combination.
+                These frequencies should typically sum up to 1.0 and are used
+                to weigh the wind farm value for every condition in calculating
+                the wind farm's AVP. Defaults to None. If None and a
+                WindData object is supplied, the WindData object's frequencies
+                will be used. Otherwise, uniform frequencies are assumed (i.e.,
+                a simple mean over the findices is computed).
+            values (NDArrayFloat): NumPy array with shape (n_findex)
+                with the values corresponding to the power generated for each
+                wind condition combination. The wind farm power is multiplied
+                by the value for every condition in calculating the wind farm's
+                AVP. Defaults to None. If None and a WindData object is
+                supplied, the WindData object's values will be used. Otherwise,
+                a value of 1 for all conditions is assumed (i.e., the AVP will
+                be equivalent to the AEP).
+            turbine_weights (NDArrayFloat | list[float] | None, optional):
+                weighing terms that allow the user to emphasize power at
+                particular turbines and/or completely ignore the power
+                from other turbines. This is useful when, for example, you are
+                modeling multiple wind farms in a single floris object. If you
+                only want to calculate the value production for one of those
+                farms and include the wake effects of the neighboring farms,
+                you can set the turbine_weights for the neighboring farms'
+                turbines to 0.0. The array of turbine powers from floris is
+                multiplied with this array in the calculation of the AVP. If
+                None, this is an array with all values 1.0 and with shape equal
+                to (n_findex, n_turbines). Defaults to None.
+            hours_per_year (float, optional): Number of hours in a year.
+                Defaults to 365 * 24.
+
+        Returns:
+            float:
+                The Annual Value Production (AVP) for the wind farm in units
+                of value.
+        """
+        if (
+            freq is None and not isinstance(
+                self.fmodel_unexpanded.wind_data,
+                (WindRose, WindRoseWRG, WindTIRose)
+            )
+        ):
+            self.logger.warning(
+                "Computing AVP with uniform frequencies. Results results may not reflect annual "
+                "operation."
+            )
+
+        if values is None and self.fmodel_unexpanded.wind_data is None:
+            self.logger.warning(
+                "Computing AVP with uniform value equal to 1. Results will be equivalent to "
+                "annual energy production."
+            )
+
+        return (
+            self.get_expected_farm_value(freq=freq, values=values, turbine_weights=turbine_weights)
             * hours_per_year
         )
 
@@ -718,21 +943,116 @@ class UncertainFlorisModel(LoggingManager):
 
         return weights
 
-    def copy(self):
-        """Create an independent copy of the current UncertainFlorisModel object"""
-        return UncertainFlorisModel(
-            self.fmodel_unexpanded.core.as_dict(),
-            wd_resolution=self.wd_resolution,
-            ws_resolution=self.ws_resolution,
-            ti_resolution=self.ti_resolution,
-            yaw_resolution=self.yaw_resolution,
-            power_setpoint_resolution=self.power_setpoint_resolution,
-            awc_amplitude_resolution=self.awc_amplitude_resolution,
-            wd_std=self.wd_std,
-            wd_sample_points=self.wd_sample_points,
-            fix_yaw_to_nominal_direction=self.fix_yaw_to_nominal_direction,
-            verbose=self.verbose,
+    def get_operation_model(self) -> str:
+        """Get the operation model of a FlorisModel.
+
+        Returns:
+            str: The operation_model.
+        """
+        operation_models = [
+            self.fmodel_unexpanded.core.farm.turbine_definitions[tindex]["operation_model"]
+            for tindex in range(self.fmodel_unexpanded.core.farm.n_turbines)
+        ]
+        if len(set(operation_models)) == 1:
+            return operation_models[0]
+        else:
+            return operation_models
+
+    def set_operation_model(self, operation_model: str | List[str]):
+        """Set the turbine operation model(s).
+
+        Args:
+            operation_model (str): The operation model to set.
+        """
+        if isinstance(operation_model, str):
+            if len(self.fmodel_unexpanded.core.farm.turbine_type) == 1:
+                # Set a single one here, then, and return
+                turbine_type = self.fmodel_unexpanded.core.farm.turbine_definitions[0]
+                turbine_type["operation_model"] = operation_model
+                self.set(
+                    turbine_type=[turbine_type],
+                    reference_wind_height=self.reference_wind_height
+                )
+                return
+            else:
+                operation_model = [operation_model] * self.fmodel_unexpanded.core.farm.n_turbines
+
+        if len(operation_model) != self.fmodel_unexpanded.core.farm.n_turbines:
+            raise ValueError(
+                "The length of the operation_model list must be " "equal to the number of turbines."
+            )
+
+        turbine_type_list = self.fmodel_unexpanded.core.farm.turbine_definitions
+
+        for tindex in range(self.fmodel_unexpanded.core.farm.n_turbines):
+            turbine_type_list[tindex]["turbine_type"] = (
+                turbine_type_list[tindex]["turbine_type"] + "_" + operation_model[tindex]
+            )
+            turbine_type_list[tindex]["operation_model"] = operation_model[tindex]
+
+        self.set(
+            turbine_type=turbine_type_list,
+            reference_wind_height=self.reference_wind_height
         )
+
+    def copy(self):
+        """Create an independent copy of the current UncertainFlorisModel object
+
+        When creating the copy, this method uses self.__class__(), rather than
+        UncertainFlorisModel() directly, so that subclasses of UncertainFlorisModel can inherit this
+        method and return instantiations of their own class, rather than the UncertainFlorisModel
+        class.
+        """
+        return self.__class__(self.fmodel_unexpanded.copy(), **self.secondary_init_kwargs)
+
+    def get_param(self, param: List[str], param_idx: Optional[int] = None) -> Any:
+        """Get a parameter from a FlorisModel object.
+
+        Args:
+            param (List[str]): A list of keys to traverse the FlorisModel dictionary.
+            param_idx (Optional[int], optional): The index to get the value at. Defaults to None.
+                If None, the entire parameter is returned.
+
+        Returns:
+            Any: The value of the parameter.
+        """
+        fm_dict = self.fmodel_unexpanded.core.as_dict()
+
+        if param_idx is None:
+            return nested_get(fm_dict, param)
+        else:
+            return nested_get(fm_dict, param)[param_idx]
+
+    def set_param(self, param: List[str], value: Any, param_idx: Optional[int] = None):
+        """Set a parameter in a FlorisModel object.
+
+        Args:
+            param (List[str]): A list of keys to traverse the FlorisModel dictionary.
+            value (Any): The value to set.
+            param_idx (Optional[int], optional): The index to set the value at. Defaults to None.
+        """
+        fm_dict_mod = self.fmodel_unexpanded.core.as_dict()
+        nested_set(fm_dict_mod, param, value, param_idx)
+        self.fmodel_unexpanded.__init__(fm_dict_mod, **self.fmodel_unexpanded.secondary_init_kwargs)
+        self.set()
+
+    @property
+    def secondary_init_kwargs(self):
+        """
+        UncertainFlorisModel secondary keyword arguments (after configuration).
+        """
+        return {
+            "wd_resolution": self.wd_resolution,
+            "ws_resolution": self.ws_resolution,
+            "ti_resolution": self.ti_resolution,
+            "yaw_resolution": self.yaw_resolution,
+            "power_setpoint_resolution": self.power_setpoint_resolution,
+            "awc_amplitude_resolution": self.awc_amplitude_resolution,
+            "wd_std": self.wd_std,
+            "wd_sample_points": self.wd_sample_points,
+            "fix_yaw_to_nominal_direction": self.fix_yaw_to_nominal_direction,
+            "verbose": self.verbose,
+        }
 
     @property
     def layout_x(self):
@@ -805,6 +1125,16 @@ class UncertainFlorisModel(LoggingManager):
         return self.fmodel_unexpanded.core.farm.n_turbines
 
     @property
+    def reference_wind_height(self):
+        """
+        Reference wind height.
+
+        Returns:
+            float: Reference wind height.
+        """
+        return self.fmodel_unexpanded.core.flow_field.reference_wind_height
+
+    @property
     def core(self):
         """
         Returns the core of the unexpanded model.
@@ -813,6 +1143,27 @@ class UncertainFlorisModel(LoggingManager):
             Floris: The core of the unexpanded model.
         """
         return self.fmodel_unexpanded.core
+
+    @property
+    def turbine_average_velocities(self) -> NDArrayFloat:
+        # Get the expanded velocities
+        expanded_velocities = average_velocity(
+            velocities=self.fmodel_expanded.core.flow_field.u,
+            method=self.fmodel_expanded.core.grid.average_method,
+            cubature_weights=self.fmodel_expanded.core.grid.cubature_weights,
+        )
+
+        # Pass to off-class function
+        result = map_turbine_values_uncertain(
+            unique_turbine_values=expanded_velocities,
+            map_to_expanded_inputs=self.map_to_expanded_inputs,
+            weights=self.weights,
+            n_unexpanded=self.n_unexpanded,
+            n_sample_points=self.n_sample_points,
+            n_turbines=self.fmodel_unexpanded.core.farm.n_turbines,
+        )
+
+        return result
 
 
 def map_turbine_powers_uncertain(
@@ -823,35 +1174,57 @@ def map_turbine_powers_uncertain(
     n_sample_points,
     n_turbines,
 ):
-    """Calculates the power at each turbine in the wind farm based on uncertainty weights.
+    """
+    Alias for map_turbine_values_uncertain.
+    """
+    # Deprecation warning
+    print("map_turbine_powers_uncertain is deprecated, use map_turbine_values_uncertain instead.")
+    return map_turbine_values_uncertain(
+        unique_turbine_values=unique_turbine_powers,
+        map_to_expanded_inputs=map_to_expanded_inputs,
+        weights=weights,
+        n_unexpanded=n_unexpanded,
+        n_sample_points=n_sample_points,
+        n_turbines=n_turbines,
+    )
 
-    This function calculates the power at each turbine in the wind farm, considering
-    the underlying turbine powers and applying a weighted sum to handle uncertainty.
+def map_turbine_values_uncertain(
+    unique_turbine_values,
+    map_to_expanded_inputs,
+    weights,
+    n_unexpanded,
+    n_sample_points,
+    n_turbines,
+):
+    """Calculates values at each turbine in the wind farm based on uncertainty weights.
+
+    This function calculates the values (e.g. power, velocity) at each turbine in the wind farm,
+    considering the underlying turbine values and applying a weighted sum to handle uncertainty.
 
     Args:
-        unique_turbine_powers (NDArrayFloat): An array of unique turbine powers from the
-            underlying FlorisModel
-        map_to_expanded_inputs (NDArrayFloat): An array of indices mapping the unique powers to
-            the expanded powers
+        unique_turbine_values (NDArrayFloat): An array of unique turbine powers, velocities, etc
+            from the underlying FlorisModel
+        map_to_expanded_inputs (NDArrayFloat): An array of indices mapping the unique values to
+            the expanded values
         weights (NDArrayFloat): An array of weights for each wind direction sample point
         n_unexpanded (int): The number of unexpanded conditions
         n_sample_points (int): The number of wind direction sample points
         n_turbines (int): The number of turbines in the wind farm
 
     Returns:
-        NDArrayFloat: An array containing the powers at each turbine for each findex.
+        NDArrayFloat: An array containing the values at each turbine for each findex.
 
     """
 
     # Expand back to the expanded value
-    expanded_turbine_powers = unique_turbine_powers[map_to_expanded_inputs]
+    expanded_turbine_values = unique_turbine_values[map_to_expanded_inputs]
 
     # Reshape the weights array to make it compatible with broadcasting
     weights_reshaped = weights[:, np.newaxis]
 
-    # Reshape expanded_turbine_powers into blocks
+    # Reshape expanded_turbine_values into blocks
     blocks = np.reshape(
-        expanded_turbine_powers,
+        expanded_turbine_values,
         (n_unexpanded, n_sample_points, n_turbines),
         order="F",
     )
@@ -893,7 +1266,7 @@ class ApproxFlorisModel(UncertainFlorisModel):
             yaw_resolution,
             power_setpoint_resolution,
             awc_amplitude_resolution,
-            wd_std=1.0,
+            wd_std=1.0,  # Arbitrary nonzero value, not used since only one sample point
             wd_sample_points=[0],
             fix_yaw_to_nominal_direction=False,
             verbose=verbose,
@@ -905,3 +1278,18 @@ class ApproxFlorisModel(UncertainFlorisModel):
         self.yaw_resolution = yaw_resolution
         self.power_setpoint_resolution = power_setpoint_resolution
         self.awc_amplitude_resolution = awc_amplitude_resolution
+
+    @property
+    def secondary_init_kwargs(self):
+        """
+        ApproxFlorisModel secondary keyword arguments (after configuration).
+        """
+        return {
+            "wd_resolution": self.wd_resolution,
+            "ws_resolution": self.ws_resolution,
+            "ti_resolution": self.ti_resolution,
+            "yaw_resolution": self.yaw_resolution,
+            "power_setpoint_resolution": self.power_setpoint_resolution,
+            "awc_amplitude_resolution": self.awc_amplitude_resolution,
+            "verbose": self.verbose,
+        }

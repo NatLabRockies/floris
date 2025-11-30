@@ -893,6 +893,7 @@ def test_wind_ti_rose_aggregate():
     np.testing.assert_allclose(wind_rose.wind_speeds, wind_rose_2.wind_speeds)
     np.testing.assert_allclose(wind_rose.turbulence_intensities, wind_rose_2.turbulence_intensities)
 
+    wind_rose_2 = copy.deepcopy(wind_rose)
     wind_rose_2.downsample(ti_step=0.04, inplace=True)
     np.testing.assert_allclose(
         wind_rose_aggregate.turbulence_intensities, wind_rose_2.turbulence_intensities

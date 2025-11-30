@@ -25,6 +25,7 @@ from floris.core.wake_velocity import (
     GaussVelocityDeficit,
     JensenVelocityDeficit,
     NoneVelocityDeficit,
+    TurboparkgaussVelocityDeficit,
     TurbOParkVelocityDeficit,
 )
 
@@ -53,6 +54,7 @@ MODEL_MAP = {
         "jensen": JensenVelocityDeficit,
         "turbopark": TurbOParkVelocityDeficit,
         "empirical_gauss": EmpiricalGaussVelocityDeficit,
+        "turboparkgauss": TurboparkgaussVelocityDeficit,
     },
 }
 

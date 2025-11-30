@@ -1,6 +1,3 @@
-
-from __future__ import annotations
-
 import copy
 from collections.abc import Callable
 from pathlib import Path
@@ -120,6 +117,10 @@ class Farm(BaseClass):
 
     internal_turbine_library: Path = field(init=False, default=default_turbine_library_path)
 
+    # Private attributes
+    _turbine_types: List = field(init=False, validator=iter_validator(list, str), factory=list)
+    _turbine_definition_cache: dict = field(init=False, factory=dict)
+
     def __attrs_post_init__(self) -> None:
         # Turbine definitions can be supplied in three ways:
         # - A string selecting a turbine in the floris turbine library
@@ -134,21 +135,31 @@ class Farm(BaseClass):
         # This allows to read the yaml input files once rather than every time they're given.
         # In other words, if the turbine type is already in the cache, skip that iteration of
         # the for-loop.
-        turbine_definition_cache = {}
+
         for t in self.turbine_type:
             # If a turbine type is a dict, then it was either preprocessed by the yaml
             # library to resolve the "!include" or it was set in a script as a dict. In either case,
             # add an entry to the cache
             if isinstance(t, dict):
-                if t["turbine_type"] in turbine_definition_cache:
-                    continue
-                turbine_definition_cache[t["turbine_type"]] = t
+                if t["turbine_type"] in self._turbine_definition_cache:
+                    if self._turbine_definition_cache[t["turbine_type"]] == t:
+                        continue # Skip t if already loaded
+                    else:
+                        raise ValueError(
+                            "Two different turbine definitions have the same name: "\
+                            f"'{t['turbine_type']}'. "\
+                            "Please specify a unique 'turbine_type' for each turbine definition."
+                        )
+                self._turbine_definition_cache[t["turbine_type"]] = t
+                self._turbine_definition_cache[t["turbine_type"]]["turbine_library_path"] = (
+                    self.turbine_library_path
+                )
 
             # If a turbine type is a string, then it is expected in the internal or external
             # turbine library
             if isinstance(t, str):
-                if t in turbine_definition_cache:
-                    continue
+                if t in self._turbine_definition_cache:
+                    continue # Skip t if already loaded
 
                 # Check if the file exists in the internal and/or external library
                 internal_fn = (self.internal_turbine_library / t).with_suffix(".yaml")
@@ -174,7 +185,10 @@ class Farm(BaseClass):
                         f"The turbine type: {t} does not exist in either the internal or"
                         " external turbine library."
                     )
-                turbine_definition_cache[t] = load_yaml(full_path)
+                self._turbine_definition_cache[t] = load_yaml(full_path)
+                self._turbine_definition_cache[t]["turbine_library_path"] = (
+                    self.turbine_library_path
+                )
 
         # Convert any dict entries in the turbine_type list to the type string. Since the
         # definition is saved above, we can make the whole list consistent now to use it
@@ -184,23 +198,23 @@ class Farm(BaseClass):
         # types must be used. If we modify that directly and change its shape, recreating this
         # class with a different layout but not a new self.turbine_type could cause the data
         # to be out of sync.
-        _turbine_types = [
+        self._turbine_types = [
             copy.deepcopy(t["turbine_type"]) if isinstance(t, dict) else t
             for t in self.turbine_type
         ]
 
         # If 1 turbine definition is given, expand to N turbines; this covers a 1-turbine
         # farm and 1 definition for multiple turbines
-        if len(_turbine_types) == 1:
-            _turbine_types *= self.n_turbines
+        if len(self._turbine_types) == 1:
+            self._turbine_types *= self.n_turbines
 
         # Check that turbine definitions contain any v3 keys
-        for t in _turbine_types:
-            check_turbine_definition_for_v3_keys(turbine_definition_cache[t])
+        for _, v in self._turbine_definition_cache.items():
+            check_turbine_definition_for_v3_keys(v)
 
         # Map each turbine definition to its index in this list
         self.turbine_definitions = [
-            copy.deepcopy(turbine_definition_cache[t]) for t in _turbine_types
+            copy.deepcopy(self._turbine_definition_cache[t]) for t in self._turbine_types
         ]
 
     @layout_x.validator
@@ -285,7 +299,10 @@ class Farm(BaseClass):
         )
 
     def construct_turbine_map(self):
-        self.turbine_map = [Turbine.from_dict(turb) for turb in self.turbine_definitions]
+        turbine_map_unique = {
+            k: Turbine.from_dict(v) for k, v in self._turbine_definition_cache.items()
+        }
+        self.turbine_map = [turbine_map_unique[k] for k in self._turbine_types]
 
     def construct_turbine_thrust_coefficient_functions(self):
         self.turbine_thrust_coefficient_functions = {

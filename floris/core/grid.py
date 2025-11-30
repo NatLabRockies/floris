@@ -1,6 +1,3 @@
-
-from __future__ import annotations
-
 from abc import ABC, abstractmethod
 from typing import Iterable
 
@@ -209,7 +206,7 @@ class TurbineGrid(Grid):
         # np.linspace would just return the starting value of -1 * disc_area_radius
         # which would place the point below the center of the rotor.
         if self.grid_resolution == 1:
-            disc_grid = np.zeros((np.shape(disc_area_radius)[0], 1 ))
+            disc_grid = np.zeros((np.shape(disc_area_radius)[0], 1 ),dtype=floris_float_type)
         else:
             disc_grid = np.linspace(
                 -1 * disc_area_radius,
@@ -346,6 +343,17 @@ class TurbineCubatureGrid(Grid):
         self.x_sorted = np.take_along_axis(_x, self.sorted_indices, axis=1)
         self.y_sorted = np.take_along_axis(_y, self.sorted_indices, axis=1)
         self.z_sorted = np.take_along_axis(_z, self.sorted_indices, axis=1)
+
+        # Now calculate grid coordinates in original frame (from 270 deg perspective)
+        self.x_sorted_inertial_frame, self.y_sorted_inertial_frame, self.z_sorted_inertial_frame = \
+            reverse_rotate_coordinates_rel_west(
+                wind_directions=self.wind_directions,
+                grid_x=self.x_sorted,
+                grid_y=self.y_sorted,
+                grid_z=self.z_sorted,
+                x_center_of_rotation=self.x_center_of_rotation,
+                y_center_of_rotation=self.y_center_of_rotation,
+            )
 
     @classmethod
     def get_cubature_coefficients(cls, N: int):

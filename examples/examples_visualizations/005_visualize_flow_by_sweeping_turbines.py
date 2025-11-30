@@ -4,9 +4,11 @@ Demonstrate the use calculate_horizontal_plane_with_turbines
 
 """
 
-import floris.flow_visualization as flowviz
 import matplotlib.pyplot as plt
+
+import floris.flow_visualization as flowviz
 from floris import FlorisModel
+
 
 fmodel = FlorisModel("../inputs/gch.yaml")
 
@@ -39,4 +41,3 @@ flowviz.visualize_cut_plane(
 
 
 plt.show()
-plt.close()

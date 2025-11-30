@@ -6,8 +6,11 @@ velocities are grabbed from the model, then the turbine average is
 recalculated from the u velocities to show that they are equivalent.
 """
 
+
 import numpy as np
+
 from floris import FlorisModel
+
 
 # Initialize the FLORIS model
 fmodel = FlorisModel("../inputs/gch.yaml")

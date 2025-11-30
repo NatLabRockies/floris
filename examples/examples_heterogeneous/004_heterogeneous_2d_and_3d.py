@@ -21,20 +21,23 @@ heterogeneous_inflow_config_by_wd. However, the latter is more convenient
 when running multiple conditions.
 """
 
+
 import matplotlib.pyplot as plt
+
 from floris import FlorisModel
 from floris.flow_visualization import visualize_cut_plane
+
 
 # Initialize FLORIS with the given input file via FlorisModel.
 # Note that the heterogeneous flow is defined in the input file. The heterogeneous_inflow_config
 # dictionary is defined as below. The speed ups are multipliers of the ambient wind speed,
 # and the x and y are the locations of the speed ups.
 #
-# heterogeneous_inflow_config = { # ERA001
-#     'speed_multipliers': [[2.0, 1.0, 2.0, 1.0]], # noqa ERA001
-#     'x': [-300.0, -300.0, 2600.0, 2600.0], # noqa ERA001
-#     'y': [ -300.0, 300.0, -300.0, 300.0], # noqa ERA001
-# } # ERA001
+# heterogeneous_inflow_config = {
+#     'speed_multipliers': [[2.0, 1.0, 2.0, 1.0]],
+#     'x': [-300.0, -300.0, 2600.0, 2600.0],
+#     'y': [ -300.0, 300.0, -300.0, 300.0],
+# }
 
 
 fmodel_2d = FlorisModel("../inputs/gch_heterogeneous_inflow.yaml")
@@ -74,8 +77,7 @@ visualize_cut_plane(
 )
 ax_list[2].set_xlabel("y")
 ax_list[2].set_ylabel("z")
-plt.show()
-plt.close()
+
 
 # Define the speed ups of the heterogeneous inflow, and their locations.
 # For the 3-dimensional case, this requires x, y, and z locations.
@@ -138,4 +140,3 @@ ax_list[2].set_xlabel("y")
 ax_list[2].set_ylabel("z")
 
 plt.show()
-plt.close()

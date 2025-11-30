@@ -13,14 +13,17 @@ This example:
 
 """
 
+
 import matplotlib.pyplot as plt
 import numpy as np
+
 from floris import (
     FlorisModel,
     HeterogeneousMap,
     TimeSeries,
 )
 from floris.flow_visualization import visualize_heterogeneous_cut_plane
+
 
 # Define a HeterogeneousMap object with speedups defined for two wind directions
 # and two wind speeds.  The speedups imply no heterogeneity for the first wind direction
@@ -63,8 +66,7 @@ heterogeneous_map.plot_single_speed_multiplier(
 )
 ax.set_title("Wind Direction = 280.0\nWind Speed = 16.0")
 fig.suptitle("Heterogeneous speedup map for several directions and wind speeds")
-plt.show()
-plt.close()
+
 
 # Initialize FlorisModel
 fmodel = FlorisModel("../inputs/gch.yaml")
@@ -109,4 +111,3 @@ for findex in range(3):
 
 
 plt.show()
-plt.close()

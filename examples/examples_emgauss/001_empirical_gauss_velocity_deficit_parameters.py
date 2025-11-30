@@ -7,16 +7,17 @@ import copy
 
 import matplotlib.pyplot as plt
 import numpy as np
+
 from floris import FlorisModel
 from floris.flow_visualization import visualize_cut_plane
+
 
 # Options
 show_flow_cuts = True
 num_in_row = 5
 
-
 # Define function for visualizing wakes
-def generate_wake_visualization(fmodel: FlorisModel, title: str | None = None) -> None:
+def generate_wake_visualization(fmodel: FlorisModel, title=None):
     # Using the FlorisModel functions, get 2D slices.
     x_bounds = [-500, 3000]
     y_bounds = [-250, 250]
@@ -76,11 +77,11 @@ def generate_wake_visualization(fmodel: FlorisModel, title: str | None = None) -
         ax.plot([cpl, cpl], z_bounds, color=cp_clr, linewidth=cp_lw, linestyle=cp_ls)
 
     # Spanwise profiles
-    for i, (cp, cpl) in enumerate(zip(cross_planes, cross_plane_locations, strict=False)):
+    for i, (cp, cpl) in enumerate(zip(cross_planes, cross_plane_locations)):
         visualize_cut_plane(
             cp,
             ax=fig.add_subplot(3, len(cross_planes), i + 7),
-            title=f"Loc: {cpl:.0f}m",
+            title="Loc: {:.0f}m".format(cpl),
             min_speed=min_ws,
             max_speed=max_ws,
         )
@@ -88,8 +89,6 @@ def generate_wake_visualization(fmodel: FlorisModel, title: str | None = None) -
     # Add overall figure title
     if title is not None:
         fig.suptitle(title, fontsize=16)
-    plt.show()
-    plt.close()
 
 
 ## Main script
@@ -191,12 +190,9 @@ if show_flow_cuts:
 
 # Power plot aesthetics
 ax0.set_xticks(range(num_in_row))
-ax0.set_xticklabels([f"T{t}" for t in range(num_in_row)])
+ax0.set_xticklabels(["T{0}".format(t) for t in range(num_in_row)])
 ax0.legend()
 ax0.set_xlabel("Turbine")
 ax0.set_ylabel("Power [MW]")
 
-plt.figure()
-plt.figure(num=fig0)
 plt.show()
-plt.close()

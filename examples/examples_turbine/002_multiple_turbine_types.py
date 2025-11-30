@@ -4,9 +4,12 @@ This example uses an input file where multiple turbine types are defined.
 The first two turbines are the NREL 5MW, and the third turbine is the IEA 10MW.
 """
 
-import floris.flow_visualization as flowviz
+
 import matplotlib.pyplot as plt
+
+import floris.flow_visualization as flowviz
 from floris import FlorisModel
+
 
 # Initialize FLORIS with the given input file.
 # For basic usage, FlorisModel provides a simplified and expressive
@@ -28,6 +31,4 @@ flowviz.visualize_cut_plane(horizontal_plane, ax=ax_list[0], title="Horizontal")
 flowviz.visualize_cut_plane(y_plane, ax=ax_list[1], title="Streamwise profile")
 flowviz.visualize_cut_plane(cross_plane, ax=ax_list[2], title="Spanwise profile")
 
-plt.tight_layout()
 plt.show()
-plt.close()

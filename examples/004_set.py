@@ -11,12 +11,15 @@ This example demonstrates setting each of the following:
 
 """
 
+
 import numpy as np
+
 from floris import (
     FlorisModel,
     TimeSeries,
     WindRose,
 )
+
 
 fmodel = FlorisModel("inputs/gch.yaml")
 

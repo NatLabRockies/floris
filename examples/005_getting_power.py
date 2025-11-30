@@ -16,11 +16,13 @@ of the turbines.  FLORIS has several methods for getting power:
 
 import matplotlib.pyplot as plt
 import numpy as np
+
 from floris import (
     FlorisModel,
     TimeSeries,
     WindRose,
 )
+
 
 fmodel = FlorisModel("inputs/gch.yaml")
 
@@ -69,7 +71,7 @@ for i in range(turbine_powers.shape[1]):
     ax.plot(wind_directions, turbine_powers[:, i] / 1e3, label=f"Turbine {i+1}  ")
 ax.set_xlabel("Wind Direction (deg)")
 ax.set_ylabel("Power (kW)")
-ax.grid()
+ax.grid(True)
 ax.legend()
 ax.set_title("Turbine Powers")
 
@@ -79,7 +81,7 @@ ax.plot(wind_directions, farm_power / 1e3, label="Farm Power With Wakes", color=
 ax.plot(wind_directions, farm_power_no_wake / 1e3, label="Farm Power No Wakes", color="r")
 ax.set_xlabel("Wind Direction (deg)")
 ax.set_ylabel("Power (kW)")
-ax.grid()
+ax.grid(True)
 ax.legend()
 ax.set_title("Farm Power")
 
@@ -89,12 +91,10 @@ percent_wake_losses = 100 * (farm_power_no_wake - farm_power) / farm_power_no_wa
 ax.plot(wind_directions, percent_wake_losses, label="Percent Wake Losses", color="k")
 ax.set_xlabel("Wind Direction (deg)")
 ax.set_ylabel("Percent Wake Losses")
-ax.grid()
+ax.grid(True)
 ax.legend()
 ax.set_title("Percent Wake Losses")
 
-plt.show()
-plt.close()
 
 ######################################################
 # Using WindRose
@@ -137,9 +137,8 @@ for w_idx, wd in enumerate(wind_rose.wind_directions):
 
 ax.set_xlabel("Wind Speed (m/s)")
 ax.set_ylabel("Power (kW)")
-ax.grid()
+ax.grid(True)
 ax.legend()
 ax.set_title("Farm Power (from Wind Rose)")
 
 plt.show()
-plt.close()

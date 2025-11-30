@@ -11,8 +11,11 @@ This example illustrates several of the key concepts in FLORIS. It demonstrates:
 Main concept is introduce FLORIS and illustrate essential structure of most-used FLORIS calls
 """
 
+
 import numpy as np
+
 from floris import FlorisModel
+
 
 # The FlorisModel class is the entry point for most usage.
 # Initialize using an input yaml file

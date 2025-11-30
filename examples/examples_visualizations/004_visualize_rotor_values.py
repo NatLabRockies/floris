@@ -4,9 +4,11 @@ Demonstrate visualizing the flow velocities at the rotor using plot_rotor_values
 
 """
 
-import floris.flow_visualization as flowviz
 import matplotlib.pyplot as plt
+
+import floris.flow_visualization as flowviz
 from floris import FlorisModel
+
 
 fmodel = FlorisModel("../inputs/gch.yaml")
 
@@ -29,4 +31,3 @@ fig, axes, _, _ = flowviz.plot_rotor_values(
 fig.suptitle("Rotor Plane Visualization, Original Resolution")
 
 plt.show()
-plt.close()

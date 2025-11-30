@@ -12,13 +12,16 @@ Try different values for met_mast_option to vary the location of the
 met mast within the two-turbine farm.
 """
 
+
 import matplotlib.pyplot as plt
 import numpy as np
+
 from floris import FlorisModel
 
+
 # User options
-# FLORIS model to use (limited to Gauss/GCH, Jensen, and empirical Gauss)
-floris_model = "gch"  # Try "gch", "jensen", "emgauss"
+# FLORIS model to use (legacy Turbopark not available)
+floris_model = "gch"  # Try "gch", "cc", "jensen", "emgauss", "turboparkgauss"
 # Option to try different met mast locations
 met_mast_option = 0  # Try 0, 1, 2, 3
 
@@ -46,10 +49,10 @@ if met_mast_option == 0:
 elif met_mast_option == 1:
     points_x = 4 * [200.0]
     points_y = 4 * [200.0]
-elif met_mast_option == 2:  # noqa PLR2004
+elif met_mast_option == 2:
     points_x = 4 * [20.0]
     points_y = 4 * [20.0]
-elif met_mast_option == 3:  # noqa PLR2004
+elif met_mast_option == 3:
     points_x = 4 * [305.0]
     points_y = 4 * [158.0]
 
@@ -73,4 +76,3 @@ ax[1].set_xlabel("Wind Direction (deg)")
 ax[1].set_ylabel("Wind Speed (m/s)")
 
 plt.show()
-plt.close()

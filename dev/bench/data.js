@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1764622063062,
+  "lastUpdate": 1764622677335,
   "repoUrl": "https://github.com/NREL/floris",
   "entries": {
     "Python Benchmark with pytest-benchmark": [
@@ -3668,6 +3668,72 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.0002348596156790226",
             "extra": "mean: 7.905448990080607 msec\nrounds: 101"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "alex.clerc@res-group.com",
+            "name": "Alex Clerc",
+            "username": "aclerc"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "49a14658b48d79a8e0c25eee321abb59e49faf81",
+          "message": "Improve examples (#956)\n\n* Update 002_visualizations.py\n\n* add plt.show() and fix ruff issues\n\n* fix ruff issue\n\n* control_optimization fixes\n\n* minor fixes to examples_emgauss\n\n* minor fixes to examples_get_flow\n\n* minor fixes to examples_heterogeneous\n\n* minor fixes to examples_turbine\n\n* minor fixes to examples_uncertain\n\n* minor fixes to examples_visualizations\n\n* minor fixes to examples_wind_data\n\n* revert ruff change to conftest.py\n\n* Revert various minor formatting changes\n\n* Revert a few more formatting changes\n\n* Revert plt.show(), plt.close()\n\n* Apply current formatting rules\n\n* Revert a couple of other minor changes\n\n* Final cleanup\n\n* Last minor reversions for consistency\n\n---------\n\nCo-authored-by: misi9170 <michael.sinner@nrel.gov>",
+          "timestamp": "2025-12-01T13:33:11-07:00",
+          "tree_id": "59cef41bd051e5f015418a6d92ecb3528f370a56",
+          "url": "https://github.com/NREL/floris/commit/49a14658b48d79a8e0c25eee321abb59e49faf81"
+        },
+        "date": 1764622675128,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_set",
+            "value": 43.008378192573986,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0001377268022351684",
+            "extra": "mean: 23.251283634142343 msec\nrounds: 41"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_run",
+            "value": 56.875786715981164,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00019592228815809137",
+            "extra": "mean: 17.58217437929551 msec\nrounds: 29"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_set",
+            "value": 25.79896316258908,
+            "unit": "iter/sec",
+            "range": "stddev: 0.001034343554443063",
+            "extra": "mean: 38.76124763998632 msec\nrounds: 25"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_run",
+            "value": 0.2977936162044245,
+            "unit": "iter/sec",
+            "range": "stddev: 0.006533256392620626",
+            "extra": "mean: 3.35803034580008 sec\nrounds: 5"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_set",
+            "value": 37.50155994151254,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00015474357892878126",
+            "extra": "mean: 26.6655574210673 msec\nrounds: 38"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_run",
+            "value": 122.2582843134402,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000059039299490320444",
+            "extra": "mean: 8.179404820014042 msec\nrounds: 100"
           }
         ]
       }

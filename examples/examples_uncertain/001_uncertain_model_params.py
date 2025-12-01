@@ -172,4 +172,3 @@ ax.set_ylabel("Power (kW)")
 
 
 plt.show()
-plt.close()

@@ -144,6 +144,20 @@ wind_rose_from_csv = WindRose.read_csv_long(
 )
 
 ##################################################
+# Aggregating and Resampling the Wind Rose
+##################################################
+
+# The downsample function allows for aggregation of the wind rose data into
+# fewer wind direction and wind speed bins.
+# Note it will throw an error if the step sizes passed in are smaller than the
+# step sizes of the original data.
+wind_rose_aggregate = wind_rose.downsample(wd_step=10, ws_step=2)
+
+# For upsampling, the upsample function can be used to interpolate
+# the wind rose data to a finer grid.  It can use either linear or nearest neighbor
+wind_rose_resample = wind_rose.upsample(wd_step=0.5, ws_step=0.25)
+
+##################################################
 # Setting turbulence intensity
 ##################################################
 
@@ -176,23 +190,15 @@ wind_rose.assign_value_piecewise_linear()
 # Certain plotting methods are included to enable visualization of the wind data objects
 # Plotting a wind rose
 wind_rose.plot()
-plt.show()
-plt.close()
 
 # Plot a wind rose with the wind directions aggregated into 10-deg bins
 wind_rose.plot(wd_step=10)
-plt.show()
-plt.close()
 
 # Showing TI over wind speed for a WindRose
 wind_rose.plot_ti_over_ws()
-plt.show()
-plt.close()
 
 # Showing value over wind speed for a WindRose
 wind_rose.plot_value_over_ws()
-plt.show()
-plt.close()
 
 ##################################################
 # Setting the FLORIS model via wind data
@@ -246,4 +252,3 @@ print(
 fmodel.set(wind_data=wind_ti_rose)
 
 plt.show()
-plt.close()

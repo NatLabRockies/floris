@@ -69,4 +69,3 @@ print(f"Expected power from FlorisModel: {fmodel.get_expected_farm_power()/1E6:0
 print(f"Expected power from ApproxFlorisModel: {afmodel.get_expected_farm_power()/1E6:0.2f} MW")
 
 plt.show()
-plt.close()

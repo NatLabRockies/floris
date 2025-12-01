@@ -164,4 +164,3 @@ ax.set_title("Uplift in farm power by wind direction and wind speed", fontsize=1
 
 plt.tight_layout()
 plt.show()
-plt.close()

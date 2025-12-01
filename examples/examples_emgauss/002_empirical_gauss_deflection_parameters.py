@@ -99,9 +99,6 @@ def generate_wake_visualization(fmodel: FlorisModel, title: str | None = None) -
     if title is not None:
         fig.suptitle(title, fontsize=16)
 
-    plt.show()
-    plt.close()
-
 
 ## Main script
 
@@ -229,4 +226,3 @@ ax0.set_ylabel("Power [MW]")
 plt.figure()
 plt.figure(num=fig0)
 plt.show()
-plt.close()

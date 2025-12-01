@@ -321,4 +321,3 @@ ax.grid()
 ax.set_title("Optimal yaw angles for turbine 0")
 
 plt.show()
-plt.close()

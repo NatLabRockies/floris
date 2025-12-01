@@ -42,8 +42,6 @@ ax.set_ylabel("Turbulence Intensity")
 ax = axarr[3]
 ax.plot(value_array, marker=".", ls="None")
 ax.set_ylabel("Value")
-plt.show()
-plt.close()
 
 # Build the time series
 time_series = TimeSeries(wd_array, ws_array, turbulence_intensities=ti_array, values=value_array)
@@ -55,8 +53,6 @@ wind_rose = time_series.to_WindRose()
 fig, ax = plt.subplots(subplot_kw={"polar": True})
 wind_rose.plot(ax=ax, ws_step=5, wd_step=15, legend_kwargs={"label": "WS"})
 fig.suptitle("WindRose Plot")
-plt.show()
-plt.close()
 # Now build a wind rose with turbulence intensity
 wind_ti_rose = time_series.to_WindTIRose()
 
@@ -68,8 +64,6 @@ wind_ti_rose.plot(ax=axs[1], wind_rose_var="ti", legend_kwargs={"label": "WS"})
 axs[1].set_title("Wind Direction and Turbulence Intensity Frequencies")
 fig.suptitle("WindTIRose Plots")
 plt.tight_layout()
-plt.show()
-plt.close()
 
 # Now set up a FLORIS model and initialize it using the time series and wind rose
 fmodel = FlorisModel("../inputs/gch.yaml")
@@ -110,3 +104,5 @@ wind_ti_rose_avp = fmodel_wind_ti_rose.get_farm_AVP()
 print(f"Annual Value Production (AVP) from TimeSeries {time_series_avp / 1e6:.2f} dollars")
 print(f"AVP from WindRose {wind_rose_avp / 1e6:.2f} dollars")
 print(f"AVP from WindTIRose {wind_ti_rose_avp / 1e6:.2f} dollars")
+
+plt.show()

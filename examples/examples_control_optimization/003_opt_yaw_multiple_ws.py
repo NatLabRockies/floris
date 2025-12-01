@@ -1,3 +1,4 @@
+
 """Example: Optimize yaw for multiple wind directions and multiple wind speeds.
 This example demonstrates how to perform a yaw optimization for multiple wind directions
 and multiple wind speeds using the WindRose object
@@ -9,11 +10,14 @@ the SerialRefine method. Finally, we plot the results.
 
 import matplotlib.pyplot as plt
 import numpy as np
+
 from floris import FlorisModel, WindRose
 from floris.optimization.yaw_optimization.yaw_optimizer_sr import YawOptimizationSR
 
+
 # Load the default example floris object
-fmodel = FlorisModel("../inputs/gch.yaml")  # GCH model matched to the default "legacy_gauss" of V2
+fmodel = FlorisModel("../inputs/gch.yaml") # GCH model matched to the default "legacy_gauss" of V2
+# fmodel = FlorisModel("inputs/cc.yaml") # New CumulativeCurl model
 
 # Define a WindRose object with uniform TI and frequency table
 wind_rose = WindRose(
@@ -23,8 +27,9 @@ wind_rose = WindRose(
 )
 
 
+
 # Reinitialize as a 3-turbine farm with range of WDs and WSs
-D = 126.0  # Rotor diameter for the NREL 5 MW
+D = 126.0 # Rotor diameter for the NREL 5 MW
 fmodel.set(
     layout_x=[0.0, 5 * D, 10 * D],
     layout_y=[0.0, 0.0, 0.0],
@@ -50,60 +55,68 @@ print(df_opt)
 
 # Split out the turbine results
 for t in range(3):
-    df_opt["t%d" % t] = df_opt.yaw_angles_opt.apply(lambda x: x[t]) # noqa B023
+    df_opt['t%d' % t] = df_opt.yaw_angles_opt.apply(lambda x: x[t])
 
 # Show the results: optimal yaw angles
-fig, axarr = plt.subplots(nrows=4, ncols=4, sharex=True, sharey=True, figsize=(10, 8))
+fig, axarr = plt.subplots(
+    nrows=4,
+    ncols=4,
+    sharex=True,
+    sharey=True,
+    figsize=(10, 8)
+)
 jj = 0
 for ii, ws in enumerate(np.unique(fmodel.wind_speeds)):
     xi = np.remainder(ii, 4)
-    if (ii > 0) & (xi == 0):
+    if ((ii > 0) & (xi == 0)):
         jj += 1
     ax = axarr[np.remainder(ii, 4)][jj]
-    ids = df_opt.wind_speed == ws
+    ids = (df_opt.wind_speed == ws)
     wd = df_opt.loc[ids, "wind_direction"]
     for t in range(3):
-        yaw_opt = df_opt.loc[ids, f"t{t:d}"]
-        ax.plot(wd, yaw_opt, label=f"Turbine {t:d}")
-    ax.set_title(f"Wind speed = {ws:.1f} m/s", size=10)
-    if (ii == 0) & (jj == 0):
+        yaw_opt = df_opt.loc[ids, "t{:d}".format(t)]
+        ax.plot(wd, yaw_opt, label='Turbine {:d}'.format(t))
+    ax.set_title("Wind speed = {:.1f} m/s".format(ws), size=10)
+    if ((ii == 0) & (jj == 0)):
         ax.legend()
-    ax.grid()
+    ax.grid(True)
     if jj == 0:
-        ax.set_ylabel("Yaw angle (deg)", size=10)
-    if xi == 3: # noqa PLR2004
-        axarr[xi][jj].set_xlabel("Wind Direction (deg)", size=10)
+        ax.set_ylabel('Yaw angle (deg)', size=10)
+    if xi == 3:
+        axarr[xi][jj].set_xlabel('Wind Direction (deg)', size=10)
 
     plt.tight_layout()
 
-plt.show()
-plt.close()
-
 # Show the results: baseline and optimized farm power
-fig, axarr = plt.subplots(nrows=4, ncols=4, sharex=True, sharey=True, figsize=(10, 8))
+fig, axarr = plt.subplots(
+    nrows=4,
+    ncols=4,
+    sharex=True,
+    sharey=True,
+    figsize=(10, 8)
+)
 jj = 0
 for ii, ws in enumerate(np.unique(fmodel.wind_speeds)):
     xi = np.remainder(ii, 4)
-    if (ii > 0) & (xi == 0):
+    if ((ii > 0) & (xi == 0)):
         jj += 1
     ax = axarr[np.remainder(ii, 4)][jj]
-    ids = df_opt.wind_speed == ws
+    ids = (df_opt.wind_speed == ws)
     wd = df_opt.loc[ids, "wind_direction"]
     power_baseline = df_opt.loc[ids, "farm_power_baseline"]
     power_opt = df_opt.loc[ids, "farm_power_opt"]
-    ax.plot(wd, power_baseline / 1e6, color="k", label="Baseline")
-    ax.plot(wd, power_opt / 1e6, color="r", label="Optimized")
-    ax.set_title(f"Wind speed = {ws:.1f} m/s", size=10)
+    ax.plot(wd, power_baseline / 1e6, color='k', label='Baseline')
+    ax.plot(wd, power_opt / 1e6, color='r', label='Optimized')
+    ax.set_title("Wind speed = {:.1f} m/s".format(ws), size=10)
     ax.set_ylim([0.0, 16.0])
-    if (ii == 0) & (jj == 0):
+    if ((ii == 0) & (jj == 0)):
         ax.legend()
-    ax.grid()
+    ax.grid(True)
     if jj == 0:
-        ax.set_ylabel("Farm Power (MW)", size=10)
-    if xi == 3: # noqa PLR2004
-        axarr[xi][jj].set_xlabel("Wind Direction (deg)", size=10)
+        ax.set_ylabel('Farm Power (MW)', size=10)
+    if xi == 3:
+        axarr[xi][jj].set_xlabel('Wind Direction (deg)', size=10)
 
     plt.tight_layout()
 
 plt.show()
-plt.close()

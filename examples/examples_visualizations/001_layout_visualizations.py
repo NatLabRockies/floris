@@ -4,11 +4,13 @@ Demonstrate the use of all the functions within the layout_visualization module
 
 """
 
-import floris.layout_visualization as layoutviz
 import matplotlib.pyplot as plt
 import numpy as np
+
+import floris.layout_visualization as layoutviz
 from floris import FlorisModel
 from floris.flow_visualization import visualize_cut_plane
+
 
 # Create the plotting objects using matplotlib
 fig, axarr = plt.subplots(3, 3, figsize=(16, 10), sharex=False)
@@ -51,7 +53,7 @@ ax.set_title("Show turbine names with a red bounding box")
 
 # Plot 2: Show turbine rotors on flow
 ax = axarr[2]
-fmodel.set(yaw_angles=np.array([[0.0, 30.0, 0.0, 0.0, 0.0]]))
+fmodel.set(yaw_angles=np.array([[0., 30., 0., 0., 0.]]))
 horizontal_plane = fmodel.calculate_horizontal_plane(height=90.0)
 visualize_cut_plane(horizontal_plane, ax=ax, min_speed=MIN_WS, max_speed=MAX_WS)
 layoutviz.plot_turbine_rotors(fmodel, ax=ax, yaw_angles=np.array([[0.0, 30.0, 0.0, 0.0, 0.0]]))
@@ -86,4 +88,3 @@ layoutviz.plot_farm_terrain(fmodel, ax=ax)
 
 plt.tight_layout()
 plt.show()
-plt.close()

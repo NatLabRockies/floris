@@ -4,9 +4,12 @@ For each turbine in the turbine library, make a small figure showing that its po
 curve and power loss to yaw are reasonable and reasonably smooth
 """
 
+
 import matplotlib.pyplot as plt
 import numpy as np
+
 from floris import FlorisModel
+
 
 ws_array = np.arange(0.1, 30, 0.2)
 wd_array = 270.0 * np.ones_like(ws_array)
@@ -51,7 +54,7 @@ for t in turbines:
         fmodel.core.farm.turbine_map[0].power_thrust_table["power"],
         label=t,
     )
-    axarr_pow_ct[0].grid()
+    axarr_pow_ct[0].grid(True)
     axarr_pow_ct[0].legend()
     axarr_pow_ct[0].set_ylabel("Power (kW)")
     axarr_pow_ct[1].plot(
@@ -59,7 +62,7 @@ for t in turbines:
         fmodel.core.farm.turbine_map[0].power_thrust_table["thrust_coefficient"],
         label=t,
     )
-    axarr_pow_ct[1].grid()
+    axarr_pow_ct[1].grid(True)
     axarr_pow_ct[1].legend()
     axarr_pow_ct[1].set_ylabel("Ct (-)")
     axarr_pow_ct[1].set_xlabel("Wind Speed (m/s)")
@@ -81,11 +84,11 @@ for t in turbines:
         fmodel.reset_operation() # Remove any previously applied yaw angles
         fmodel.run()
         turbine_powers = fmodel.get_turbine_powers().flatten() / 1e3
-        if density == 1.225:  # noqa PLR2004
-            ax.plot(ws_array, turbine_powers, label=f"Air Density = {density:.3f}", lw=2, color="k")
+        if density == 1.225:
+            ax.plot(ws_array, turbine_powers, label="Air Density = %.3f" % density, lw=2, color="k")
         else:
-            ax.plot(ws_array, turbine_powers, label=f"Air Density = {density:.3f}", lw=1)
-        ax.grid()
+            ax.plot(ws_array, turbine_powers, label="Air Density = %.3f" % density, lw=1)
+        ax.grid(True)
         ax.legend()
         ax.set_xlabel("Wind Speed (m/s)")
         ax.set_ylabel("Power (kW)")
@@ -104,22 +107,18 @@ for t in turbines:
             fmodel.run()
             turbine_powers = fmodel.get_turbine_powers().flatten() / 1e3
             yaw_result.append(turbine_powers[0])
-        if density == 1.225:  # noqa PLR2004
-            ax.plot(yaw_angles, yaw_result, label=f"Air Density = {density:.3f}", lw=2, color="k")
+        if density == 1.225:
+            ax.plot(yaw_angles, yaw_result, label="Air Density = %.3f" % density, lw=2, color="k")
         else:
-            ax.plot(yaw_angles, yaw_result, label=f"Air Density = {density:.3f}", lw=1)
-        ax.grid()
+            ax.plot(yaw_angles, yaw_result, label="Air Density = %.3f" % density, lw=1)
+        # ax.plot(yaw_angles,yaw_result,label='Air Density = %.3f' % density)
+        ax.grid(True)
         ax.legend()
         ax.set_xlabel("Yaw Error (deg)")
         ax.set_ylabel("Power (kW)")
-        ax.set_title(f"Wind Speed = {wind_speed_to_test_yaw:.1f}")
+        ax.set_title("Wind Speed = %.1f" % wind_speed_to_test_yaw)
 
     # Give a suptitle
     fig.suptitle(t)
-    plt.show()
-    plt.close()
 
-plt.figure()
-plt.figure(num=fig_pow_ct)
 plt.show()
-plt.close()

@@ -17,10 +17,12 @@ The example includes demonstrations of sweeping:
 
 import matplotlib.pyplot as plt
 import numpy as np
+
 from floris import (
     FlorisModel,
     TimeSeries,
 )
+
 
 fmodel = FlorisModel("inputs/gch.yaml")
 
@@ -209,8 +211,7 @@ ax.set_xlabel("Turbine Disable Combination")
 
 
 for ax in axarr:
-    ax.grid()
+    ax.grid(True)
 
 
 plt.show()
-plt.close()

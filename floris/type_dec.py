@@ -1,6 +1,3 @@
-
-from __future__ import annotations
-
 import copy
 import inspect
 from pathlib import Path

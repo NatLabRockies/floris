@@ -34,7 +34,8 @@ html:
   use_issues_button: true
   use_repository_button: true
   use_edit_page_button: true
-  google_analytics_id: G-JV2SK7CNPR
+  analytics:
+    google_analytics_id: G-JV2SK7CNPR
 
 
 # Sphinx for API doc generation

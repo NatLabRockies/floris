@@ -3,7 +3,7 @@
 FLORIS is a controls-focused wind farm simulation software incorporating
 steady-state engineering wake models into a performance-focused Python
 framework. It has been in active development at NREL since 2013 and the latest
-release is [FLORIS v4.2.2](https://github.com/NREL/floris/releases/latest).
+release is [FLORIS v.4.5.1](https://github.com/NREL/floris/releases/latest).
 Online documentation is available at https://nrel.github.io/floris.
 
 The software is in active development and engagement with the development team
@@ -11,10 +11,17 @@ is highly encouraged. If you are interested in using FLORIS to conduct studies
 of a wind farm or extending FLORIS to include your own wake model, please join
 the conversation in [GitHub Discussions](https://github.com/NREL/floris/discussions/)!
 
-## Installation
+## WETO software
 
-**WARNING:**
-Support for python version 3.8 will be dropped in FLORIS v4.3. See [Installation documentation](https://nrel.github.io/floris/installation.html#installation) for details.
+FLORIS is primarily developed with the support from the U.S. Department of Energy and
+is part of the `WETO Software Stack <https://nrel.github.io/WETOStack>`_.
+For more information and other integrated modeling software, see:
+
+- [Portfolio Overview](https://nrel.github.io/WETOStack/portfolio_analysis/overview.html)
+- [Entry Guide](https://nrel.github.io/WETOStack/_static/entry_guide/index.html)
+- [Wind Farm Controls Workshop](https://www.youtube.com/watch?v=f-w6whxIBrA&list=PL6ksUtsZI1dwRXeWFCmJT6cEN1xijsHJz)
+
+## Installation
 
 **If upgrading from a previous version, it is recommended to install FLORIS v4 into a new virtual environment**.
 If you intend to use [pyOptSparse](https://mdolab-pyoptsparse.readthedocs-hosted.com/en/latest/) with FLORIS,
@@ -82,7 +89,7 @@ PACKAGE CONTENTS
     wind_data
 
 VERSION
-    4.2.2
+    4.5.1
 
 FILE
     ~/floris/floris/__init__.py

@@ -21,7 +21,7 @@ jobs:
     - name: Install project
       run: |
         python -m pip install --upgrade pip
-        pip install -e ".[develop]"
+        pip install ".[develop]"
     - name: Run the code quality script
       run: |
         cd profiling

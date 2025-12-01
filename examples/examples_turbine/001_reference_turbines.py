@@ -29,7 +29,7 @@ fmodel.set(
 )
 
 # Get a list of available turbine models provided through FLORIS, and remove
-# multi-dimensional Cp/Ct turbine definitions as they require different handling
+# multi-dimensional power/thrust coefficient turbine definitions as they require different handling
 turbines = [
     t.stem
     for t in fmodel.core.farm.internal_turbine_library.iterdir()

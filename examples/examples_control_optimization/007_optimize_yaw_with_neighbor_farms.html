@@ -668,12 +668,11 @@ document.write(`
 <span class="sd">part of a neighboring farm.  The optimization is performed in two ways: first by</span>
 <span class="sd">accounting for the wakes of the neighboring farm (while not including those turbines)</span>
 <span class="sd">in the optimization as a target of yaw angle changes or including their power</span>
-<span class="sd">in the objective function.  In th second method the neighboring farms are removed</span>
+<span class="sd">in the objective function.  In the second method the neighboring farms are removed</span>
 <span class="sd">from FLORIS for the optimization.  The AEP is then calculated for the optimized</span>
 <span class="sd">yaw angles (accounting for and not accounting for the neighboring farm) and compared</span>
 <span class="sd">to the baseline AEP.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -790,9 +789,8 @@ document.write(`
     <span class="s2">&quot;Turbine 0&quot;</span><span class="p">,</span>
     <span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
     <span class="n">xytext</span><span class="o">=</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">100</span><span class="p">,</span> <span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">100</span><span class="p">),</span>
-    <span class="n">arrowprops</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;facecolor&#39;</span><span class="p">:</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="s1">&#39;shrink&#39;</span><span class="p">:</span><span class="mf">0.05</span><span class="p">},</span>
+    <span class="n">arrowprops</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;facecolor&quot;</span><span class="p">:</span> <span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="s2">&quot;shrink&quot;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">},</span>
 <span class="p">)</span>
-
 
 <span class="c1"># Optimize the yaw angles.  This could be done for every wind direction and wind speed</span>
 <span class="c1"># but in practice it is much faster to optimize only for one speed and infer the rest</span>
@@ -899,24 +897,36 @@ document.write(`
     <span class="p">)</span>
 
     <span class="c1"># Now decide what to do for different wind speeds</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">wind_speed</span> <span class="o">&lt;</span> <span class="mf">4.0</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">wind_speed</span> <span class="o">&gt;</span> <span class="mf">14.0</span><span class="p">):</span>
+    <span class="n">wind_speed_low_no_steer</span> <span class="o">=</span> <span class="mf">4.0</span>
+    <span class="n">wind_speed_high_no_steer</span> <span class="o">=</span> <span class="mf">14.0</span>
+    <span class="n">wind_speed_low_steer</span> <span class="o">=</span> <span class="mf">6.0</span>
+    <span class="n">wind_speed_high_steer</span> <span class="o">=</span> <span class="mf">12.0</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">wind_speed</span> <span class="o">&lt;</span> <span class="n">wind_speed_low_no_steer</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">wind_speed</span> <span class="o">&gt;</span> <span class="n">wind_speed_high_no_steer</span><span class="p">):</span>
         <span class="n">yaw_opt_with_neighbor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">fmodel</span><span class="o">.</span><span class="n">n_turbines</span><span class="p">)</span>  <span class="c1"># do nothing for very low/high speeds</span>
         <span class="n">yaw_opt_without_neighbor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
             <span class="n">fmodel</span><span class="o">.</span><span class="n">n_turbines</span>
         <span class="p">)</span>  <span class="c1"># do nothing for very low/high speeds</span>
-    <span class="k">elif</span> <span class="n">wind_speed</span> <span class="o">&lt;</span> <span class="mf">6.0</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">wind_speed</span> <span class="o">&lt;</span> <span class="n">wind_speed_low_steer</span><span class="p">:</span>
         <span class="n">yaw_opt_with_neighbor</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">yaw_opt_full_with_neighbor</span> <span class="o">*</span> <span class="p">(</span><span class="mf">6.0</span> <span class="o">-</span> <span class="n">wind_speed</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+            <span class="n">yaw_opt_full_with_neighbor</span>
+            <span class="o">*</span> <span class="p">(</span><span class="n">wind_speed_low_steer</span> <span class="o">-</span> <span class="n">wind_speed</span><span class="p">)</span>
+            <span class="o">/</span> <span class="p">(</span><span class="n">wind_speed_low_steer</span> <span class="o">-</span> <span class="n">wind_speed_low_no_steer</span><span class="p">)</span>
         <span class="p">)</span>  <span class="c1"># Linear ramp up</span>
         <span class="n">yaw_opt_without_neighbor</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">yaw_opt_full_without_neighbor</span> <span class="o">*</span> <span class="p">(</span><span class="mf">6.0</span> <span class="o">-</span> <span class="n">wind_speed</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+            <span class="n">yaw_opt_full_without_neighbor</span>
+            <span class="o">*</span> <span class="p">(</span><span class="n">wind_speed_low_steer</span> <span class="o">-</span> <span class="n">wind_speed</span><span class="p">)</span>
+            <span class="o">/</span> <span class="p">(</span><span class="n">wind_speed_low_steer</span> <span class="o">-</span> <span class="n">wind_speed_low_no_steer</span><span class="p">)</span>
         <span class="p">)</span>  <span class="c1"># Linear ramp up</span>
-    <span class="k">elif</span> <span class="n">wind_speed</span> <span class="o">&gt;</span> <span class="mf">12.0</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">wind_speed</span> <span class="o">&gt;</span> <span class="n">wind_speed_high_steer</span><span class="p">:</span>
         <span class="n">yaw_opt_with_neighbor</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">yaw_opt_full_with_neighbor</span> <span class="o">*</span> <span class="p">(</span><span class="mf">14.0</span> <span class="o">-</span> <span class="n">wind_speed</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+            <span class="n">yaw_opt_full_with_neighbor</span>
+            <span class="o">*</span> <span class="p">(</span><span class="n">wind_speed_high_no_steer</span> <span class="o">-</span> <span class="n">wind_speed</span><span class="p">)</span>
+            <span class="o">/</span> <span class="p">(</span><span class="n">wind_speed_high_no_steer</span> <span class="o">-</span> <span class="n">wind_speed_high_steer</span><span class="p">)</span>
         <span class="p">)</span>  <span class="c1"># Linear ramp down</span>
         <span class="n">yaw_opt_without_neighbor</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">yaw_opt_full_without_neighbor</span> <span class="o">*</span> <span class="p">(</span><span class="mf">14.0</span> <span class="o">-</span> <span class="n">wind_speed</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+            <span class="n">yaw_opt_full_without_neighbor</span>
+            <span class="o">*</span> <span class="p">(</span><span class="n">wind_speed_high_no_steer</span> <span class="o">-</span> <span class="n">wind_speed</span><span class="p">)</span>
+            <span class="o">/</span> <span class="p">(</span><span class="n">wind_speed_high_no_steer</span> <span class="o">-</span> <span class="n">wind_speed_high_steer</span><span class="p">)</span>
         <span class="p">)</span>  <span class="c1"># Linear ramp down</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">yaw_opt_with_neighbor</span> <span class="o">=</span> <span class="p">(</span>
@@ -945,15 +955,11 @@ document.write(`
 <span class="n">aep_uplift_without_neighbor</span> <span class="o">=</span> <span class="mf">100.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">aep_opt_without_neighbor</span> <span class="o">/</span> <span class="n">aep_baseline</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
 <span class="n">farm_power_opt_without_neighbor</span> <span class="o">=</span> <span class="n">fmodel</span><span class="o">.</span><span class="n">get_farm_power</span><span class="p">(</span><span class="n">turbine_weights</span><span class="o">=</span><span class="n">turbine_weights</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Baseline AEP: </span><span class="si">{:.2f}</span><span class="s2"> GWh.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">aep_baseline</span> <span class="o">/</span> <span class="mf">1e9</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Baseline AEP: </span><span class="si">{</span><span class="n">aep_baseline</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">1e9</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> GWh.&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span>
-    <span class="s2">&quot;Optimal AEP (Not accounting for neighboring farm): </span><span class="si">{:.2f}</span><span class="s2"> GWh.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-        <span class="n">aep_opt_without_neighbor</span> <span class="o">/</span> <span class="mf">1e9</span>
-    <span class="p">)</span>
+    <span class="sa">f</span><span class="s2">&quot;Optimal AEP (Not accounting for neighboring farm): </span><span class="si">{</span><span class="n">aep_opt_without_neighbor</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">1e9</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> GWh.&quot;</span>
 <span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span>
-    <span class="s2">&quot;Optimal AEP (Accounting for neighboring farm): </span><span class="si">{:.2f}</span><span class="s2"> GWh.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">aep_opt_with_neighbor</span> <span class="o">/</span> <span class="mf">1e9</span><span class="p">)</span>
-<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Optimal AEP (Accounting for neighboring farm): </span><span class="si">{</span><span class="n">aep_opt_with_neighbor</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">1e9</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> GWh.&quot;</span><span class="p">)</span>
 
 <span class="c1"># Plot the optimal yaw angles for turbine 0 with and without accounting for the neighboring farm</span>
 <span class="n">yaw_angles_0_with_neighbor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">df_opt_with_neighbor</span><span class="p">[</span><span class="s2">&quot;yaw_angles_opt&quot;</span><span class="p">])[:,</span> <span class="mi">0</span><span class="p">]</span>

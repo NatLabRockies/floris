@@ -728,15 +728,17 @@ document.write(`
 <span class="c1"># Define the UncertainFlorisModel</span>
 <span class="c1">################################################</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;*** Instantiating UncertainFlorisModel ***&#39;</span><span class="p">)</span>
-<span class="n">ufmodel</span> <span class="o">=</span> <span class="n">UncertainFlorisModel</span><span class="p">(</span><span class="s2">&quot;../inputs/gch.yaml&quot;</span><span class="p">,</span>
-                               <span class="n">wd_resolution</span><span class="o">=</span><span class="n">wd_resolution</span><span class="p">,</span>
-                                 <span class="n">ws_resolution</span><span class="o">=</span><span class="n">ws_resolution</span><span class="p">,</span>
-                                    <span class="n">ti_resolution</span><span class="o">=</span><span class="n">ti_resolution</span><span class="p">,</span>
-                                    <span class="n">yaw_resolution</span><span class="o">=</span><span class="n">yaw_resolution</span><span class="p">,</span>
-                                    <span class="n">power_setpoint_resolution</span><span class="o">=</span><span class="n">power_setpoint_resolution</span><span class="p">,</span>
-                                    <span class="n">wd_std</span><span class="o">=</span><span class="n">wd_std</span><span class="p">,</span>
-                                    <span class="n">wd_sample_points</span><span class="o">=</span><span class="n">wd_sample_points</span><span class="p">,</span>
-                                    <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+<span class="n">ufmodel</span> <span class="o">=</span> <span class="n">UncertainFlorisModel</span><span class="p">(</span>
+    <span class="s2">&quot;../inputs/gch.yaml&quot;</span><span class="p">,</span>
+    <span class="n">wd_resolution</span><span class="o">=</span><span class="n">wd_resolution</span><span class="p">,</span>
+    <span class="n">ws_resolution</span><span class="o">=</span><span class="n">ws_resolution</span><span class="p">,</span>
+    <span class="n">ti_resolution</span><span class="o">=</span><span class="n">ti_resolution</span><span class="p">,</span>
+    <span class="n">yaw_resolution</span><span class="o">=</span><span class="n">yaw_resolution</span><span class="p">,</span>
+    <span class="n">power_setpoint_resolution</span><span class="o">=</span><span class="n">power_setpoint_resolution</span><span class="p">,</span>
+    <span class="n">wd_std</span><span class="o">=</span><span class="n">wd_std</span><span class="p">,</span>
+    <span class="n">wd_sample_points</span><span class="o">=</span><span class="n">wd_sample_points</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <span class="c1">################################################</span>
@@ -792,6 +794,7 @@ document.write(`
     <span class="n">color</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span>
     <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Power with uncertainty&quot;</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">bottom</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
 <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
@@ -807,6 +810,7 @@ document.write(`
     <span class="n">color</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span>
     <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Power with uncertainty&quot;</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">bottom</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
 <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Downstream Turbine&quot;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
@@ -822,7 +826,7 @@ document.write(`
     <span class="n">color</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span>
     <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Farm power with uncertainty&quot;</span><span class="p">,</span>
 <span class="p">)</span>
-
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">bottom</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
 <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Farm Power&quot;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
@@ -850,7 +854,7 @@ Expanded num rows: 300
 Unique num rows: 72
 </pre></div>
 </div>
-<img alt="../../_images/124e9923c07850e8cc6383c8a9483db79016df8a3750ce2f5ca0db6121694fa7.png" src="../../_images/124e9923c07850e8cc6383c8a9483db79016df8a3750ce2f5ca0db6121694fa7.png" />
+<img alt="../../_images/0ee020283f6f904177d151ad93f1c925d81252011b66c6a05045c096359aa9a3.png" src="../../_images/0ee020283f6f904177d151ad93f1c925d81252011b66c6a05045c096359aa9a3.png" />
 </div>
 </div>
 </section>

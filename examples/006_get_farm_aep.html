@@ -675,7 +675,6 @@ document.write(`
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">floris</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">FlorisModel</span><span class="p">,</span>
@@ -688,16 +687,16 @@ document.write(`
 
 
 <span class="c1"># Set to a 3-turbine layout</span>
-<span class="n">D</span> <span class="o">=</span> <span class="mf">126.</span>
-<span class="n">fmodel</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">layout_x</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">D</span><span class="p">,</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">D</span><span class="p">],</span>
-            <span class="n">layout_y</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
+<span class="n">D</span> <span class="o">=</span> <span class="mf">126.0</span>
+<span class="n">fmodel</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">layout_x</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">D</span><span class="p">,</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">D</span><span class="p">],</span> <span class="n">layout_y</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
 
 <span class="c1"># Using TimeSeries</span>
 
 <span class="c1"># Randomly generated a time series with time steps = 365 * 24</span>
 <span class="n">N</span> <span class="o">=</span> <span class="mi">365</span> <span class="o">*</span> <span class="mi">24</span>
-<span class="n">wind_directions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
-<span class="n">wind_speeds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">wind_directions</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+<span class="n">wind_speeds</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
 
 <span class="c1"># Set up a time series</span>
 <span class="n">time_series</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span>
@@ -772,7 +771,7 @@ document.write(`
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Blue">floris.floris_model.FlorisModel</span> <span class=" -Color -Color-Bold -Color-Bold-Black">WARNING</span> <span class=" -Color -Color-Yellow">Computing AEP with uniform frequencies. Results results may not reflect annual operation.</span>
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>AEP from time series: 107136360958.59108, and re-computed AEP: 107136360958.59108
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>AEP from time series: 107576733686.4665, and re-computed AEP: 107576733686.4665
 Total number of wind direction and wind speed combination: 1872
 Number of 0 frequency bins: 545
 n_findex: 1327

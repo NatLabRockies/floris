@@ -666,14 +666,13 @@ document.write(`
 <span class="sd">deflection model and their effects on the wind turbine wake.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-
 <span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">floris</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlorisModel</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">floris.flow_visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_rotor_values</span><span class="p">,</span> <span class="n">visualize_cut_plane</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">floris.flow_visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">visualize_cut_plane</span>
 
 
 <span class="c1"># Initialize FLORIS with the given input file.</span>
@@ -682,15 +681,16 @@ document.write(`
 
 <span class="c1"># Options</span>
 <span class="n">show_flow_cuts</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="n">num_in_row</span> <span class="o">=</span> <span class="mi">5</span> <span class="c1"># Should be at least 3</span>
-<span class="n">first_three_yaw_angles</span> <span class="o">=</span> <span class="p">[</span><span class="mf">20.</span><span class="p">,</span> <span class="mf">20.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">]</span>
+<span class="n">num_in_row</span> <span class="o">=</span> <span class="mi">5</span>  <span class="c1"># Should be at least 3</span>
+<span class="n">first_three_yaw_angles</span> <span class="o">=</span> <span class="p">[</span><span class="mf">20.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">]</span>
 
-<span class="n">yaw_angles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">first_three_yaw_angles</span> <span class="o">+</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">num_in_row</span><span class="o">-</span><span class="mi">3</span><span class="p">))[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
+<span class="n">yaw_angles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">first_three_yaw_angles</span> <span class="o">+</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">num_in_row</span> <span class="o">-</span> <span class="mi">3</span><span class="p">))[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Turbine yaw angles (degrees): &quot;</span><span class="p">,</span> <span class="n">yaw_angles</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
+
 <span class="c1"># Define function for visualizing wakes</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">generate_wake_visualization</span><span class="p">(</span><span class="n">fmodel</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_wake_visualization</span><span class="p">(</span><span class="n">fmodel</span><span class="p">:</span> <span class="n">FlorisModel</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="c1"># Using the FlorisModel functions, get 2D slices.</span>
     <span class="n">x_bounds</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">500</span><span class="p">,</span> <span class="mi">3000</span><span class="p">]</span>
     <span class="n">y_bounds</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">250</span><span class="p">,</span> <span class="mi">250</span><span class="p">]</span>
@@ -716,47 +716,48 @@ document.write(`
         <span class="n">x_bounds</span><span class="o">=</span><span class="n">x_bounds</span><span class="p">,</span>
         <span class="n">z_bounds</span><span class="o">=</span><span class="n">z_bounds</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">cross_planes</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">cpl</span> <span class="ow">in</span> <span class="n">cross_plane_locations</span><span class="p">:</span>
-        <span class="n">cross_planes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="n">fmodel</span><span class="o">.</span><span class="n">calculate_cross_plane</span><span class="p">(</span>
-                <span class="n">y_resolution</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-                <span class="n">z_resolution</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-                <span class="n">downstream_dist</span><span class="o">=</span><span class="n">cpl</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
+    <span class="n">cross_planes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">fmodel</span><span class="o">.</span><span class="n">calculate_cross_plane</span><span class="p">(</span><span class="n">y_resolution</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">z_resolution</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">downstream_dist</span><span class="o">=</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">cross_plane_locations</span>
+    <span class="p">]</span>
 
     <span class="c1"># Create the plots</span>
     <span class="c1"># Cutplane settings</span>
-    <span class="n">cp_ls</span> <span class="o">=</span> <span class="s2">&quot;solid&quot;</span> <span class="c1"># line style</span>
-    <span class="n">cp_lw</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="c1"># line width</span>
-    <span class="n">cp_clr</span> <span class="o">=</span> <span class="s2">&quot;black&quot;</span> <span class="c1"># line color</span>
+    <span class="n">cp_ls</span> <span class="o">=</span> <span class="s2">&quot;solid&quot;</span>  <span class="c1"># line style</span>
+    <span class="n">cp_lw</span> <span class="o">=</span> <span class="mf">0.5</span>  <span class="c1"># line width</span>
+    <span class="n">cp_clr</span> <span class="o">=</span> <span class="s2">&quot;black&quot;</span>  <span class="c1"># line color</span>
     <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
     <span class="n">fig</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
     <span class="c1"># Horizontal profile</span>
     <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">311</span><span class="p">)</span>
-    <span class="n">visualize_cut_plane</span><span class="p">(</span><span class="n">horizontal_plane</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Top-down profile&quot;</span><span class="p">,</span>
-        <span class="n">min_speed</span><span class="o">=</span><span class="n">min_ws</span><span class="p">,</span> <span class="n">max_speed</span><span class="o">=</span><span class="n">max_ws</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_bounds</span><span class="p">,</span> <span class="p">[</span><span class="n">streamwise_plane_location</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">cp_clr</span><span class="p">,</span>
-        <span class="n">linewidth</span><span class="o">=</span><span class="n">cp_lw</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="n">cp_ls</span><span class="p">)</span>
+    <span class="n">visualize_cut_plane</span><span class="p">(</span>
+        <span class="n">horizontal_plane</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Top-down profile&quot;</span><span class="p">,</span> <span class="n">min_speed</span><span class="o">=</span><span class="n">min_ws</span><span class="p">,</span> <span class="n">max_speed</span><span class="o">=</span><span class="n">max_ws</span>
+    <span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+        <span class="n">x_bounds</span><span class="p">,</span> <span class="p">[</span><span class="n">streamwise_plane_location</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">cp_clr</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">cp_lw</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="n">cp_ls</span>
+    <span class="p">)</span>
     <span class="k">for</span> <span class="n">cpl</span> <span class="ow">in</span> <span class="n">cross_plane_locations</span><span class="p">:</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">cpl</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="n">y_bounds</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">cp_clr</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">cp_lw</span><span class="p">,</span>
-            <span class="n">linestyle</span><span class="o">=</span><span class="n">cp_ls</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">cpl</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">y_bounds</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">cp_clr</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">cp_lw</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="n">cp_ls</span><span class="p">)</span>
 
     <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">312</span><span class="p">)</span>
-    <span class="n">visualize_cut_plane</span><span class="p">(</span><span class="n">y_plane</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Streamwise profile&quot;</span><span class="p">,</span>
-        <span class="n">min_speed</span><span class="o">=</span><span class="n">min_ws</span><span class="p">,</span> <span class="n">max_speed</span><span class="o">=</span><span class="n">max_ws</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_bounds</span><span class="p">,</span> <span class="p">[</span><span class="n">horizontal_plane_location</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">cp_clr</span><span class="p">,</span>
-        <span class="n">linewidth</span><span class="o">=</span><span class="n">cp_lw</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="n">cp_ls</span><span class="p">)</span>
+    <span class="n">visualize_cut_plane</span><span class="p">(</span>
+        <span class="n">y_plane</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Streamwise profile&quot;</span><span class="p">,</span> <span class="n">min_speed</span><span class="o">=</span><span class="n">min_ws</span><span class="p">,</span> <span class="n">max_speed</span><span class="o">=</span><span class="n">max_ws</span>
+    <span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+        <span class="n">x_bounds</span><span class="p">,</span> <span class="p">[</span><span class="n">horizontal_plane_location</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">cp_clr</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">cp_lw</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="n">cp_ls</span>
+    <span class="p">)</span>
     <span class="k">for</span> <span class="n">cpl</span> <span class="ow">in</span> <span class="n">cross_plane_locations</span><span class="p">:</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">cpl</span><span class="p">,</span> <span class="n">cpl</span><span class="p">],</span> <span class="n">z_bounds</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">cp_clr</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">cp_lw</span><span class="p">,</span>
-            <span class="n">linestyle</span><span class="o">=</span><span class="n">cp_ls</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">cpl</span><span class="p">,</span> <span class="n">cpl</span><span class="p">],</span> <span class="n">z_bounds</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">cp_clr</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">cp_lw</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="n">cp_ls</span><span class="p">)</span>
 
     <span class="c1"># Spanwise profiles</span>
-    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">cp</span><span class="p">,</span> <span class="n">cpl</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">cross_planes</span><span class="p">,</span> <span class="n">cross_plane_locations</span><span class="p">)):</span>
-        <span class="n">visualize_cut_plane</span><span class="p">(</span><span class="n">cp</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">cross_planes</span><span class="p">),</span> <span class="n">i</span><span class="o">+</span><span class="mi">7</span><span class="p">),</span>
-            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Loc: </span><span class="si">{:.0f}</span><span class="s2">m&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cpl</span><span class="p">),</span> <span class="n">min_speed</span><span class="o">=</span><span class="n">min_ws</span><span class="p">,</span>
-            <span class="n">max_speed</span><span class="o">=</span><span class="n">max_ws</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">cp</span><span class="p">,</span> <span class="n">cpl</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">cross_planes</span><span class="p">,</span> <span class="n">cross_plane_locations</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)):</span>
+        <span class="n">visualize_cut_plane</span><span class="p">(</span>
+            <span class="n">cp</span><span class="p">,</span>
+            <span class="n">ax</span><span class="o">=</span><span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">cross_planes</span><span class="p">),</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">7</span><span class="p">),</span>
+            <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Loc: </span><span class="si">{</span><span class="n">cpl</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">m&quot;</span><span class="p">,</span>
+            <span class="n">min_speed</span><span class="o">=</span><span class="n">min_ws</span><span class="p">,</span>
+            <span class="n">max_speed</span><span class="o">=</span><span class="n">max_ws</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="c1"># Add overall figure title</span>
     <span class="k">if</span> <span class="n">title</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -769,8 +770,8 @@ document.write(`
 <span class="n">fmodel</span> <span class="o">=</span> <span class="n">FlorisModel</span><span class="p">(</span><span class="s2">&quot;../inputs/emgauss.yaml&quot;</span><span class="p">)</span>
 <span class="n">D</span> <span class="o">=</span> <span class="n">fmodel</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">farm</span><span class="o">.</span><span class="n">rotor_diameters</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">fmodel</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
-    <span class="n">layout_x</span><span class="o">=</span><span class="p">[</span><span class="n">x</span><span class="o">*</span><span class="mf">5.0</span><span class="o">*</span><span class="n">D</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_in_row</span><span class="p">)],</span>
-    <span class="n">layout_y</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">]</span><span class="o">*</span><span class="n">num_in_row</span><span class="p">,</span>
+    <span class="n">layout_x</span><span class="o">=</span><span class="p">[</span><span class="n">x</span> <span class="o">*</span> <span class="mf">5.0</span> <span class="o">*</span> <span class="n">D</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_in_row</span><span class="p">)],</span>
+    <span class="n">layout_y</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">*</span> <span class="n">num_in_row</span><span class="p">,</span>
     <span class="n">wind_speeds</span><span class="o">=</span><span class="p">[</span><span class="mf">8.0</span><span class="p">],</span>
     <span class="n">wind_directions</span><span class="o">=</span><span class="p">[</span><span class="mf">270.0</span><span class="p">],</span>
     <span class="n">yaw_angles</span><span class="o">=</span><span class="n">yaw_angles</span><span class="p">,</span>
@@ -783,12 +784,12 @@ document.write(`
 <span class="n">fmodel</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 
 <span class="c1"># Look at the powers of each turbine</span>
-<span class="n">turbine_powers</span> <span class="o">=</span> <span class="n">fmodel</span><span class="o">.</span><span class="n">get_turbine_powers</span><span class="p">()</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">/</span><span class="mf">1e6</span>
+<span class="n">turbine_powers</span> <span class="o">=</span> <span class="n">fmodel</span><span class="o">.</span><span class="n">get_turbine_powers</span><span class="p">()</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="o">/</span> <span class="mf">1e6</span>
 
-<span class="n">fig0</span><span class="p">,</span> <span class="n">ax0</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">fig0</span><span class="p">,</span> <span class="n">ax0</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="n">width</span> <span class="o">=</span> <span class="mf">0.1</span>
 <span class="n">nw</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span>
-<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">num_in_row</span><span class="p">))</span><span class="o">+</span><span class="n">width</span><span class="o">*</span><span class="n">nw</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">num_in_row</span><span class="p">))</span> <span class="o">+</span> <span class="n">width</span> <span class="o">*</span> <span class="n">nw</span>
 <span class="n">nw</span> <span class="o">+=</span> <span class="mi">1</span>
 
 <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Original&quot;</span>
@@ -802,8 +803,9 @@ document.write(`
 <span class="c1"># Increase the maximum deflection attained</span>
 <span class="n">fmodel_dict_mod</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">fmodel_dict</span><span class="p">)</span>
 
-<span class="n">fmodel_dict_mod</span><span class="p">[</span><span class="s1">&#39;wake&#39;</span><span class="p">][</span><span class="s1">&#39;wake_deflection_parameters&#39;</span><span class="p">][</span><span class="s1">&#39;empirical_gauss&#39;</span><span class="p">]</span>\
-    <span class="p">[</span><span class="s1">&#39;horizontal_deflection_gain_D&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">5.0</span>
+<span class="n">fmodel_dict_mod</span><span class="p">[</span><span class="s2">&quot;wake&quot;</span><span class="p">][</span><span class="s2">&quot;wake_deflection_parameters&quot;</span><span class="p">][</span><span class="s2">&quot;empirical_gauss&quot;</span><span class="p">][</span>
+    <span class="s2">&quot;horizontal_deflection_gain_D&quot;</span>
+<span class="p">]</span> <span class="o">=</span> <span class="mf">5.0</span>
 
 <span class="n">fmodel</span> <span class="o">=</span> <span class="n">FlorisModel</span><span class="p">(</span><span class="n">fmodel_dict_mod</span><span class="p">)</span>
 <span class="n">fmodel</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
@@ -813,9 +815,9 @@ document.write(`
 <span class="p">)</span>
 
 <span class="n">fmodel</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-<span class="n">turbine_powers</span> <span class="o">=</span> <span class="n">fmodel</span><span class="o">.</span><span class="n">get_turbine_powers</span><span class="p">()</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">/</span><span class="mf">1e6</span>
+<span class="n">turbine_powers</span> <span class="o">=</span> <span class="n">fmodel</span><span class="o">.</span><span class="n">get_turbine_powers</span><span class="p">()</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="o">/</span> <span class="mf">1e6</span>
 
-<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">num_in_row</span><span class="p">))</span><span class="o">+</span><span class="n">width</span><span class="o">*</span><span class="n">nw</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">num_in_row</span><span class="p">))</span> <span class="o">+</span> <span class="n">width</span> <span class="o">*</span> <span class="n">nw</span>
 <span class="n">nw</span> <span class="o">+=</span> <span class="mi">1</span>
 
 <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Increase max deflection&quot;</span>
@@ -826,8 +828,9 @@ document.write(`
 
 <span class="c1"># Add (increase) influence of wake added mixing</span>
 <span class="n">fmodel_dict_mod</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">fmodel_dict</span><span class="p">)</span>
-<span class="n">fmodel_dict_mod</span><span class="p">[</span><span class="s1">&#39;wake&#39;</span><span class="p">][</span><span class="s1">&#39;wake_deflection_parameters&#39;</span><span class="p">][</span><span class="s1">&#39;empirical_gauss&#39;</span><span class="p">]</span>\
-   <span class="p">[</span><span class="s1">&#39;mixing_gain_deflection&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">100.0</span>
+<span class="n">fmodel_dict_mod</span><span class="p">[</span><span class="s2">&quot;wake&quot;</span><span class="p">][</span><span class="s2">&quot;wake_deflection_parameters&quot;</span><span class="p">][</span><span class="s2">&quot;empirical_gauss&quot;</span><span class="p">][</span>
+    <span class="s2">&quot;mixing_gain_deflection&quot;</span>
+<span class="p">]</span> <span class="o">=</span> <span class="mf">100.0</span>
 
 <span class="n">fmodel</span> <span class="o">=</span> <span class="n">FlorisModel</span><span class="p">(</span><span class="n">fmodel_dict_mod</span><span class="p">)</span>
 <span class="n">fmodel</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
@@ -837,9 +840,9 @@ document.write(`
 <span class="p">)</span>
 
 <span class="n">fmodel</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-<span class="n">turbine_powers</span> <span class="o">=</span> <span class="n">fmodel</span><span class="o">.</span><span class="n">get_turbine_powers</span><span class="p">()</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">/</span><span class="mf">1e6</span>
+<span class="n">turbine_powers</span> <span class="o">=</span> <span class="n">fmodel</span><span class="o">.</span><span class="n">get_turbine_powers</span><span class="p">()</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="o">/</span> <span class="mf">1e6</span>
 
-<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">num_in_row</span><span class="p">))</span><span class="o">+</span><span class="n">width</span><span class="o">*</span><span class="n">nw</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">num_in_row</span><span class="p">))</span> <span class="o">+</span> <span class="n">width</span> <span class="o">*</span> <span class="n">nw</span>
 <span class="n">nw</span> <span class="o">+=</span> <span class="mi">1</span>
 
 <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Increase mixing gain&quot;</span>
@@ -852,10 +855,12 @@ document.write(`
 <span class="n">fmodel_dict_mod</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">fmodel_dict</span><span class="p">)</span>
 <span class="c1"># Include a WIM gain so that YAM is reflected in deflection as well</span>
 <span class="c1"># as deficit</span>
-<span class="n">fmodel_dict_mod</span><span class="p">[</span><span class="s1">&#39;wake&#39;</span><span class="p">][</span><span class="s1">&#39;wake_deflection_parameters&#39;</span><span class="p">][</span><span class="s1">&#39;empirical_gauss&#39;</span><span class="p">]</span>\
-   <span class="p">[</span><span class="s1">&#39;mixing_gain_deflection&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">100.0</span>
-<span class="n">fmodel_dict_mod</span><span class="p">[</span><span class="s1">&#39;wake&#39;</span><span class="p">][</span><span class="s1">&#39;wake_deflection_parameters&#39;</span><span class="p">][</span><span class="s1">&#39;empirical_gauss&#39;</span><span class="p">]</span>\
-   <span class="p">[</span><span class="s1">&#39;yaw_added_mixing_gain&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">fmodel_dict_mod</span><span class="p">[</span><span class="s2">&quot;wake&quot;</span><span class="p">][</span><span class="s2">&quot;wake_deflection_parameters&quot;</span><span class="p">][</span><span class="s2">&quot;empirical_gauss&quot;</span><span class="p">][</span>
+    <span class="s2">&quot;mixing_gain_deflection&quot;</span>
+<span class="p">]</span> <span class="o">=</span> <span class="mf">100.0</span>
+<span class="n">fmodel_dict_mod</span><span class="p">[</span><span class="s2">&quot;wake&quot;</span><span class="p">][</span><span class="s2">&quot;wake_deflection_parameters&quot;</span><span class="p">][</span><span class="s2">&quot;empirical_gauss&quot;</span><span class="p">][</span>
+    <span class="s2">&quot;yaw_added_mixing_gain&quot;</span>
+<span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
 <span class="n">fmodel</span> <span class="o">=</span> <span class="n">FlorisModel</span><span class="p">(</span><span class="n">fmodel_dict_mod</span><span class="p">)</span>
 <span class="n">fmodel</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
     <span class="n">wind_speeds</span><span class="o">=</span><span class="p">[</span><span class="mf">8.0</span><span class="p">],</span>
@@ -864,9 +869,9 @@ document.write(`
 <span class="p">)</span>
 
 <span class="n">fmodel</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-<span class="n">turbine_powers</span> <span class="o">=</span> <span class="n">fmodel</span><span class="o">.</span><span class="n">get_turbine_powers</span><span class="p">()</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">/</span><span class="mf">1e6</span>
+<span class="n">turbine_powers</span> <span class="o">=</span> <span class="n">fmodel</span><span class="o">.</span><span class="n">get_turbine_powers</span><span class="p">()</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="o">/</span> <span class="mf">1e6</span>
 
-<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">num_in_row</span><span class="p">))</span><span class="o">+</span><span class="n">width</span><span class="o">*</span><span class="n">nw</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">num_in_row</span><span class="p">))</span> <span class="o">+</span> <span class="n">width</span> <span class="o">*</span> <span class="n">nw</span>
 <span class="n">nw</span> <span class="o">+=</span> <span class="mi">1</span>
 
 <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Increase yaw-added mixing&quot;</span>
@@ -877,7 +882,7 @@ document.write(`
 
 <span class="c1"># Power plot aesthetics</span>
 <span class="n">ax0</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">num_in_row</span><span class="p">))</span>
-<span class="n">ax0</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">([</span><span class="s2">&quot;T</span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_in_row</span><span class="p">)])</span>
+<span class="n">ax0</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;T</span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_in_row</span><span class="p">)])</span>
 <span class="n">ax0</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 <span class="n">ax0</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Turbine&quot;</span><span class="p">)</span>
 <span class="n">ax0</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Power [MW]&quot;</span><span class="p">)</span>

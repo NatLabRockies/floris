@@ -40,7 +40,7 @@ afmodel = ApproxFlorisModel("../inputs/gch.yaml", ws_resolution=0.5)
 
 
 # Set both models to an n_turbine layout and use the above time series
-layout_x = np.array([i * 500 for i in range(n_turbines)])
+layout_x = np.array([i*500 for i in range(n_turbines)])
 layout_y = np.zeros(n_turbines)
 fmodel.set(layout_x=layout_x, layout_y=layout_y, wind_data=time_series)
 afmodel.set(layout_x=layout_x, layout_y=layout_y, wind_data=time_series)
@@ -63,7 +63,7 @@ ax.plot(afmodel.get_farm_power(), label="ApproxFlorisModel")
 ax.set_xlabel("Time Step")
 ax.set_ylabel("Farm Power [W]")
 ax.legend()
-ax.grid()
+ax.grid(True)
 
 
 # Compare the expected power results

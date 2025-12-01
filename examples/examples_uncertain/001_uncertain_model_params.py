@@ -53,7 +53,7 @@ wd_sample_points = [-6, -3, 0, 3, 6]
 # to the UncertainFlorisModel class.  This parameter is used to weight the points
 # following expansion by the wd_sample_points.  The smaller the value, the closer
 # the weighting will be to the nominal case.
-wd_std = 3  # Default is 3 degrees
+wd_std = 3 # Default is 3 degrees
 
 ################################################
 # Verbosity
@@ -65,7 +65,7 @@ verbose = True
 ################################################
 # Define the UncertainFlorisModel
 ################################################
-print("*** Instantiating UncertainFlorisModel ***")
+print('*** Instantiating UncertainFlorisModel ***')
 ufmodel = UncertainFlorisModel(
     "../inputs/gch.yaml",
     wd_resolution=wd_resolution,
@@ -102,7 +102,7 @@ fmodel.set(
     layout_y=layout_y,
     wind_data=time_series,
 )
-print("*** Setting UncertainFlorisModel to 60 Wind Direction Inflow ***")
+print('*** Setting UncertainFlorisModel to 60 Wind Direction Inflow ***')
 ufmodel.set(
     layout_x=layout_x,
     layout_y=layout_y,
@@ -134,7 +134,7 @@ ax.plot(
 )
 ax.set_ylim(bottom=0)
 
-ax.grid()
+ax.grid(True)
 ax.legend()
 ax.set_xlabel("Wind Direction (deg)")
 ax.set_ylabel("Power (kW)")
@@ -151,7 +151,7 @@ ax.plot(
 ax.set_ylim(bottom=0)
 
 ax.set_title("Downstream Turbine")
-ax.grid()
+ax.grid(True)
 ax.legend()
 ax.set_xlabel("Wind Direction (deg)")
 ax.set_ylabel("Power (kW)")
@@ -167,7 +167,7 @@ ax.plot(
 ax.set_ylim(bottom=0)
 
 ax.set_title("Farm Power")
-ax.grid()
+ax.grid(True)
 ax.legend()
 ax.set_xlabel("Wind Direction (deg)")
 ax.set_ylabel("Power (kW)")

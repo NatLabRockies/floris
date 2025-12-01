@@ -4,4 +4,7 @@ updates:
   directory: "/" # Location of package manifests
   target-branch: "develop"
   schedule:
-    interval: "weekly"
+    interval: "monthly"
+  ignore:
+    - dependency-name: "*"
+      update-types: ["version-update:semver-minor", "version-update:semver-patch"]

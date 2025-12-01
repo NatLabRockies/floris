@@ -8,8 +8,10 @@ import copy
 
 import matplotlib.pyplot as plt
 import numpy as np
+
 from floris import FlorisModel
 from floris.flow_visualization import visualize_cut_plane
+
 
 # Initialize FLORIS with the given input file.
 # For basic usage, FlorisModel provides a simplified and expressive

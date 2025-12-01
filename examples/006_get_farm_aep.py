@@ -13,11 +13,13 @@ If a wind_data object is provided to the model, the expected power and AEP
 """
 
 import numpy as np
+
 from floris import (
     FlorisModel,
     TimeSeries,
     WindRose,
 )
+
 
 fmodel = FlorisModel("inputs/gch.yaml")
 

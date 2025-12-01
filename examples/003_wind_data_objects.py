@@ -16,12 +16,14 @@ This example demonstrates the use of wind data objects in FLORIS:
 
 import matplotlib.pyplot as plt
 import numpy as np
+
 from floris import (
     FlorisModel,
     TimeSeries,
     WindRose,
     WindTIRose,
 )
+
 
 ##################################################
 # Initializing

@@ -14,12 +14,14 @@ to the baseline AEP.
 
 import matplotlib.pyplot as plt
 import numpy as np
+
 from floris import (
     FlorisModel,
     TimeSeries,
     WindRose,
 )
 from floris.optimization.yaw_optimization.yaw_optimizer_sr import YawOptimizationSR
+
 
 # Load the wind rose from csv
 wind_rose = WindRose.read_csv_long(

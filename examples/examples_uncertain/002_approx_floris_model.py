@@ -8,11 +8,13 @@ from time import perf_counter as timerpc
 
 import matplotlib.pyplot as plt
 import numpy as np
+
 from floris import (
     ApproxFlorisModel,
     FlorisModel,
     TimeSeries,
 )
+
 
 # Generate time series data using a random walk on wind speeds with constant wind direction
 N = 5000

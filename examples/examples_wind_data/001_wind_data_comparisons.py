@@ -14,11 +14,13 @@ two-turbine wind farm. The annual energy production (AEP) and annual value produ
 
 import matplotlib.pyplot as plt
 import numpy as np
+
 from floris import (
     FlorisModel,
     TimeSeries,
 )
 from floris.utilities import wrap_360
+
 
 # Generate a random time series of wind speeds, wind directions, turbulence
 # intensities, and values. In this case let's treat value as the dollars per MWh.

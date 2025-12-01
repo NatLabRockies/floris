@@ -6,11 +6,13 @@ analyze the impact of uncertain wind direction on power results.
 
 import matplotlib.pyplot as plt
 import numpy as np
+
 from floris import (
     FlorisModel,
     TimeSeries,
     UncertainFlorisModel,
 )
+
 
 # Instantiate FlorisModel for comparison
 fmodel = FlorisModel("../inputs/gch.yaml")  # GCH model

@@ -225,6 +225,4 @@ ax0.legend()
 ax0.set_xlabel("Turbine")
 ax0.set_ylabel("Power [MW]")
 
-plt.figure()
-plt.figure(num=fig0)
 plt.show()

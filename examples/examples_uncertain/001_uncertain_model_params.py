@@ -41,7 +41,7 @@ power_setpoint_resolution = 100.0  # kW
 # if the the single condition to analyze is 270 degrees, and the wd_sample_points
 # is [-2, -1, 0, 1 ,2], then the cases to be run and weighted
 #  will be 268, 269, 270, 271, 272.  If not supplied default is
-# [-2 * wd_std, -1 * wd_std, 0, wd_std, 2 * wd_std] # noqa ERA001
+# [-2 * wd_std, -1 * wd_std, 0, wd_std, 2 * wd_std]
 wd_sample_points = [-6, -3, 0, 3, 6]
 
 

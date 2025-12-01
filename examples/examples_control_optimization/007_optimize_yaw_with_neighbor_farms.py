@@ -129,8 +129,6 @@ ax.annotate(
     xytext=(X[0] + 100, Y[0] + 100),
     arrowprops={"facecolor": "black", "shrink": 0.05},
 )
-plt.show()
-plt.close()
 
 # Optimize the yaw angles.  This could be done for every wind direction and wind speed
 # but in practice it is much faster to optimize only for one speed and infer the rest

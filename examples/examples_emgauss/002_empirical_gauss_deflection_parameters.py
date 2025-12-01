@@ -28,7 +28,7 @@ print("Turbine yaw angles (degrees): ", yaw_angles[0])
 
 
 # Define function for visualizing wakes
-def generate_wake_visualization(fmodel: FlorisModel, title: str | None = None) -> None:
+def generate_wake_visualization(fmodel: FlorisModel, title=None):
     # Using the FlorisModel functions, get 2D slices.
     x_bounds = [-500, 3000]
     y_bounds = [-250, 250]

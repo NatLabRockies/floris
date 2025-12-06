@@ -1,6 +1,6 @@
 # Developer's Guide
 
-FLORIS is maintained by NRL.
+FLORIS is maintained by NLR.
 We are excited about community contribution, and this page outlines
 processes and procedures to follow when contributing to the
 source code. For technical questions regarding FLORIS usage, please

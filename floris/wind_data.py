@@ -416,10 +416,12 @@ class WindRose(WindDataBase):
         )
 
     def unpack_multidim_conditions(self):
-        multidim_conditions_unpack = {
-            k: v[self.non_zero_freq_mask] for k, v in self.multidim_conditions_flat.items()
-        }
-        return multidim_conditions_unpack
+        if self.multidim_conditions_flat is None:
+            return None
+        else:
+            return {
+                k: v[self.non_zero_freq_mask] for k, v in self.multidim_conditions_flat.items()
+            }
 
     def aggregate(self, wd_step=None, ws_step=None, inplace=False):
         """
@@ -1411,10 +1413,12 @@ class WindTIRose(WindDataBase):
         )
 
     def unpack_multidim_conditions(self):
-        multidim_conditions_unpack = {
-            k: v[self.non_zero_freq_mask] for k, v in self.multidim_conditions_flat.items()
-        }
-        return multidim_conditions_unpack
+        if self.multidim_conditions_flat is None:
+            return None
+        else:
+            return {
+                k: v[self.non_zero_freq_mask] for k, v in self.multidim_conditions_flat.items()
+            }
 
     def aggregate(self, wd_step=None, ws_step=None, ti_step=None, inplace=False):
         """

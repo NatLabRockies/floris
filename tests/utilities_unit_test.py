@@ -251,6 +251,7 @@ def test_nested_set():
     nested_set(example_dict, ['a', 'b', 'c'], 20)
     assert nested_get(example_dict, ['a', 'b', 'c']) == 20
 
+
 def test_is_all_scalar_dict():
     example_dict_1 = {
         "a": 10,

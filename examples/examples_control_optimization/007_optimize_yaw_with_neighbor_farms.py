@@ -6,12 +6,11 @@ case, the wind farm is part of a larger collection of turbines, some of which ar
 part of a neighboring farm.  The optimization is performed in two ways: first by
 accounting for the wakes of the neighboring farm (while not including those turbines)
 in the optimization as a target of yaw angle changes or including their power
-in the objective function.  In th second method the neighboring farms are removed
+in the objective function.  In the second method the neighboring farms are removed
 from FLORIS for the optimization.  The AEP is then calculated for the optimized
 yaw angles (accounting for and not accounting for the neighboring farm) and compared
 to the baseline AEP.
 """
-
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -128,9 +127,8 @@ ax.annotate(
     "Turbine 0",
     (X[0], Y[0]),
     xytext=(X[0] + 100, Y[0] + 100),
-    arrowprops={'facecolor':"black", 'shrink':0.05},
+    arrowprops={"facecolor": "black", "shrink": 0.05},
 )
-
 
 # Optimize the yaw angles.  This could be done for every wind direction and wind speed
 # but in practice it is much faster to optimize only for one speed and infer the rest
@@ -237,24 +235,36 @@ for i in range(n_findex):
     )
 
     # Now decide what to do for different wind speeds
-    if (wind_speed < 4.0) | (wind_speed > 14.0):
+    wind_speed_low_no_steer = 4.0
+    wind_speed_high_no_steer = 14.0
+    wind_speed_low_steer = 6.0
+    wind_speed_high_steer = 12.0
+    if (wind_speed < wind_speed_low_no_steer) | (wind_speed > wind_speed_high_no_steer):
         yaw_opt_with_neighbor = np.zeros(fmodel.n_turbines)  # do nothing for very low/high speeds
         yaw_opt_without_neighbor = np.zeros(
             fmodel.n_turbines
         )  # do nothing for very low/high speeds
-    elif wind_speed < 6.0:
+    elif wind_speed < wind_speed_low_steer:
         yaw_opt_with_neighbor = (
-            yaw_opt_full_with_neighbor * (6.0 - wind_speed) / 2.0
+            yaw_opt_full_with_neighbor
+            * (wind_speed_low_steer - wind_speed)
+            / (wind_speed_low_steer - wind_speed_low_no_steer)
         )  # Linear ramp up
         yaw_opt_without_neighbor = (
-            yaw_opt_full_without_neighbor * (6.0 - wind_speed) / 2.0
+            yaw_opt_full_without_neighbor
+            * (wind_speed_low_steer - wind_speed)
+            / (wind_speed_low_steer - wind_speed_low_no_steer)
         )  # Linear ramp up
-    elif wind_speed > 12.0:
+    elif wind_speed > wind_speed_high_steer:
         yaw_opt_with_neighbor = (
-            yaw_opt_full_with_neighbor * (14.0 - wind_speed) / 2.0
+            yaw_opt_full_with_neighbor
+            * (wind_speed_high_no_steer - wind_speed)
+            / (wind_speed_high_no_steer - wind_speed_high_steer)
         )  # Linear ramp down
         yaw_opt_without_neighbor = (
-            yaw_opt_full_without_neighbor * (14.0 - wind_speed) / 2.0
+            yaw_opt_full_without_neighbor
+            * (wind_speed_high_no_steer - wind_speed)
+            / (wind_speed_high_no_steer - wind_speed_high_steer)
         )  # Linear ramp down
     else:
         yaw_opt_with_neighbor = (
@@ -283,15 +293,11 @@ aep_opt_without_neighbor = fmodel.get_farm_AEP(turbine_weights=turbine_weights)
 aep_uplift_without_neighbor = 100.0 * (aep_opt_without_neighbor / aep_baseline - 1)
 farm_power_opt_without_neighbor = fmodel.get_farm_power(turbine_weights=turbine_weights)
 
-print("Baseline AEP: {:.2f} GWh.".format(aep_baseline / 1e9))
+print(f"Baseline AEP: {aep_baseline / 1e9:.2f} GWh.")
 print(
-    "Optimal AEP (Not accounting for neighboring farm): {:.2f} GWh.".format(
-        aep_opt_without_neighbor / 1e9
-    )
+    f"Optimal AEP (Not accounting for neighboring farm): {aep_opt_without_neighbor / 1e9:.2f} GWh."
 )
-print(
-    "Optimal AEP (Accounting for neighboring farm): {:.2f} GWh.".format(aep_opt_with_neighbor / 1e9)
-)
+print(f"Optimal AEP (Accounting for neighboring farm): {aep_opt_with_neighbor / 1e9:.2f} GWh.")
 
 # Plot the optimal yaw angles for turbine 0 with and without accounting for the neighboring farm
 yaw_angles_0_with_neighbor = np.vstack(df_opt_with_neighbor["yaw_angles_opt"])[:, 0]

@@ -86,4 +86,5 @@ ax = axarr[6]
 fmodel.core.farm.hub_heights = np.array([110, 90, 100, 100, 95])
 layoutviz.plot_farm_terrain(fmodel, ax=ax)
 
+plt.tight_layout()
 plt.show()

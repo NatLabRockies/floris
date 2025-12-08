@@ -903,6 +903,10 @@ class UncertainFlorisModel(LoggingManager):
         Finds unique rows in the input numpy array and constructs a mapping array
         to reconstruct the input array from the unique rows.
 
+        Include an exception that if the underlying FlorisModel object (fmodel_unexpanded)
+        includes a multidim_conditions that includes non-scalar values, then force
+        unique_inputs and map_to_expanded_inputs to represent that all rows are unique.
+
         Args:
             input_array (numpy.ndarray): Input array of shape (m, n).
 
@@ -914,6 +918,16 @@ class UncertainFlorisModel(LoggingManager):
                             to the corresponding row in the unique_inputs array.
                             It represents how to reconstruct the input_array from the unique rows.
         """
+
+        if self.fmodel_unexpanded.core.flow_field.multidim_conditions is not None:
+
+            # Notify the user that given multidim condtions, force all unique values
+            # for the uncertainty model which may be slower
+            self.logger.warning("Given  multidim conditions, force all unique values "
+                                "for the uncertainty model which may be slower")
+            unique_inputs = input_array
+            map_to_expanded_inputs = np.arange(len(input_array))
+            return unique_inputs, map_to_expanded_inputs
 
         unique_inputs, indices, map_to_expanded_inputs = np.unique(
             input_array, axis=0, return_index=True, return_inverse=True

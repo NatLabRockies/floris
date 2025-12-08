@@ -439,3 +439,21 @@ def print_nested_dict(dictionary: Dict[str, Any], indent: int = 0) -> None:
             print_nested_dict(value, indent + 4)
         else:
             print(" " * (indent + 4) + str(value))
+
+def is_all_scalar_dict(dictionary: Dict[str, Any]) -> bool:
+    """Check if all values in a dictionary are scalar.
+
+    A scalar is defined as a value that is not iterable (like int, float, str, bool)
+    or a numpy scalar (0-dimensional array).
+
+    Args:
+        dictionary (Dict[str, Any]): The dictionary to check.
+
+    Returns:
+        bool: True if all values are scalar, False otherwise.
+    """
+    for value in dictionary.values():
+        if not np.isscalar(value):
+            return False
+
+    return True

@@ -21,8 +21,8 @@ from floris.heterogeneous_map import HeterogeneousMap
 from floris.type_dec import NDArrayFloat
 from floris.utilities import (
     check_and_identify_step_size,
+    is_all_scalar_dict,
     make_wind_directions_adjacent,
-    wrap_180,
 )
 
 
@@ -2262,25 +2262,28 @@ class TimeSeries(WindDataBase):
         else:
             self.heterogeneous_map = None
 
-        # Hanlde the multidim_conditions
+        # Handle the multidim_conditions
         if multidim_conditions is not None:
             # Check that each value in the dictionary is either a 1D NumPy array of size n_findex
             # or a scalar value
-            for key, value in multidim_conditions.items():
-                if isinstance(value, np.ndarray):
-                    if value.shape != (self.n_findex,):
+            if is_all_scalar_dict(multidim_conditions):
+                # If all values are scalar, then broadcast to size n_findex
+                multidim_conditions = {
+                    k: np.full(self.n_findex, v) for k, v in multidim_conditions.items()
+                }
+            else:
+                for key, value in multidim_conditions.items():
+                    if isinstance(value, np.ndarray):
+                        if value.shape != (self.n_findex,):
+                            raise ValueError(
+                                f"multidim_conditions[{key}] must be of size n_findex"
+                                f"({self.n_findex})"
+                            )
+                    else:
                         raise ValueError(
-                            f"multidim_conditions[{key}] must be of size n_findex ({self.n_findex})"
+                            f"multidim_conditions[{key}] must be a 1D NumPy array of size n_findex "
+                            "or a scalar value."
                         )
-                elif np.isscalar(value):
-                    # TODO: This will mean more time spent in identifying neighboring conditions;
-                    # is that problematic?
-                    multidim_conditions[key] = np.full(self.n_findex, value)
-                else:
-                    raise ValueError(
-                        f"multidim_conditions[{key}] must be a 1D NumPy array of size n_findex "
-                        "or a scalar value."
-                    )
 
         self.multidim_conditions = multidim_conditions
 

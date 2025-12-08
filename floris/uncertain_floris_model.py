@@ -17,6 +17,7 @@ from floris.type_dec import (
     NDArrayFloat,
 )
 from floris.utilities import (
+    is_all_scalar_dict,
     nested_get,
     nested_set,
     wrap_180,
@@ -919,12 +920,11 @@ class UncertainFlorisModel(LoggingManager):
                             It represents how to reconstruct the input_array from the unique rows.
         """
 
-        if self.fmodel_unexpanded.core.flow_field.multidim_conditions is not None:
-
-            # Notify the user that given multidim condtions, force all unique values
-            # for the uncertainty model which may be slower
-            self.logger.warning("Given  multidim conditions, force all unique values "
-                                "for the uncertainty model which may be slower")
+        if (self.fmodel_unexpanded.core.flow_field.multidim_conditions is not None
+           and not is_all_scalar_dict(self.fmodel_unexpanded.core.flow_field.multidim_conditions)
+        ):
+            self.logger.warning("Given non-scalar multidim conditions. Forcing all unique values "
+                                "for the uncertainty model, which may be slower to run.")
             unique_inputs = input_array
             map_to_expanded_inputs = np.arange(len(input_array))
             return unique_inputs, map_to_expanded_inputs

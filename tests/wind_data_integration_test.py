@@ -896,7 +896,7 @@ def test_wind_ti_rose_unpack():
     # Array multi-dimensional conditions that are not the correct shape (n_wd x n_ws x n_ti)
     multidim_conditions_array_bad_shape = {"a": np.array([1, 2, 3, 4, 5, 6])}
     with pytest.raises(ValueError):
-        WindRose(
+        WindTIRose(
             wind_directions,
             wind_speeds,
             turbulence_intensities,
@@ -914,7 +914,7 @@ def test_wind_ti_rose_unpack():
         ]
     )}
     with pytest.raises(ValueError):
-        WindRose(
+        WindTIRose(
             wind_directions,
             wind_speeds,
             turbulence_intensities,
@@ -930,7 +930,7 @@ def test_wind_ti_rose_unpack():
             [[0.06, 0.05], [0.06, 0.05], [0.06, 0.05]],
         ]
     )}
-    wind_rose = WindRose(
+    wind_rose = WindTIRose(
         wind_directions,
         wind_speeds,
         turbulence_intensities,

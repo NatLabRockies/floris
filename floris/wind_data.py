@@ -183,15 +183,18 @@ class WindRose(WindDataBase):
         heterogeneous_inflow_config_by_wd: dict | None = None,
         multidim_conditions: dict | None = None,
     ):
-        if not isinstance(wind_directions, np.ndarray):
-            raise TypeError("wind_directions must be a NumPy array")
+        if not isinstance(wind_directions, np.ndarray) or wind_directions.ndim != 1:
+            raise TypeError("wind_directions must be a 1D NumPy array")
 
-        if not isinstance(wind_speeds, np.ndarray):
-            raise TypeError("wind_speeds must be a NumPy array")
+        if not isinstance(wind_speeds, np.ndarray) or wind_speeds.ndim != 1:
+            raise TypeError("wind_speeds must be a 1D NumPy array")
 
         # Confirm that both wind_directions and wind_speeds are monitonically
         # increasing and evenly spaced
-        if len(wind_directions) > 1:
+        _n_wd = len(wind_directions)
+        _n_ws = len(wind_speeds)
+
+        if _n_wd > 1:
             # Check monotonically increasing
             if not np.all(np.diff(wind_directions) > 0):
                 raise ValueError("wind_directions must be monotonically increasing")
@@ -199,7 +202,7 @@ class WindRose(WindDataBase):
             # Check evenly spaced (Function will raise error if not)
             check_and_identify_step_size(wind_directions=wind_directions)
 
-        if len(wind_speeds) > 1:
+        if _n_ws > 1:
             # Check monotonically increasing
             if not np.all(np.diff(wind_speeds) > 0):
                 raise ValueError("wind_speeds must be monotonically increasing")
@@ -218,26 +221,26 @@ class WindRose(WindDataBase):
 
         # Check if ti_table is a single float value
         if isinstance(ti_table, float):
-            self.ti_table = np.full((len(wind_directions), len(wind_speeds)), ti_table)
+            self.ti_table = np.full((_n_wd, _n_ws), ti_table)
 
         # Otherwise confirm the dimensions and then save it
         else:
-            if not ti_table.shape[0] == len(wind_directions):
+            if not ti_table.shape[0] == _n_wd:
                 raise ValueError("ti_table first dimension must equal len(wind_directions)")
-            if not ti_table.shape[1] == len(wind_speeds):
+            if not ti_table.shape[1] == _n_ws:
                 raise ValueError("ti_table second dimension must equal len(wind_speeds)")
             self.ti_table = ti_table
 
         # If freq_table is not None, confirm it has correct dimension,
         # otherwise initialize to uniform probability
         if freq_table is not None:
-            if not freq_table.shape[0] == len(wind_directions):
+            if not freq_table.shape[0] == _n_wd:
                 raise ValueError("freq_table first dimension must equal len(wind_directions)")
-            if not freq_table.shape[1] == len(wind_speeds):
+            if not freq_table.shape[1] == _n_ws:
                 raise ValueError("freq_table second dimension must equal len(wind_speeds)")
             self.freq_table = freq_table
         else:
-            self.freq_table = np.ones((len(wind_directions), len(wind_speeds)))
+            self.freq_table = np.ones((_n_wd, _n_ws))
 
         # Normalize freq table
         self.freq_table = self.freq_table / np.sum(self.freq_table)
@@ -245,9 +248,9 @@ class WindRose(WindDataBase):
         # If value_table is not None, confirm it has correct dimension,
         # otherwise initialize to all ones
         if value_table is not None:
-            if not value_table.shape[0] == len(wind_directions):
+            if not value_table.shape[0] == _n_wd:
                 raise ValueError("value_table first dimension must equal len(wind_directions)")
-            if not value_table.shape[1] == len(wind_speeds):
+            if not value_table.shape[1] == _n_ws:
                 raise ValueError("value_table second dimension must equal len(wind_speeds)")
         self.value_table = value_table
 
@@ -299,7 +302,29 @@ class WindRose(WindDataBase):
         else:
             self.heterogeneous_map = None
 
-        # TODO: Handle multidim_conditions (check shape)
+        # Handle the multidim_conditions
+        if multidim_conditions is not None:
+            # Check that each value in the dictionary is either scalar or a correctly-sized array
+            if is_all_scalar_dict(multidim_conditions):
+                # If all values are scalar, then broadcast to size n_findex
+                multidim_conditions = {
+                    k: np.full((_n_wd, _n_ws), v) for k, v in multidim_conditions.items()
+                }
+            else:
+                for key, value in multidim_conditions.items():
+                    if isinstance(value, np.ndarray):
+                        if value.shape != (_n_wd, _n_ws):
+                            raise ValueError(
+                                f"multidim_conditions[{key}] must be of size len(wind_directions) "
+                                f"x len(wind_speeds) [({_n_wd}, {_n_ws})] but currently has shape "
+                                f"{value.shape}."
+                            )
+                    else:
+                        raise ValueError(
+                            f"multidim_conditions[{key}] must be a 2D NumPy array of size "
+                            "len(wind_directions) x len(wind_speeds) or a scalar value."
+                        )
+        self.multidim_conditions = multidim_conditions
 
         # Build the gridded and flatten versions
         self._build_gridded_and_flattened_version()
@@ -330,6 +355,14 @@ class WindRose(WindDataBase):
             self.value_table_flat = self.value_table.flatten()
         else:
             self.value_table_flat = None
+
+        # Flatten multidim_conditions if defined
+        if self.multidim_conditions is not None:
+            self.multidim_conditions_flat = {
+                k: v.flatten() for k, v in self.multidim_conditions.items()
+            }
+        else:
+            self.multidim_conditions_flat = None
 
         # Set mask to non-zero frequency cases depending on compute_zero_freq_occurrence
         if self.compute_zero_freq_occurrence:
@@ -383,8 +416,10 @@ class WindRose(WindDataBase):
         )
 
     def unpack_multidim_conditions(self):
-        # TODO: mask self.multidim_conditions
-        return super().unpack_multidim_conditions() # TEMPORARY
+        multidim_conditions_unpack = {
+            k: v[self.non_zero_freq_mask] for k, v in self.multidim_conditions_flat.items()
+        }
+        return multidim_conditions_unpack
 
     def aggregate(self, wd_step=None, ws_step=None, inplace=False):
         """
@@ -1123,6 +1158,11 @@ class WindTIRose(WindDataBase):
                 Optional.
             * 'wind_speeds': A 1D NumPy array (size num_ws) of wind speeds (m/s). Optional.
             Defaults to None.
+        multidim_conditions (dict, optional): A dictionary containing multidimensional inflow
+            conditions. Each key is the name of the condition, and each value is either a 3D NumPy
+            array of shape (n_wind_speeds, n_wind_directions, n_turbulence_intensities) containing
+            the condition values, or a scalar value that will be broadcast to size n_findex.
+            Defaults to None.
 
     """
 
@@ -1136,20 +1176,25 @@ class WindTIRose(WindDataBase):
         compute_zero_freq_occurrence: bool = False,
         heterogeneous_map: HeterogeneousMap | dict | None = None,
         heterogeneous_inflow_config_by_wd: dict | None = None,
+        multidim_conditions: dict | None = None,
     ):
-        if not isinstance(wind_directions, np.ndarray):
-            raise TypeError("wind_directions must be a NumPy array")
+        if not isinstance(wind_directions, np.ndarray) or wind_directions.ndim != 1:
+            raise TypeError("wind_directions must be a 1D NumPy array")
 
-        if not isinstance(wind_speeds, np.ndarray):
-            raise TypeError("wind_speeds must be a NumPy array")
+        if not isinstance(wind_speeds, np.ndarray) or wind_speeds.ndim != 1:
+            raise TypeError("wind_speeds must be a 1D NumPy array")
 
-        if not isinstance(turbulence_intensities, np.ndarray):
-            raise TypeError("turbulence_intensities must be a NumPy array")
+        if not isinstance(turbulence_intensities, np.ndarray) or turbulence_intensities.ndim != 1:
+            raise TypeError("turbulence_intensities must be a 1D NumPy array")
 
         # Confirm that both wind_directions and wind_speeds
         # and turbulence intensities are monotonically
         # increasing and evenly spaced
-        if len(wind_directions) > 1:
+        _n_wd = len(wind_directions)
+        _n_ws = len(wind_speeds)
+        _n_ti = len(turbulence_intensities)
+
+        if _n_wd > 1:
             # Check monotonically increasing
             if not np.all(np.diff(wind_directions) > 0):
                 raise ValueError("wind_directions must be monotonically increasing")
@@ -1157,7 +1202,7 @@ class WindTIRose(WindDataBase):
             # Check evenly spaced (Function will raise error if not)
             check_and_identify_step_size(wind_directions=wind_directions)
 
-        if len(wind_speeds) > 1:
+        if _n_ws > 1:
             # Check monotonically increasing
             if not np.all(np.diff(wind_speeds) > 0):
                 raise ValueError("wind_speeds must be monotonically increasing")
@@ -1166,7 +1211,7 @@ class WindTIRose(WindDataBase):
             if not np.allclose(np.diff(wind_speeds), wind_speeds[1] - wind_speeds[0]):
                 raise ValueError("wind_speeds must be evenly spaced")
 
-        if len(turbulence_intensities) > 1:
+        if _n_ti > 1:
             # Check monotonically increasing
             if not np.all(np.diff(turbulence_intensities) > 0):
                 raise ValueError("turbulence_intensities must be monotonically increasing")
@@ -1186,19 +1231,17 @@ class WindTIRose(WindDataBase):
         # If freq_table is not None, confirm it has correct dimension,
         # otherwise initialize to uniform probability
         if freq_table is not None:
-            if not freq_table.shape[0] == len(wind_directions):
+            if not freq_table.shape[0] == _n_wd:
                 raise ValueError("freq_table first dimension must equal len(wind_directions)")
-            if not freq_table.shape[1] == len(wind_speeds):
+            if not freq_table.shape[1] == _n_ws:
                 raise ValueError("freq_table second dimension must equal len(wind_speeds)")
-            if not freq_table.shape[2] == len(turbulence_intensities):
+            if not freq_table.shape[2] == _n_ti:
                 raise ValueError(
                     "freq_table third dimension must equal len(turbulence_intensities)"
                 )
             self.freq_table = freq_table
         else:
-            self.freq_table = np.ones(
-                (len(wind_directions), len(wind_speeds), len(turbulence_intensities))
-            )
+            self.freq_table = np.ones((_n_wd, _n_ws, _n_ti))
 
         # Normalize freq table
         self.freq_table = self.freq_table / np.sum(self.freq_table)
@@ -1206,11 +1249,11 @@ class WindTIRose(WindDataBase):
         # If value_table is not None, confirm it has correct dimension,
         # otherwise initialize to all ones
         if value_table is not None:
-            if not value_table.shape[0] == len(wind_directions):
+            if not value_table.shape[0] == _n_wd:
                 raise ValueError("value_table first dimension must equal len(wind_directions)")
-            if not value_table.shape[1] == len(wind_speeds):
+            if not value_table.shape[1] == _n_ws:
                 raise ValueError("value_table second dimension must equal len(wind_speeds)")
-            if not value_table.shape[2] == len(turbulence_intensities):
+            if not value_table.shape[2] == _n_ti:
                 raise ValueError(
                     "value_table third dimension must equal len(turbulence_intensities)"
                 )
@@ -1254,6 +1297,32 @@ class WindTIRose(WindDataBase):
         else:
             self.heterogeneous_map = None
 
+        # Handle the multidim_conditions
+        if multidim_conditions is not None:
+            # Check that each value in the dictionary is either scalar or a correctly-sized array
+            if is_all_scalar_dict(multidim_conditions):
+                # If all values are scalar, then broadcast to size n_findex
+                multidim_conditions = {
+                    k: np.full((_n_wd, _n_ws, _n_ti), v) for k, v in multidim_conditions.items()
+                }
+            else:
+                for key, value in multidim_conditions.items():
+                    if isinstance(value, np.ndarray):
+                        if value.shape != (_n_wd, _n_ws, _n_ti):
+                            raise ValueError(
+                                f"multidim_conditions[{key}] must be of size len(wind_directions) "
+                                "x len(wind_speeds) x len(turbulence_intensities) "
+                                f"[({_n_wd}, {_n_ws}, {_n_ti})] but currently has shape "
+                                f"{value.shape}."
+                            )
+                    else:
+                        raise ValueError(
+                            f"multidim_conditions[{key}] must be a 2D NumPy array of size "
+                            "len(wind_directions) x len(wind_speeds) x len(turbulence_intensities)"
+                            " or a scalar value."
+                        )
+        self.multidim_conditions = multidim_conditions
+
         # Build the gridded and flatten versions
         self._build_gridded_and_flattened_version()
 
@@ -1281,6 +1350,14 @@ class WindTIRose(WindDataBase):
             self.value_table_flat = self.value_table.flatten()
         else:
             self.value_table_flat = None
+
+        # Flatten multidim_conditions if defined
+        if self.multidim_conditions is not None:
+            self.multidim_conditions_flat = {
+                k: v.flatten() for k, v in self.multidim_conditions.items()
+            }
+        else:
+            self.multidim_conditions_flat = None
 
         # Set mask to non-zero frequency cases depending on compute_zero_freq_occurrence
         if self.compute_zero_freq_occurrence:
@@ -1332,6 +1409,12 @@ class WindTIRose(WindDataBase):
             value_table_unpack,
             heterogeneous_inflow_config,
         )
+
+    def unpack_multidim_conditions(self):
+        multidim_conditions_unpack = {
+            k: v[self.non_zero_freq_mask] for k, v in self.multidim_conditions_flat.items()
+        }
+        return multidim_conditions_unpack
 
     def aggregate(self, wd_step=None, ws_step=None, ti_step=None, inplace=False):
         """
@@ -2237,7 +2320,7 @@ class TimeSeries(WindDataBase):
         # If heterogeneous_inflow_config_by_wd is not None, then create a HeterogeneousMap object
         # using the dictionary
         if heterogeneous_inflow_config_by_wd is not None:
-            # TODO: In future, add deprectation warning for this parameter here
+            # TODO: In future, add deprecation warning for this parameter here
 
             self.heterogeneous_map = HeterogeneousMap(**heterogeneous_inflow_config_by_wd)
 

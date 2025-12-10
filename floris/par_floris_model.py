@@ -9,6 +9,7 @@ from floris.floris_model import FlorisModel
 from floris.type_dec import (
     NDArrayFloat,
 )
+from floris.utilities import is_all_scalar_dict
 
 
 class ParFlorisModel(FlorisModel):
@@ -332,12 +333,13 @@ class ParFlorisModel(FlorisModel):
 
             # Handle multidim_conditions
             if self.core.flow_field.multidim_conditions is not None:
-                multidim_conditions_subset = {}
-                for key, value in self.core.flow_field.multidim_conditions.items():
-                    if np.isscalar(value):
-                        multidim_conditions_subset[key] = value
-                    else:
-                        multidim_conditions_subset[key] = value[wc_id_split]
+                if is_all_scalar_dict(self.core.flow_field.multidim_conditions):
+                    multidim_conditions_subset = self.core.flow_field.multidim_conditions
+                else:
+                    multidim_conditions_subset = {
+                        k: v[wc_id_split] for k, v in
+                        self.core.flow_field.multidim_conditions.items()
+                    }
                 set_args_subset["multidim_conditions"] = multidim_conditions_subset
 
             # Prepare lightweight data to pass along

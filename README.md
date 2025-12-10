@@ -156,7 +156,7 @@ space to show off the things you are doing with FLORIS.
 
 BSD 3-Clause License
 
-Copyright (c) 2025, Alliance for Sustainable Energy LLC, All rights reserved.
+Copyright (c) 2025, Alliance for Energy Innovation LLC, All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted
 provided that the following conditions are met:

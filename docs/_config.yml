@@ -2,9 +2,9 @@
 # Learn more at https://jupyterbook.org/customize/config.html
 
 title: FLORIS
-author: National Renewable Energy Laboratory
+author: National Laboratory of the Rockies
 logo: docs_image.png
-copyright: '2023'
+copyright: '2025'
 only_build_toc_files: false
 
 # Force re-execution of notebooks on each build.

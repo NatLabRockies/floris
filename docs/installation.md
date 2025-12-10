@@ -70,7 +70,7 @@ and importing FLORIS:
 Help on package floris:
 
 NAME
-    floris - # Copyright 2024 NREL
+    floris
 
 PACKAGE CONTENTS
     convert_floris_input_v3_to_v4
@@ -91,7 +91,7 @@ PACKAGE CONTENTS
     wind_data
 
 VERSION
-    4.0
+    4.5.1
 
 FILE
     ~/floris/floris/__init__.py

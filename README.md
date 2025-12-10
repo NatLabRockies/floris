@@ -2,7 +2,7 @@
 
 FLORIS is a controls-focused wind farm simulation software incorporating
 steady-state engineering wake models into a performance-focused Python
-framework. It has been in active development at NREL since 2013 and the latest
+framework. It has been in active development at NLR since 2013 and the latest
 release is [FLORIS v.4.5.1](https://github.com/NREL/floris/releases/latest).
 Online documentation is available at https://nrel.github.io/floris.
 
@@ -68,7 +68,7 @@ and importing FLORIS:
 Help on package floris:
 
 NAME
-    floris - # Copyright 2024 NREL
+    floris
 
 PACKAGE CONTENTS
     convert_floris_input_v3_to_v4
@@ -156,7 +156,7 @@ space to show off the things you are doing with FLORIS.
 
 BSD 3-Clause License
 
-Copyright (c) 2024, Alliance for Sustainable Energy LLC, All rights reserved.
+Copyright (c) 2025, Alliance for Energy Innovation LLC, All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted
 provided that the following conditions are met:

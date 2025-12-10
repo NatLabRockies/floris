@@ -306,10 +306,8 @@ class WindRose(WindDataBase):
         if multidim_conditions is not None:
             # Check that each value in the dictionary is either scalar or a correctly-sized array
             if is_all_scalar_dict(multidim_conditions):
-                # If all values are scalar, then broadcast to size n_findex
-                multidim_conditions = {
-                    k: np.full((_n_wd, _n_ws), v) for k, v in multidim_conditions.items()
-                }
+                # Leave all scalar for performance purposes
+                pass
             else:
                 for key, value in multidim_conditions.items():
                     if isinstance(value, np.ndarray):
@@ -358,9 +356,13 @@ class WindRose(WindDataBase):
 
         # Flatten multidim_conditions if defined
         if self.multidim_conditions is not None:
-            self.multidim_conditions_flat = {
-                k: v.flatten() for k, v in self.multidim_conditions.items()
-            }
+            if is_all_scalar_dict(self.multidim_conditions):
+                # Leave all scalar for performance purposes
+                self.multidim_conditions_flat = self.multidim_conditions
+            else:
+                self.multidim_conditions_flat = {
+                    k: v.flatten() for k, v in self.multidim_conditions.items()
+                }
         else:
             self.multidim_conditions_flat = None
 
@@ -418,6 +420,8 @@ class WindRose(WindDataBase):
     def unpack_multidim_conditions(self):
         if self.multidim_conditions_flat is None:
             return None
+        elif is_all_scalar_dict(self.multidim_conditions_flat):
+            return self.multidim_conditions_flat
         else:
             return {
                 k: v[self.non_zero_freq_mask] for k, v in self.multidim_conditions_flat.items()
@@ -1303,10 +1307,8 @@ class WindTIRose(WindDataBase):
         if multidim_conditions is not None:
             # Check that each value in the dictionary is either scalar or a correctly-sized array
             if is_all_scalar_dict(multidim_conditions):
-                # If all values are scalar, then broadcast to size n_findex
-                multidim_conditions = {
-                    k: np.full((_n_wd, _n_ws, _n_ti), v) for k, v in multidim_conditions.items()
-                }
+                # Leave all scalar for performance purposes
+                pass
             else:
                 for key, value in multidim_conditions.items():
                     if isinstance(value, np.ndarray):
@@ -1355,9 +1357,13 @@ class WindTIRose(WindDataBase):
 
         # Flatten multidim_conditions if defined
         if self.multidim_conditions is not None:
-            self.multidim_conditions_flat = {
-                k: v.flatten() for k, v in self.multidim_conditions.items()
-            }
+            if is_all_scalar_dict(self.multidim_conditions):
+                # Leave all scalar for performance purposes
+                self.multidim_conditions_flat = self.multidim_conditions
+            else:
+                self.multidim_conditions_flat = {
+                    k: v.flatten() for k, v in self.multidim_conditions.items()
+                }
         else:
             self.multidim_conditions_flat = None
 
@@ -1415,6 +1421,8 @@ class WindTIRose(WindDataBase):
     def unpack_multidim_conditions(self):
         if self.multidim_conditions_flat is None:
             return None
+        elif is_all_scalar_dict(self.multidim_conditions_flat):
+            return self.multidim_conditions_flat
         else:
             return {
                 k: v[self.non_zero_freq_mask] for k, v in self.multidim_conditions_flat.items()
@@ -2354,10 +2362,8 @@ class TimeSeries(WindDataBase):
             # Check that each value in the dictionary is either a 1D NumPy array of size n_findex
             # or a scalar value
             if is_all_scalar_dict(multidim_conditions):
-                # If all values are scalar, then broadcast to size n_findex
-                multidim_conditions = {
-                    k: np.full(self.n_findex, v) for k, v in multidim_conditions.items()
-                }
+                # Leave all scalar for performance purposes
+                pass
             else:
                 for key, value in multidim_conditions.items():
                     if isinstance(value, np.ndarray):

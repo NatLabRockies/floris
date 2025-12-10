@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1764622677335,
+  "lastUpdate": 1765401097676,
   "repoUrl": "https://github.com/NREL/floris",
   "entries": {
     "Python Benchmark with pytest-benchmark": [
@@ -3734,6 +3734,72 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.000059039299490320444",
             "extra": "mean: 8.179404820014042 msec\nrounds: 100"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "39596329+misi9170@users.noreply.github.com",
+            "name": "misi9170",
+            "username": "misi9170"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "8bb03d886a451a9fd800f2e7e1d89cf2a83d05bc",
+          "message": "Update name of laboratory (#1160)\n\n* NREL -> NLR\n\n* Typo fix\n\n* Strictly less than v3.15 to allow patch to float\n\n* revert and check\n\n* Strictly less than 3.15\n\n* Remove script-specific discalimer\n\n* Alliance for Energy Innovation",
+          "timestamp": "2025-12-10T13:47:06-07:00",
+          "tree_id": "8137b0a3b3635dfb5695961dc28ca4d64e5ba60c",
+          "url": "https://github.com/NREL/floris/commit/8bb03d886a451a9fd800f2e7e1d89cf2a83d05bc"
+        },
+        "date": 1765401095229,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_set",
+            "value": 42.74722003407024,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00012527450205136834",
+            "extra": "mean: 23.393334097585377 msec\nrounds: 41"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_run",
+            "value": 56.07382909290718,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0001148236050175875",
+            "extra": "mean: 17.83363141374076 msec\nrounds: 29"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_set",
+            "value": 26.224469191658905,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0007439644088709851",
+            "extra": "mean: 38.13232567994419 msec\nrounds: 25"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_run",
+            "value": 0.2994831152571822,
+            "unit": "iter/sec",
+            "range": "stddev: 0.003238069547443395",
+            "extra": "mean: 3.339086409399897 sec\nrounds: 5"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_set",
+            "value": 36.95528613631477,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00010023642862293147",
+            "extra": "mean: 27.059728243243995 msec\nrounds: 37"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_run",
+            "value": 119.58328997528459,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0004035411988444203",
+            "extra": "mean: 8.362372369974764 msec\nrounds: 100"
           }
         ]
       }

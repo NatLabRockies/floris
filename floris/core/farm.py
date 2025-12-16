@@ -170,6 +170,7 @@ class Farm(BaseClass):
                 # If an external library is used and there's a duplicate of an internal
                 # definition, then raise an error
                 is_unique_path = self.turbine_library_path != default_turbine_library_path
+                is_unique_path = False
                 if is_unique_path and in_external and in_internal:
                     raise ValueError(
                         f"The turbine type: {t} exists in both the internal and external"

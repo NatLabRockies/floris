@@ -121,6 +121,7 @@ class Core(BaseClass):
                 grid_resolution=self.solver["flow_field_grid_points"],
                 x1_bounds=self.solver["flow_field_bounds"][0],
                 x2_bounds=self.solver["flow_field_bounds"][1],
+                keep_inertial_frame=self.solver.get("keep_inertial_frame", False),
             )
         else:
             raise ValueError(

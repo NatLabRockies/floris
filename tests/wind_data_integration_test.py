@@ -77,7 +77,7 @@ def test_time_series_read_csv():
     )
 
     csv_path = TEST_DATA / "test_time_series.csv"
-    df_test.to_csv(csv_path, index=False, sep=" ")
+    df_test.to_csv(csv_path, index=False)
 
     time_series = TimeSeries.read_csv(
         csv_path,
@@ -101,7 +101,7 @@ def test_time_series_read_csv():
     assert np.allclose(time_series.turbulence_intensities, 0.05)
 
     # Test with invalid column raises error
-    with pytest.raises(ValueError):
+    with pytest.raises(KeyError):
         TimeSeries.read_csv(
             csv_path,
             ws_col="Wind Speed",
@@ -110,7 +110,7 @@ def test_time_series_read_csv():
         )
 
     # Test that unspecified column raises error
-    with pytest.raises(ValueError):
+    with pytest.raises(KeyError):
         TimeSeries.read_csv(
             csv_path,
             ws_col="Wind Speed",
@@ -120,23 +120,24 @@ def test_time_series_read_csv():
     # Test with default column names, default column separator
     df_test_2 = pd.DataFrame(
         {
-            "wind_direction": [270, 280, 290],
-            "wind_speed": [5, 6, 7],
-            "turbulence_intensity": [0.06, 0.07, 0.08],
+            "wind_directions": [270, 280, 290],
+            "wind_speeds": [5, 6, 7],
+            "turbulence_intensities": [0.06, 0.07, 0.08],
             "other_column": [1, 2, 3],
         }
     )
-    df_test_2.to_csv(csv_path, index=True)
+    df_test_2.to_csv(csv_path, index=True, sep=" ")
 
-    time_series = TimeSeries.read_csv(csv_path)
+    time_series = TimeSeries.read_csv(csv_path, value_col="other_column", sep=" ")
     assert isinstance(time_series, TimeSeries)
-    assert np.allclose(time_series.wind_speeds, df_test_2["wind_speed"].values)
+    assert np.allclose(time_series.wind_speeds, df_test_2["wind_speeds"].values)
+    assert np.allclose(time_series.values, df_test_2["other_column"].values)
 
     # Test error if default column names are used but a column is missing
-    df_test_3 = df_test_2.drop(columns=["turbulence_intensity"])
-    df_test_3.to_csv(csv_path, index=True)
+    df_test_3 = df_test_2.drop(columns=["turbulence_intensities"])
+    df_test_3.to_csv(csv_path, index=True, sep=" ")
 
-    with pytest.raises(ValueError):
+    with pytest.raises(KeyError):
         TimeSeries.read_csv(csv_path)
 
     os.remove(csv_path)

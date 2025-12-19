@@ -2692,6 +2692,53 @@ class TimeSeries(WindDataBase):
             self.heterogeneous_map,
         )
 
+    @staticmethod
+    def read_csv(
+        file_path: str,
+        ws_col: str = "wind_speeds",
+        wd_col: str = "wind_directions",
+        ti_col_or_value: str | float = "turbulence_intensities",
+        value_col: str | None = None,
+        sep: str = ",",
+    ) -> TimeSeries:
+        """
+        Reads a CSV file and returns a TimeSeries object.
+
+        Args:
+            file_path (str): Path to the CSV file.
+            ws_col (str, optional): Column name for wind speeds. Defaults to "wind_speeds".
+            wd_col (str, optional): Column name for wind directions. Defaults to "wind_directions".
+            ti_col_or_value (str | float, optional): Column name for turbulence intensities
+                or a single float value. Defaults to "turbulence_intensities".
+            value_col (str | None, optional): Column name for values. Defaults to None.
+            sep (str, optional): Separator used in the CSV file. Defaults to ",".
+
+        Returns:
+            TimeSeries: A TimeSeries object populated with data from the CSV file.
+        """
+        df = pd.read_csv(file_path, sep=sep)
+
+        wind_speeds = df[ws_col].to_numpy()
+        wind_directions = df[wd_col].to_numpy()
+
+        if isinstance(ti_col_or_value, str):
+            turbulence_intensities = df[ti_col_or_value].to_numpy()
+        else:
+            turbulence_intensities = ti_col_or_value
+
+        if value_col is not None:
+            values = df[value_col].to_numpy()
+        else:
+            values = None
+
+        return TimeSeries(
+            wind_directions=wind_directions,
+            wind_speeds=wind_speeds,
+            turbulence_intensities=turbulence_intensities,
+            values=values,
+        )
+
+
 
 class WindRoseWRG(WindDataBase):
     """

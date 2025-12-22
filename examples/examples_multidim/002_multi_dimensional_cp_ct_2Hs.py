@@ -1,6 +1,11 @@
 """Example: Multi-dimensional power/thrust coefficient with 2 Hs values
 This example follows the previous example but shows the effect of changing the Hs setting.
 
+Updated in FLORIS v4.6 to use new array-based multidimensional functionality, where a different
+multidimensional condition can be specified for each findex. Prior to v4.6, when only scalar
+multidimensional conditions were supported, this example used two separate FLORIS runs to compute
+the two Hs cases.
+
 NOTE: The multi-dimensional power/thrust coefficient data used in this example is fictional for the
 purposes of facilitating this example. The power/thrust coefficient values for the different wave
 conditions are scaled values of the original power/thrust coefficient data for the IEA 15MW turbine.
@@ -25,7 +30,9 @@ multidim_conditions = {
     "Hs": np.array([3.1]*n_wind_speeds + [1.0]*n_wind_speeds),
 }
 time_series = TimeSeries(
-    wind_directions=270.0, wind_speeds=wind_speeds, turbulence_intensities=0.06,
+    wind_directions=270.0,
+    wind_speeds=wind_speeds,
+    turbulence_intensities=0.06,
     multidim_conditions=multidim_conditions
 )
 

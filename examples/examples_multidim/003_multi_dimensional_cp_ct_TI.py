@@ -2,6 +2,12 @@
 This example follows the previous example, but demonstrating how a multidimensional turbine can be
 used to model the effect of turbulence intensity on power and thrust coefficient.
 
+Updated in FLORIS v4.6 to demonstrate new array-based multidimensional functionality. In the updated
+version, setting loop_over_ti to True will run a single scalar multidimensional condition at a time
+and call fmodel.run() multiple times, similar to the behavior prior to v4.6. Alternatively, users
+may set loop_over_ti to False to use the new (and improved!) functionality and run all TI values in
+a single call to fmodel.run().
+
 NOTE: The multi-dimensional power/thrust coefficient data used in this example is fictional for the
 purposes of facilitating this example and the power values shown should not be taken as
 representative of the actual effect of turbulence intensity on power/thrust coefficient.

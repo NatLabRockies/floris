@@ -676,6 +676,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.utilities.nested_get"><code class="docutils literal notranslate"><span class="pre">nested_get()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.utilities.nested_set"><code class="docutils literal notranslate"><span class="pre">nested_set()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.utilities.print_nested_dict"><code class="docutils literal notranslate"><span class="pre">print_nested_dict()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.utilities.is_all_scalar_dict"><code class="docutils literal notranslate"><span class="pre">is_all_scalar_dict()</span></code></a></li>
 </ul>
             </nav>
         </div>
@@ -698,49 +699,52 @@ document.write(`
 <tr class="row-even"><td><p><a class="reference internal" href="#floris.utilities.cosd" title="floris.utilities.cosd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cosd</span></code></a>(angle)</p></td>
 <td><p>Cosine of an angle with the angle given in degrees.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#floris.utilities.load_yaml" title="floris.utilities.load_yaml"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_yaml</span></code></a>(filename[, loader])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#floris.utilities.is_all_scalar_dict" title="floris.utilities.is_all_scalar_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_all_scalar_dict</span></code></a>(dictionary)</p></td>
+<td><p>Check if all values in a dictionary are scalar.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#floris.utilities.load_yaml" title="floris.utilities.load_yaml"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_yaml</span></code></a>(filename[, loader])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#floris.utilities.make_wind_directions_adjacent" title="floris.utilities.make_wind_directions_adjacent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_wind_directions_adjacent</span></code></a>(wind_directions)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#floris.utilities.make_wind_directions_adjacent" title="floris.utilities.make_wind_directions_adjacent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_wind_directions_adjacent</span></code></a>(wind_directions)</p></td>
 <td><p>This function reorders the wind directions so that they are adjacent.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#floris.utilities.nested_get" title="floris.utilities.nested_get"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nested_get</span></code></a>(d, keys)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#floris.utilities.nested_get" title="floris.utilities.nested_get"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nested_get</span></code></a>(d, keys)</p></td>
 <td><p>Get a value from a nested dictionary using a list of keys.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#floris.utilities.nested_set" title="floris.utilities.nested_set"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nested_set</span></code></a>(d, keys, value[, idx])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#floris.utilities.nested_set" title="floris.utilities.nested_set"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nested_set</span></code></a>(d, keys, value[, idx])</p></td>
 <td><p>Set a value in a nested dictionary using a list of keys.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#floris.utilities.print_nested_dict" title="floris.utilities.print_nested_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_nested_dict</span></code></a>(dictionary[, indent])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#floris.utilities.print_nested_dict" title="floris.utilities.print_nested_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_nested_dict</span></code></a>(dictionary[, indent])</p></td>
 <td><p>Print a nested dictionary with indentation.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#floris.utilities.pshape" title="floris.utilities.pshape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pshape</span></code></a>(array[, label])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#floris.utilities.pshape" title="floris.utilities.pshape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pshape</span></code></a>(array[, label])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#floris.utilities.reverse_rotate_coordinates_rel_west" title="floris.utilities.reverse_rotate_coordinates_rel_west"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reverse_rotate_coordinates_rel_west</span></code></a>(...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#floris.utilities.reverse_rotate_coordinates_rel_west" title="floris.utilities.reverse_rotate_coordinates_rel_west"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reverse_rotate_coordinates_rel_west</span></code></a>(...)</p></td>
 <td><p>This function reverses the rotation of the given grid so that the coordinates are aligned with the original wind direction.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#floris.utilities.rotate_coordinates_rel_west" title="floris.utilities.rotate_coordinates_rel_west"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotate_coordinates_rel_west</span></code></a>(wind_directions, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#floris.utilities.rotate_coordinates_rel_west" title="floris.utilities.rotate_coordinates_rel_west"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotate_coordinates_rel_west</span></code></a>(wind_directions, ...)</p></td>
 <td><p>This function rotates the given coordinates so that they are aligned with West (270) rather than North (0).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#floris.utilities.round_nearest" title="floris.utilities.round_nearest"><code class="xref py py-obj docutils literal notranslate"><span class="pre">round_nearest</span></code></a>(x[, base])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#floris.utilities.round_nearest" title="floris.utilities.round_nearest"><code class="xref py py-obj docutils literal notranslate"><span class="pre">round_nearest</span></code></a>(x[, base])</p></td>
 <td><p>Rounds a number (with a 0.5 buffer) up to the nearest integer divisible by 5.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#floris.utilities.round_nearest_2_or_5" title="floris.utilities.round_nearest_2_or_5"><code class="xref py py-obj docutils literal notranslate"><span class="pre">round_nearest_2_or_5</span></code></a>(x)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#floris.utilities.round_nearest_2_or_5" title="floris.utilities.round_nearest_2_or_5"><code class="xref py py-obj docutils literal notranslate"><span class="pre">round_nearest_2_or_5</span></code></a>(x)</p></td>
 <td><p>Rounds a number (with a 0.5 buffer) up to the nearest integer divisible by 2 or 5.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#floris.utilities.sind" title="floris.utilities.sind"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sind</span></code></a>(angle)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#floris.utilities.sind" title="floris.utilities.sind"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sind</span></code></a>(angle)</p></td>
 <td><p>Sine of an angle with the angle given in degrees.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#floris.utilities.tand" title="floris.utilities.tand"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tand</span></code></a>(angle)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#floris.utilities.tand" title="floris.utilities.tand"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tand</span></code></a>(angle)</p></td>
 <td><p>Tangent of an angle with the angle given in degrees.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#floris.utilities.wind_delta" title="floris.utilities.wind_delta"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wind_delta</span></code></a>(wind_directions)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#floris.utilities.wind_delta" title="floris.utilities.wind_delta"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wind_delta</span></code></a>(wind_directions)</p></td>
 <td><p>This function calculates the deviation from West (270) for a given wind direction or series of wind directions.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#floris.utilities.wrap_180" title="floris.utilities.wrap_180"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wrap_180</span></code></a>(x)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#floris.utilities.wrap_180" title="floris.utilities.wrap_180"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wrap_180</span></code></a>(x)</p></td>
 <td><p>Shift the given values to within the range (-180, 180].</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#floris.utilities.wrap_360" title="floris.utilities.wrap_360"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wrap_360</span></code></a>(x)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#floris.utilities.wrap_360" title="floris.utilities.wrap_360"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wrap_360</span></code></a>(x)</p></td>
 <td><p>Shift the given values to within the range (0, 360].</p></td>
 </tr>
 </tbody>
@@ -1093,6 +1097,28 @@ indent (int, optional): The number of spaces to indent. Defaults to 0.</p>
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="floris.utilities.is_all_scalar_dict">
+<span class="sig-prename descclassname"><span class="pre">floris.utilities.</span></span><span class="sig-name descname"><span class="pre">is_all_scalar_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dictionary</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/floris/utilities.html#is_all_scalar_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#floris.utilities.is_all_scalar_dict" title="Link to this definition">#</a></dt>
+<dd><p>Check if all values in a dictionary are scalar.</p>
+<p>A scalar is defined as a value that is not iterable (like int, float, str, bool)
+or a numpy scalar (0-dimensional array).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>dictionary</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>)</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dictionary (Dict[str, Any]): The dictionary to check.</p>
+</dd>
+<dt>Returns:</dt><dd><p>bool: True if all values are scalar, False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
     <script type="text/x-thebe-config">
@@ -1181,6 +1207,7 @@ indent (int, optional): The number of spaces to indent. Defaults to 0.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.utilities.nested_get"><code class="docutils literal notranslate"><span class="pre">nested_get()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.utilities.nested_set"><code class="docutils literal notranslate"><span class="pre">nested_set()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.utilities.print_nested_dict"><code class="docutils literal notranslate"><span class="pre">print_nested_dict()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.utilities.is_all_scalar_dict"><code class="docutils literal notranslate"><span class="pre">is_all_scalar_dict()</span></code></a></li>
 </ul>
   </nav></div>
 

@@ -706,10 +706,12 @@ document.write(`
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Blue">floris.optimization.layout_optimization.layout_optimization_gridded.LayoutOptimizationGridded</span> <span class=" -Color -Color-Bold -Color-Bold-Black">WARNING</span> <span class=" -Color -Color-Yellow">Running layout optimization without a WindData object (e.g. TimeSeries, WindRose, WindTIRose). We suggest that the user set the wind conditions (and if applicable, frequencies and values) on the FlorisModel using the wind_data keyword argument for layout optimizations to capture frequencies and the value of the energy production accurately. If a WindData object is not defined, uniform frequencies will be assumed. If use_value is True and a WindData object is not defined, a value of 1 will be used for each wind condition and layout optimization will simply be performed to maximize AEP.</span>
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Blue">floris.floris_model.FlorisModel</span> <span class=" -Color -Color-Bold -Color-Bold-Black">WARNING</span> <span class=" -Color -Color-Yellow">Computing AEP with uniform frequencies. Results results may not reflect annual operation.</span>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
+  * np.power(
+<span class=" -Color -Color-Blue">floris.floris_model.FlorisModel</span> <span class=" -Color -Color-Bold -Color-Bold-Black">WARNING</span> <span class=" -Color -Color-Yellow">Computing AEP with uniform frequencies. Results results may not reflect annual operation.</span>
 </pre></div>
 </div>
-<img alt="../../_images/6ffd585d9ecd7aa04f1e6d2def5ac95b7ddabe126f2dcf1bcb75032569e9fe64.png" src="../../_images/6ffd585d9ecd7aa04f1e6d2def5ac95b7ddabe126f2dcf1bcb75032569e9fe64.png" />
+<img alt="../../_images/39d44a628c3892a1105c051d8a864a38acdde1571665143ea0bce2b53a9348b5.png" src="../../_images/39d44a628c3892a1105c051d8a864a38acdde1571665143ea0bce2b53a9348b5.png" />
 </div>
 </div>
 </section>

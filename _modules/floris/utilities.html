@@ -1454,6 +1454,27 @@ document.write(`
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">indent</span> <span class="o">+</span> <span class="mi">4</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span></div>
 
+
+<div class="viewcode-block" id="is_all_scalar_dict">
+<a class="viewcode-back" href="../../_autosummary/floris.utilities.html#floris.utilities.is_all_scalar_dict">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_all_scalar_dict</span><span class="p">(</span><span class="n">dictionary</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if all values in a dictionary are scalar.</span>
+
+<span class="sd">    A scalar is defined as a value that is not iterable (like int, float, str, bool)</span>
+<span class="sd">    or a numpy scalar (0-dimensional array).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dictionary (Dict[str, Any]): The dictionary to check.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: True if all values are scalar, False otherwise.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">dictionary</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">return</span> <span class="kc">True</span></div>
+
 </pre></div>
 
                 </article>

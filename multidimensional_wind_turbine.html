@@ -731,21 +731,78 @@ corresponding power thrust data file.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Blue">floris.logging_manager.LoggingManager</span> <span class=" -Color -Color-Bold -Color-Bold-Black">WARNING</span> <span class=" -Color -Color-Yellow">The current model does not account for vertical wake deflection due to tilt. Corrections to power and thrust coefficient can be included, but no vertical wake deflection will occur.</span>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
+  * np.power(
+<span class=" -Color -Color-Blue">floris.logging_manager.LoggingManager</span> <span class=" -Color -Color-Bold -Color-Bold-Black">WARNING</span> <span class=" -Color -Color-Yellow">The current model does not account for vertical wake deflection due to tilt. Corrections to power and thrust coefficient can be included, but no vertical wake deflection will occur.</span>
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Blue">floris.logging_manager.LoggingManager</span> <span class=" -Color -Color-Bold -Color-Bold-Black">WARNING</span> <span class=" -Color -Color-Yellow">The current model does not account for vertical wake deflection due to tilt. Corrections to power and thrust coefficient can be included, but no vertical wake deflection will occur.</span>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
+  * np.power(
+<span class=" -Color -Color-Blue">floris.logging_manager.LoggingManager</span> <span class=" -Color -Color-Bold -Color-Bold-Black">WARNING</span> <span class=" -Color -Color-Yellow">The current model does not account for vertical wake deflection due to tilt. Corrections to power and thrust coefficient can be included, but no vertical wake deflection will occur.</span>
 </pre></div>
 </div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.lines.Line2D at 0x7fa24494bcb0&gt;]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.lines.Line2D at 0x7f355df6c050&gt;]
 </pre></div>
 </div>
-<img alt="_images/fcaf37bc07e58cf24c0387cf0aff25f6fa9da2256b88f18ab683cd6683b6c2f1.png" src="_images/fcaf37bc07e58cf24c0387cf0aff25f6fa9da2256b88f18ab683cd6683b6c2f1.png" />
+<img alt="_images/b2a1fefec2c38798b51df44eff7a9a0661f706a11af0729bec896309a4d2b45d.png" src="_images/b2a1fefec2c38798b51df44eff7a9a0661f706a11af0729bec896309a4d2b45d.png" />
 </div>
 </div>
 <p>Note that this example is not meant to be represntative of a real turbine, but rather to illustrate
 the functionality. At this time, FLORIS only support a single external condition combination at a
 time, but multiple combinations can be run sequentially as is shown above.</p>
+<p>As of FLORIS v4.6, users can further specify array-based multidimensional conditions, where a
+different multidimensional condition can be specified for each findex. This allows users to run
+multiple multidimensional condition combinations in a single call to <code class="docutils literal notranslate"><span class="pre">fmodel.run()</span></code>. Further,
+multidimensional conditions can now be passed to <code class="docutils literal notranslate"><span class="pre">floris.set()</span></code> via the <code class="docutils literal notranslate"><span class="pre">WindData</span></code> objects
+(<code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>, in this case).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">multidim_conditions</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;Tp&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">n_wind_speeds</span> <span class="o">+</span> <span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">*</span><span class="n">n_wind_speeds</span><span class="p">),</span>
+    <span class="s2">&quot;Hs&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">n_wind_speeds</span> <span class="o">+</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">*</span><span class="n">n_wind_speeds</span><span class="p">),</span>
+<span class="p">}</span>
+
+<span class="n">fmodel</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
+    <span class="n">wind_data</span><span class="o">=</span><span class="n">TimeSeries</span><span class="p">(</span>
+        <span class="n">wind_directions</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_wind_speeds</span><span class="o">*</span><span class="mi">2</span><span class="p">),</span>
+        <span class="n">wind_speeds</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">wind_speeds</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+        <span class="n">turbulence_intensities</span><span class="o">=</span><span class="mf">0.06</span><span class="p">,</span>
+        <span class="n">multidim_conditions</span><span class="o">=</span><span class="n">multidim_conditions</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+<span class="c1"># Call fmodel.run() once and run both conditions in one go</span>
+<span class="n">fmodel</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+<span class="n">powers</span> <span class="o">=</span> <span class="n">fmodel</span><span class="o">.</span><span class="n">get_turbine_powers</span><span class="p">()</span>
+<span class="n">thrust_coefficients</span> <span class="o">=</span> <span class="n">fmodel</span><span class="o">.</span><span class="n">get_turbine_thrust_coefficients</span><span class="p">()</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">wind_speeds</span><span class="p">,</span> <span class="n">powers</span><span class="p">[:</span><span class="n">n_wind_speeds</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;First condition&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Power [kW]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">wind_speeds</span><span class="p">,</span> <span class="n">thrust_coefficients</span><span class="p">[:</span><span class="n">n_wind_speeds</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Thrust coefficient [-]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Wind speed [m/s]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">30</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">wind_speeds</span><span class="p">,</span> <span class="n">powers</span><span class="p">[</span><span class="n">n_wind_speeds</span><span class="p">:],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Second condition&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper left&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">wind_speeds</span><span class="p">,</span> <span class="n">thrust_coefficients</span><span class="p">[</span><span class="n">n_wind_speeds</span><span class="p">:])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
+  * np.power(
+<span class=" -Color -Color-Blue">floris.logging_manager.LoggingManager</span> <span class=" -Color -Color-Bold -Color-Bold-Black">WARNING</span> <span class=" -Color -Color-Yellow">The current model does not account for vertical wake deflection due to tilt. Corrections to power and thrust coefficient can be included, but no vertical wake deflection will occur.</span>
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.lines.Line2D at 0x7f355e7e2660&gt;]
+</pre></div>
+</div>
+<img alt="_images/b2a1fefec2c38798b51df44eff7a9a0661f706a11af0729bec896309a4d2b45d.png" src="_images/b2a1fefec2c38798b51df44eff7a9a0661f706a11af0729bec896309a4d2b45d.png" />
+</div>
+</div>
 </section>
 
     <script type="text/x-thebe-config">

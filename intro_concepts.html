@@ -844,7 +844,7 @@ space to get an idea of the overall form of our grid.</p>
  [800. 800. 800.]]
 </pre></div>
 </div>
-<img alt="_images/9010b74bc794e6d9a3b549f226ca330da7ef2027398ce6937f9084c790da22f5.png" src="_images/9010b74bc794e6d9a3b549f226ca330da7ef2027398ce6937f9084c790da22f5.png" />
+<img alt="_images/70253aa37b9da535400a7f6437d160c1fe13f3a5a1ca2787bc2cdf72239c9bb8.png" src="_images/70253aa37b9da535400a7f6437d160c1fe13f3a5a1ca2787bc2cdf72239c9bb8.png" />
 </div>
 </div>
 </section>
@@ -857,6 +857,12 @@ when creating the <code class="docutils literal notranslate"><span class="pre">F
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fmodel</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
+  * np.power(
 </pre></div>
 </div>
 </div>
@@ -1089,7 +1095,7 @@ yaw settings included.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/c8939e8bebede82110a150223da719381bbc1e268dac0e1b9bfed87de25555e1.png" src="_images/c8939e8bebede82110a150223da719381bbc1e268dac0e1b9bfed87de25555e1.png" />
+<img alt="_images/d87a869a6b88c09d4f4d283fb15e22cff361d0f22f24e170d1a1128a0bf6f130.png" src="_images/d87a869a6b88c09d4f4d283fb15e22cff361d0f22f24e170d1a1128a0bf6f130.png" />
 </div>
 </div>
 <p>We can also plot the streamwise inflow velocities on the turbine rotor
@@ -1127,8 +1133,8 @@ simply plots any data given as the first argument, so in this case
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/601649eb96459f37bbb190f086a471115ce5ee35b3662809f267f8024d39d924.png" src="_images/601649eb96459f37bbb190f086a471115ce5ee35b3662809f267f8024d39d924.png" />
-<img alt="_images/e1cae925d92f40f2a6deaa2289530398a0574e7805d6c577cdb2b2969357670f.png" src="_images/e1cae925d92f40f2a6deaa2289530398a0574e7805d6c577cdb2b2969357670f.png" />
+<img alt="_images/349f049bc64476f4eac7634e9a24bc3aacc12b59c6fc93105f799f6a50aaedf0.png" src="_images/349f049bc64476f4eac7634e9a24bc3aacc12b59c6fc93105f799f6a50aaedf0.png" />
+<img alt="_images/78ea936eeb7fe4829c85cd4525550523b6086e1404d9c0ba4de2de212f2c44b9.png" src="_images/78ea936eeb7fe4829c85cd4525550523b6086e1404d9c0ba4de2de212f2c44b9.png" />
 </div>
 </div>
 </section>
@@ -1172,7 +1178,7 @@ but retuning of some parameters might be required.</p>
   2 wd x 2 ws x 4 turbines x 3 x 3 grid points
 </pre></div>
 </div>
-<img alt="_images/e1455a37395e7276d4b4309296879f9b456439f98da55fabc5406bf247650fd9.png" src="_images/e1455a37395e7276d4b4309296879f9b456439f98da55fabc5406bf247650fd9.png" />
+<img alt="_images/c9a963a92379ce6645ca67e333e5b23830d4759f4098690edef5bfb850e7050d.png" src="_images/c9a963a92379ce6645ca67e333e5b23830d4759f4098690edef5bfb850e7050d.png" />
 </div>
 </div>
 </section>
@@ -1286,9 +1292,9 @@ Number of turbines = 25
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Model    AEP (GWh)  Compute Time (s)
-Jensen   661.838    0.658 
-GCH      683.869    2.809 
-CC       661.315    5.645 
+Jensen   661.838    0.675 
+GCH      683.869    2.897 
+CC       661.315    5.942 
 </pre></div>
 </div>
 </div>
@@ -1378,11 +1384,13 @@ CC       661.315    5.645
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[Serial Refine] Processing pass=1, turbine_depth=4 (78.6%)
-[Serial Refine] Processing pass=1, turbine_depth=5 (85.7%)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[Serial Refine] Processing pass=1, turbine_depth=5 (85.7%)
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[Serial Refine] Processing pass=1, turbine_depth=6 (92.9%)
-Optimization wall time: 2.968 s
+Optimization wall time: 3.088 s
 </pre></div>
 </div>
 </div>
@@ -1405,7 +1413,7 @@ Optimization wall time: 2.968 s
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/78ff899d76b8a0225bb8774f8825b3898b79c5973f1c764bdbdfd6e1c4ad4f59.png" src="_images/78ff899d76b8a0225bb8774f8825b3898b79c5973f1c764bdbdfd6e1c4ad4f59.png" />
+<img alt="_images/43b2fff7bb03a83caf6fcdc9e6801a3af7d9ece61b44ccb17cedecba3c0b8723.png" src="_images/43b2fff7bb03a83caf6fcdc9e6801a3af7d9ece61b44ccb17cedecba3c0b8723.png" />
 </div>
 </div>
 </section>

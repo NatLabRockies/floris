@@ -10,6 +10,7 @@
    
       check_and_identify_step_size
       cosd
+      is_all_scalar_dict
       load_yaml
       make_wind_directions_adjacent
       nested_get

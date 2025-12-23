@@ -975,6 +975,7 @@ document.write(`
     <span class="n">NDArrayFloat</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">floris.utilities</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">is_all_scalar_dict</span><span class="p">,</span>
     <span class="n">nested_get</span><span class="p">,</span>
     <span class="n">nested_set</span><span class="p">,</span>
     <span class="n">wrap_180</span><span class="p">,</span>
@@ -1896,6 +1897,10 @@ document.write(`
 <span class="sd">        Finds unique rows in the input numpy array and constructs a mapping array</span>
 <span class="sd">        to reconstruct the input array from the unique rows.</span>
 
+<span class="sd">        Include an exception that if the underlying FlorisModel object (fmodel_unexpanded)</span>
+<span class="sd">        includes a multidim_conditions that includes non-scalar values, then force</span>
+<span class="sd">        unique_inputs and map_to_expanded_inputs to represent that all rows are unique.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            input_array (numpy.ndarray): Input array of shape (m, n).</span>
 
@@ -1907,6 +1912,15 @@ document.write(`
 <span class="sd">                            to the corresponding row in the unique_inputs array.</span>
 <span class="sd">                            It represents how to reconstruct the input_array from the unique rows.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fmodel_unexpanded</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">flow_field</span><span class="o">.</span><span class="n">multidim_conditions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+           <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_all_scalar_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fmodel_unexpanded</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">flow_field</span><span class="o">.</span><span class="n">multidim_conditions</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Given non-scalar multidim conditions. Forcing all unique values &quot;</span>
+                                <span class="s2">&quot;for the uncertainty model, which may be slower to run.&quot;</span><span class="p">)</span>
+            <span class="n">unique_inputs</span> <span class="o">=</span> <span class="n">input_array</span>
+            <span class="n">map_to_expanded_inputs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">input_array</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">unique_inputs</span><span class="p">,</span> <span class="n">map_to_expanded_inputs</span>
 
         <span class="n">unique_inputs</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">map_to_expanded_inputs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span>
             <span class="n">input_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">return_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">return_inverse</span><span class="o">=</span><span class="kc">True</span>

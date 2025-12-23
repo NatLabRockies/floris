@@ -979,8 +979,8 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">floris.type_dec</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArrayFloat</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">floris.utilities</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">check_and_identify_step_size</span><span class="p">,</span>
+    <span class="n">is_all_scalar_dict</span><span class="p">,</span>
     <span class="n">make_wind_directions_adjacent</span><span class="p">,</span>
-    <span class="n">wrap_180</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -1041,6 +1041,19 @@ document.write(`
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Unpack values of power generated&quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">unpack</span><span class="p">()[</span><span class="mi">4</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="WindDataBase.unpack_multidim_conditions">
+<a class="viewcode-back" href="../../_autosummary/floris.wind_data.html#floris.wind_data.WindDataBase.unpack_multidim_conditions">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unpack_multidim_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Unpack multidimensional conditions</span>
+
+<span class="sd">        NOTE: This is a temporary method for backwards compatibility and will be removed in a</span>
+<span class="sd">        future release, when multidim_conditions are included in the unpack() method of child</span>
+<span class="sd">        classes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;multidim_conditions&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="WindDataBase.check_heterogeneous_inflow_config">
@@ -1135,6 +1148,10 @@ document.write(`
 <span class="sd">                Optional.</span>
 <span class="sd">            * &#39;wind_speeds&#39;: A 1D NumPy array (size num_ws) of wind speeds (m/s). Optional.</span>
 <span class="sd">            Defaults to None.</span>
+<span class="sd">        multidim_conditions (dict, optional): A dictionary containing multidimensional inflow</span>
+<span class="sd">            conditions. Each key is the name of the condition, and each value is either a 2D NumPy</span>
+<span class="sd">            array of size n_wind_directions x n_wind_speeds containing the condition values,</span>
+<span class="sd">            or a scalar value that will be broadcast to size n_findex. Defaults to None.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -1148,16 +1165,20 @@ document.write(`
         <span class="n">compute_zero_freq_occurrence</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">heterogeneous_map</span><span class="p">:</span> <span class="n">HeterogeneousMap</span> <span class="o">|</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">heterogeneous_inflow_config_by_wd</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">multidim_conditions</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wind_directions</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;wind_directions must be a NumPy array&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wind_directions</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">or</span> <span class="n">wind_directions</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;wind_directions must be a 1D NumPy array&quot;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wind_speeds</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;wind_speeds must be a NumPy array&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wind_speeds</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">or</span> <span class="n">wind_speeds</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;wind_speeds must be a 1D NumPy array&quot;</span><span class="p">)</span>
 
         <span class="c1"># Confirm that both wind_directions and wind_speeds are monitonically</span>
         <span class="c1"># increasing and evenly spaced</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">wind_directions</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">_n_wd</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">wind_directions</span><span class="p">)</span>
+        <span class="n">_n_ws</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">wind_speeds</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">_n_wd</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="c1"># Check monotonically increasing</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">wind_directions</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;wind_directions must be monotonically increasing&quot;</span><span class="p">)</span>
@@ -1165,7 +1186,7 @@ document.write(`
             <span class="c1"># Check evenly spaced (Function will raise error if not)</span>
             <span class="n">check_and_identify_step_size</span><span class="p">(</span><span class="n">wind_directions</span><span class="o">=</span><span class="n">wind_directions</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">wind_speeds</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">_n_ws</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="c1"># Check monotonically increasing</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">wind_speeds</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;wind_speeds must be monotonically increasing&quot;</span><span class="p">)</span>
@@ -1184,26 +1205,26 @@ document.write(`
 
         <span class="c1"># Check if ti_table is a single float value</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ti_table</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ti_table</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">wind_directions</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">wind_speeds</span><span class="p">)),</span> <span class="n">ti_table</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ti_table</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">_n_wd</span><span class="p">,</span> <span class="n">_n_ws</span><span class="p">),</span> <span class="n">ti_table</span><span class="p">)</span>
 
         <span class="c1"># Otherwise confirm the dimensions and then save it</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">ti_table</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">wind_directions</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">ti_table</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">_n_wd</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;ti_table first dimension must equal len(wind_directions)&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">ti_table</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">wind_speeds</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">ti_table</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">_n_ws</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;ti_table second dimension must equal len(wind_speeds)&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ti_table</span> <span class="o">=</span> <span class="n">ti_table</span>
 
         <span class="c1"># If freq_table is not None, confirm it has correct dimension,</span>
         <span class="c1"># otherwise initialize to uniform probability</span>
         <span class="k">if</span> <span class="n">freq_table</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">freq_table</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">wind_directions</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">freq_table</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">_n_wd</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;freq_table first dimension must equal len(wind_directions)&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">freq_table</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">wind_speeds</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">freq_table</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">_n_ws</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;freq_table second dimension must equal len(wind_speeds)&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">freq_table</span> <span class="o">=</span> <span class="n">freq_table</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">freq_table</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">wind_directions</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">wind_speeds</span><span class="p">)))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">freq_table</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">_n_wd</span><span class="p">,</span> <span class="n">_n_ws</span><span class="p">))</span>
 
         <span class="c1"># Normalize freq table</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">freq_table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">freq_table</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">freq_table</span><span class="p">)</span>
@@ -1211,9 +1232,9 @@ document.write(`
         <span class="c1"># If value_table is not None, confirm it has correct dimension,</span>
         <span class="c1"># otherwise initialize to all ones</span>
         <span class="k">if</span> <span class="n">value_table</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">value_table</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">wind_directions</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">value_table</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">_n_wd</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;value_table first dimension must equal len(wind_directions)&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">value_table</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">wind_speeds</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">value_table</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">_n_ws</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;value_table second dimension must equal len(wind_speeds)&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">value_table</span> <span class="o">=</span> <span class="n">value_table</span>
 
@@ -1265,6 +1286,28 @@ document.write(`
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">heterogeneous_map</span> <span class="o">=</span> <span class="kc">None</span>
 
+        <span class="c1"># Handle the multidim_conditions</span>
+        <span class="k">if</span> <span class="n">multidim_conditions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Check that each value in the dictionary is either scalar or a correctly-sized array</span>
+            <span class="k">if</span> <span class="n">is_all_scalar_dict</span><span class="p">(</span><span class="n">multidim_conditions</span><span class="p">):</span>
+                <span class="c1"># Leave all scalar for performance purposes</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">multidim_conditions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">_n_wd</span><span class="p">,</span> <span class="n">_n_ws</span><span class="p">):</span>
+                            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                                <span class="sa">f</span><span class="s2">&quot;multidim_conditions[</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">] must be of size len(wind_directions) &quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot;x len(wind_speeds) [(</span><span class="si">{</span><span class="n">_n_wd</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">_n_ws</span><span class="si">}</span><span class="s2">)] but currently has shape &quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">.&quot;</span>
+                            <span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;multidim_conditions[</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">] must be a 2D NumPy array of size &quot;</span>
+                            <span class="s2">&quot;len(wind_directions) x len(wind_speeds) or a scalar value.&quot;</span>
+                        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">multidim_conditions</span> <span class="o">=</span> <span class="n">multidim_conditions</span>
+
         <span class="c1"># Build the gridded and flatten versions</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_build_gridded_and_flattened_version</span><span class="p">()</span>
 
@@ -1294,6 +1337,18 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">value_table_flat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_table</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">value_table_flat</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Flatten multidim_conditions if defined</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">multidim_conditions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">is_all_scalar_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">multidim_conditions</span><span class="p">):</span>
+                <span class="c1"># Leave all scalar for performance purposes</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">multidim_conditions_flat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">multidim_conditions</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">multidim_conditions_flat</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">multidim_conditions</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">multidim_conditions_flat</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># Set mask to non-zero frequency cases depending on compute_zero_freq_occurrence</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_zero_freq_occurrence</span><span class="p">:</span>
@@ -1347,6 +1402,19 @@ document.write(`
             <span class="n">value_table_unpack</span><span class="p">,</span>
             <span class="n">heterogeneous_inflow_config</span><span class="p">,</span>
         <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="WindRose.unpack_multidim_conditions">
+<a class="viewcode-back" href="../../_autosummary/floris.wind_data.html#floris.wind_data.WindRose.unpack_multidim_conditions">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unpack_multidim_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">multidim_conditions_flat</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">elif</span> <span class="n">is_all_scalar_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">multidim_conditions_flat</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">multidim_conditions_flat</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">non_zero_freq_mask</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">multidim_conditions_flat</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">}</span></div>
 
 
 <div class="viewcode-block" id="WindRose.aggregate">
@@ -2125,6 +2193,11 @@ document.write(`
 <span class="sd">                Optional.</span>
 <span class="sd">            * &#39;wind_speeds&#39;: A 1D NumPy array (size num_ws) of wind speeds (m/s). Optional.</span>
 <span class="sd">            Defaults to None.</span>
+<span class="sd">        multidim_conditions (dict, optional): A dictionary containing multidimensional inflow</span>
+<span class="sd">            conditions. Each key is the name of the condition, and each value is either a 3D NumPy</span>
+<span class="sd">            array of shape (n_wind_speeds, n_wind_directions, n_turbulence_intensities) containing</span>
+<span class="sd">            the condition values, or a scalar value that will be broadcast to size n_findex.</span>
+<span class="sd">            Defaults to None.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -2138,20 +2211,25 @@ document.write(`
         <span class="n">compute_zero_freq_occurrence</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">heterogeneous_map</span><span class="p">:</span> <span class="n">HeterogeneousMap</span> <span class="o">|</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">heterogeneous_inflow_config_by_wd</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">multidim_conditions</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wind_directions</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;wind_directions must be a NumPy array&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wind_directions</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">or</span> <span class="n">wind_directions</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;wind_directions must be a 1D NumPy array&quot;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wind_speeds</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;wind_speeds must be a NumPy array&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wind_speeds</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">or</span> <span class="n">wind_speeds</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;wind_speeds must be a 1D NumPy array&quot;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">turbulence_intensities</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;turbulence_intensities must be a NumPy array&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">turbulence_intensities</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">or</span> <span class="n">turbulence_intensities</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;turbulence_intensities must be a 1D NumPy array&quot;</span><span class="p">)</span>
 
         <span class="c1"># Confirm that both wind_directions and wind_speeds</span>
         <span class="c1"># and turbulence intensities are monotonically</span>
         <span class="c1"># increasing and evenly spaced</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">wind_directions</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">_n_wd</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">wind_directions</span><span class="p">)</span>
+        <span class="n">_n_ws</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">wind_speeds</span><span class="p">)</span>
+        <span class="n">_n_ti</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">turbulence_intensities</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">_n_wd</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="c1"># Check monotonically increasing</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">wind_directions</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;wind_directions must be monotonically increasing&quot;</span><span class="p">)</span>
@@ -2159,7 +2237,7 @@ document.write(`
             <span class="c1"># Check evenly spaced (Function will raise error if not)</span>
             <span class="n">check_and_identify_step_size</span><span class="p">(</span><span class="n">wind_directions</span><span class="o">=</span><span class="n">wind_directions</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">wind_speeds</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">_n_ws</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="c1"># Check monotonically increasing</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">wind_speeds</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;wind_speeds must be monotonically increasing&quot;</span><span class="p">)</span>
@@ -2168,7 +2246,7 @@ document.write(`
             <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">wind_speeds</span><span class="p">),</span> <span class="n">wind_speeds</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">wind_speeds</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;wind_speeds must be evenly spaced&quot;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">turbulence_intensities</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">_n_ti</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="c1"># Check monotonically increasing</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">turbulence_intensities</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;turbulence_intensities must be monotonically increasing&quot;</span><span class="p">)</span>
@@ -2188,19 +2266,17 @@ document.write(`
         <span class="c1"># If freq_table is not None, confirm it has correct dimension,</span>
         <span class="c1"># otherwise initialize to uniform probability</span>
         <span class="k">if</span> <span class="n">freq_table</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">freq_table</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">wind_directions</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">freq_table</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">_n_wd</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;freq_table first dimension must equal len(wind_directions)&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">freq_table</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">wind_speeds</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">freq_table</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">_n_ws</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;freq_table second dimension must equal len(wind_speeds)&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">freq_table</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">turbulence_intensities</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">freq_table</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="n">_n_ti</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="s2">&quot;freq_table third dimension must equal len(turbulence_intensities)&quot;</span>
                 <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">freq_table</span> <span class="o">=</span> <span class="n">freq_table</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">freq_table</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span>
-                <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">wind_directions</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">wind_speeds</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">turbulence_intensities</span><span class="p">))</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">freq_table</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">_n_wd</span><span class="p">,</span> <span class="n">_n_ws</span><span class="p">,</span> <span class="n">_n_ti</span><span class="p">))</span>
 
         <span class="c1"># Normalize freq table</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">freq_table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">freq_table</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">freq_table</span><span class="p">)</span>
@@ -2208,11 +2284,11 @@ document.write(`
         <span class="c1"># If value_table is not None, confirm it has correct dimension,</span>
         <span class="c1"># otherwise initialize to all ones</span>
         <span class="k">if</span> <span class="n">value_table</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">value_table</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">wind_directions</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">value_table</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">_n_wd</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;value_table first dimension must equal len(wind_directions)&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">value_table</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">wind_speeds</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">value_table</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">_n_ws</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;value_table second dimension must equal len(wind_speeds)&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">value_table</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">turbulence_intensities</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">value_table</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="n">_n_ti</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="s2">&quot;value_table third dimension must equal len(turbulence_intensities)&quot;</span>
                 <span class="p">)</span>
@@ -2256,6 +2332,30 @@ document.write(`
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">heterogeneous_map</span> <span class="o">=</span> <span class="kc">None</span>
 
+        <span class="c1"># Handle the multidim_conditions</span>
+        <span class="k">if</span> <span class="n">multidim_conditions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Check that each value in the dictionary is either scalar or a correctly-sized array</span>
+            <span class="k">if</span> <span class="n">is_all_scalar_dict</span><span class="p">(</span><span class="n">multidim_conditions</span><span class="p">):</span>
+                <span class="c1"># Leave all scalar for performance purposes</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">multidim_conditions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">_n_wd</span><span class="p">,</span> <span class="n">_n_ws</span><span class="p">,</span> <span class="n">_n_ti</span><span class="p">):</span>
+                            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                                <span class="sa">f</span><span class="s2">&quot;multidim_conditions[</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">] must be of size len(wind_directions) &quot;</span>
+                                <span class="s2">&quot;x len(wind_speeds) x len(turbulence_intensities) &quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot;[(</span><span class="si">{</span><span class="n">_n_wd</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">_n_ws</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">_n_ti</span><span class="si">}</span><span class="s2">)] but currently has shape &quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">.&quot;</span>
+                            <span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;multidim_conditions[</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">] must be a 2D NumPy array of size &quot;</span>
+                            <span class="s2">&quot;len(wind_directions) x len(wind_speeds) x len(turbulence_intensities)&quot;</span>
+                            <span class="s2">&quot; or a scalar value.&quot;</span>
+                        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">multidim_conditions</span> <span class="o">=</span> <span class="n">multidim_conditions</span>
+
         <span class="c1"># Build the gridded and flatten versions</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_build_gridded_and_flattened_version</span><span class="p">()</span>
 
@@ -2283,6 +2383,18 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">value_table_flat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_table</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">value_table_flat</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Flatten multidim_conditions if defined</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">multidim_conditions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">is_all_scalar_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">multidim_conditions</span><span class="p">):</span>
+                <span class="c1"># Leave all scalar for performance purposes</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">multidim_conditions_flat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">multidim_conditions</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">multidim_conditions_flat</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">multidim_conditions</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">multidim_conditions_flat</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># Set mask to non-zero frequency cases depending on compute_zero_freq_occurrence</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_zero_freq_occurrence</span><span class="p">:</span>
@@ -2336,6 +2448,19 @@ document.write(`
             <span class="n">value_table_unpack</span><span class="p">,</span>
             <span class="n">heterogeneous_inflow_config</span><span class="p">,</span>
         <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="WindTIRose.unpack_multidim_conditions">
+<a class="viewcode-back" href="../../_autosummary/floris.wind_data.html#floris.wind_data.WindTIRose.unpack_multidim_conditions">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unpack_multidim_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">multidim_conditions_flat</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">elif</span> <span class="n">is_all_scalar_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">multidim_conditions_flat</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">multidim_conditions_flat</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">non_zero_freq_mask</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">multidim_conditions_flat</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">}</span></div>
 
 
 <div class="viewcode-block" id="WindTIRose.aggregate">
@@ -3147,6 +3272,10 @@ document.write(`
 <span class="sd">                    of speed multipliers.</span>
 <span class="sd">            * &#39;x&#39;: A 1D NumPy array (size num_points) of x-coordinates (meters).</span>
 <span class="sd">            * &#39;y&#39;: A 1D NumPy array (size num_points) of y-coordinates (meters).</span>
+<span class="sd">        multidim_conditions (dict, optional): A dictionary containing multidimensional inflow</span>
+<span class="sd">            conditions. Each key is the name of the condition, and each value is either a 1D NumPy</span>
+<span class="sd">            array of size n_findex containing the condition values, or a scalar value that will be</span>
+<span class="sd">            broadcast to size n_findex. Defaults to None.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -3158,6 +3287,7 @@ document.write(`
         <span class="n">heterogeneous_map</span><span class="p">:</span> <span class="n">HeterogeneousMap</span> <span class="o">|</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">heterogeneous_inflow_config_by_wd</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">heterogeneous_inflow_config</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">multidim_conditions</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="c1"># Check that wind_directions, wind_speeds, and turbulence_intensities are either numpy array</span>
         <span class="c1"># of floats</span>
@@ -3224,6 +3354,9 @@ document.write(`
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wind_speeds</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
                 <span class="n">turbulence_intensities</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">wind_speeds</span><span class="p">),</span> <span class="n">turbulence_intensities</span><span class="p">)</span>
 
+        <span class="c1"># Record findex</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_findex</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">wind_directions</span><span class="p">)</span>
+
         <span class="c1"># If values is not None, must be same length as wind_directions/wind_speeds/</span>
         <span class="k">if</span> <span class="n">values</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">wind_directions</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
@@ -3267,7 +3400,7 @@ document.write(`
         <span class="c1"># If heterogeneous_inflow_config_by_wd is not None, then create a HeterogeneousMap object</span>
         <span class="c1"># using the dictionary</span>
         <span class="k">if</span> <span class="n">heterogeneous_inflow_config_by_wd</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># TODO: In future, add deprectation warning for this parameter here</span>
+            <span class="c1"># TODO: In future, add deprecation warning for this parameter here</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">heterogeneous_map</span> <span class="o">=</span> <span class="n">HeterogeneousMap</span><span class="p">(</span><span class="o">**</span><span class="n">heterogeneous_inflow_config_by_wd</span><span class="p">)</span>
 
@@ -3292,8 +3425,28 @@ document.write(`
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">heterogeneous_map</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="c1"># Record findex</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">n_findex</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_directions</span><span class="p">)</span>
+        <span class="c1"># Handle the multidim_conditions</span>
+        <span class="k">if</span> <span class="n">multidim_conditions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Check that each value in the dictionary is either a 1D NumPy array of size n_findex</span>
+            <span class="c1"># or a scalar value</span>
+            <span class="k">if</span> <span class="n">is_all_scalar_dict</span><span class="p">(</span><span class="n">multidim_conditions</span><span class="p">):</span>
+                <span class="c1"># Leave all scalar for performance purposes</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">multidim_conditions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_findex</span><span class="p">,):</span>
+                            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                                <span class="sa">f</span><span class="s2">&quot;multidim_conditions[</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">] must be of size n_findex&quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_findex</span><span class="si">}</span><span class="s2">)&quot;</span>
+                            <span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;multidim_conditions[</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">] must be a 1D NumPy array of size n_findex &quot;</span>
+                            <span class="s2">&quot;or a scalar value.&quot;</span>
+                        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">multidim_conditions</span> <span class="o">=</span> <span class="n">multidim_conditions</span>
 
 <div class="viewcode-block" id="TimeSeries.unpack">
 <a class="viewcode-back" href="../../_autosummary/floris.wind_data.html#floris.wind_data.TimeSeries.unpack">[docs]</a>

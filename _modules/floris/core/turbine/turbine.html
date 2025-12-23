@@ -1009,7 +1009,8 @@ document.write(`
 <span class="k">def</span><span class="w"> </span><span class="nf">_select_multidim_condition</span><span class="p">(</span>
     <span class="n">condition</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
     <span class="n">specified_conditions</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">tuple</span><span class="p">],</span>
-    <span class="n">condition_keys</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">condition_keys</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">n_findex</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert condition to the type expected by power_thrust_table and select</span>
@@ -1024,7 +1025,26 @@ document.write(`
                 <span class="s2">&quot;each dimension of the multidimensional power/thrust_coefficient table.&quot;</span>
             <span class="p">)</span>
         <span class="c1"># Create a tuple of the condition values in the correct order</span>
-        <span class="n">condition</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">condition</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">condition_keys</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">condition</span><span class="p">[</span><span class="n">condition_keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="n">condition</span><span class="p">[</span><span class="n">condition_keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+        <span class="p">):</span>
+            <span class="c1"># Assume multiple specified conditions</span>
+            <span class="n">n_conds</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">condition</span><span class="p">[</span><span class="n">condition_keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+            <span class="k">if</span> <span class="n">n_conds</span> <span class="o">!=</span> <span class="n">n_findex</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;When providing multiple specified conditions, the number of conditions &quot;</span>
+                    <span class="s2">&quot;must match the number of findices.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">condition_keys</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">condition</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="o">!=</span> <span class="n">n_conds</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s2">&quot;All condition values must have the same length when providing &quot;</span>
+                        <span class="s2">&quot;multiple specified conditions.&quot;</span>
+                    <span class="p">)</span>
+            <span class="n">condition</span> <span class="o">=</span> <span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">condition</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">condition_keys</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_conds</span><span class="p">)]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">n_conds</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">condition</span> <span class="o">=</span> <span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">condition</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">condition_keys</span><span class="p">)]</span>
     <span class="k">elif</span> <span class="n">condition</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="s2">&quot;multidim_condition must be provided if using multidimensional &quot;</span>
@@ -1039,13 +1059,20 @@ document.write(`
         <span class="n">specified_conditions</span> <span class="o">=</span> <span class="n">specified_conditions</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
     <span class="c1"># Find the nearest key to the specified conditions.</span>
-    <span class="n">nearest_condition</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">condition</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">condition</span><span class="p">):</span>
-        <span class="n">nearest_condition</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">specified_conditions</span><span class="p">[:,</span> <span class="n">i</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">specified_conditions</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">c</span><span class="p">)</span><span class="o">.</span><span class="n">argmin</span><span class="p">()]</span>
-        <span class="p">)</span>
+    <span class="n">nearest_conditions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_conds</span><span class="p">,</span> <span class="n">specified_conditions</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="k">for</span> <span class="n">f</span><span class="p">,</span> <span class="n">cond</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">condition</span><span class="p">):</span> <span class="c1"># Loop over findices</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cond</span><span class="p">):</span>
+            <span class="n">nearest_conditions</span><span class="p">[</span><span class="n">f</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">specified_conditions</span><span class="p">[:,</span> <span class="n">i</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">specified_conditions</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">c</span><span class="p">)</span><span class="o">.</span><span class="n">argmin</span><span class="p">()]</span>
+            <span class="p">)</span>
 
-    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">nearest_condition</span><span class="p">)</span><span class="c1"># if len(specified_conditions)</span>
+    <span class="n">nearest_conditions</span><span class="p">,</span> <span class="n">md_map</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">nearest_conditions</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">return_inverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Update map if only a single condition was provided</span>
+    <span class="k">if</span> <span class="n">n_conds</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">md_map</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">md_map</span><span class="p">,</span> <span class="n">n_findex</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">nearest_conditions</span><span class="p">,</span> <span class="n">md_map</span>
 
 
 <div class="viewcode-block" id="power">
@@ -1124,43 +1151,57 @@ document.write(`
         <span class="k">else</span><span class="p">:</span>
             <span class="n">correct_cp_ct_for_tilt</span> <span class="o">=</span> <span class="n">correct_cp_ct_for_tilt</span><span class="p">[:,</span> <span class="n">ix_filter</span><span class="p">]</span>
 
+    <span class="c1"># Establish the main set of keyword arguments for power()</span>
+    <span class="n">power_model_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;power_thrust_table&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="c1"># Will be filled below</span>
+        <span class="s2">&quot;velocities&quot;</span><span class="p">:</span> <span class="n">velocities</span><span class="p">,</span>
+        <span class="s2">&quot;turbulence_intensities&quot;</span><span class="p">:</span> <span class="n">turbulence_intensities</span><span class="p">,</span>
+        <span class="s2">&quot;air_density&quot;</span><span class="p">:</span> <span class="n">air_density</span><span class="p">,</span>
+        <span class="s2">&quot;yaw_angles&quot;</span><span class="p">:</span> <span class="n">yaw_angles</span><span class="p">,</span>
+        <span class="s2">&quot;tilt_angles&quot;</span><span class="p">:</span> <span class="n">tilt_angles</span><span class="p">,</span>
+        <span class="s2">&quot;power_setpoints&quot;</span><span class="p">:</span> <span class="n">power_setpoints</span><span class="p">,</span>
+        <span class="s2">&quot;awc_modes&quot;</span><span class="p">:</span> <span class="n">awc_modes</span><span class="p">,</span>
+        <span class="s2">&quot;awc_amplitudes&quot;</span><span class="p">:</span> <span class="n">awc_amplitudes</span><span class="p">,</span>
+        <span class="s2">&quot;tilt_interp&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="c1"># Will be filled below</span>
+        <span class="s2">&quot;average_method&quot;</span><span class="p">:</span> <span class="n">average_method</span><span class="p">,</span>
+        <span class="s2">&quot;cubature_weights&quot;</span><span class="p">:</span> <span class="n">cubature_weights</span><span class="p">,</span>
+        <span class="s2">&quot;correct_cp_ct_for_tilt&quot;</span><span class="p">:</span> <span class="n">correct_cp_ct_for_tilt</span><span class="p">,</span>
+    <span class="p">}</span>
+
     <span class="c1"># Loop over each turbine type given to get power for all turbines</span>
     <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">velocities</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">])</span>
     <span class="n">turb_types</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">turbine_type_map</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">turb_type</span> <span class="ow">in</span> <span class="n">turb_types</span><span class="p">:</span>
-        <span class="c1"># Handle possible multidimensional power thrust tables</span>
-        <span class="k">if</span> <span class="s2">&quot;power&quot;</span> <span class="ow">in</span> <span class="n">turbine_power_thrust_tables</span><span class="p">[</span><span class="n">turb_type</span><span class="p">]:</span> <span class="c1"># normal</span>
+        <span class="k">if</span> <span class="s2">&quot;power&quot;</span> <span class="ow">in</span> <span class="n">turbine_power_thrust_tables</span><span class="p">[</span><span class="n">turb_type</span><span class="p">]:</span>  <span class="c1"># Not multidimensional</span>
             <span class="n">power_thrust_table</span> <span class="o">=</span> <span class="n">turbine_power_thrust_tables</span><span class="p">[</span><span class="n">turb_type</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span> <span class="c1"># assumed multidimensional, use multidim lookup</span>
-            <span class="c1"># Currently, only works for single mutlidim condition. May need to</span>
-            <span class="c1"># loop in the case where there are multiple conditions.</span>
-            <span class="n">multidim_condition</span> <span class="o">=</span> <span class="n">_select_multidim_condition</span><span class="p">(</span>
+
+            <span class="n">power_model_kwargs</span><span class="p">[</span><span class="s2">&quot;power_thrust_table&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">power_thrust_table</span>
+            <span class="n">power_model_kwargs</span><span class="p">[</span><span class="s2">&quot;tilt_interp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tilt_interps</span><span class="p">[</span><span class="n">turb_type</span><span class="p">]</span>
+
+            <span class="n">p</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="n">power_functions</span><span class="p">[</span><span class="n">turb_type</span><span class="p">](</span><span class="o">**</span><span class="n">power_model_kwargs</span><span class="p">)</span>
+                <span class="o">*</span> <span class="p">(</span><span class="n">turbine_type_map</span> <span class="o">==</span> <span class="n">turb_type</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span> <span class="c1"># Multidimensional</span>
+            <span class="n">md_conditions</span><span class="p">,</span> <span class="n">md_conditions_map</span> <span class="o">=</span> <span class="n">_select_multidim_condition</span><span class="p">(</span>
                 <span class="n">multidim_condition</span><span class="p">,</span>
                 <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">turbine_power_thrust_tables</span><span class="p">[</span><span class="n">turb_type</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s2">&quot;condition_keys&quot;</span><span class="p">],</span>
-                <span class="n">turbine_power_thrust_tables</span><span class="p">[</span><span class="n">turb_type</span><span class="p">][</span><span class="s2">&quot;condition_keys&quot;</span><span class="p">]</span>
+                <span class="n">turbine_power_thrust_tables</span><span class="p">[</span><span class="n">turb_type</span><span class="p">][</span><span class="s2">&quot;condition_keys&quot;</span><span class="p">],</span>
+                <span class="n">velocities</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
             <span class="p">)</span>
-            <span class="n">power_thrust_table</span> <span class="o">=</span> <span class="n">turbine_power_thrust_tables</span><span class="p">[</span><span class="n">turb_type</span><span class="p">][</span><span class="n">multidim_condition</span><span class="p">]</span>
 
-        <span class="c1"># Construct full set of possible keyword arguments for power()</span>
-        <span class="n">power_model_kwargs</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;power_thrust_table&quot;</span><span class="p">:</span> <span class="n">power_thrust_table</span><span class="p">,</span>
-            <span class="s2">&quot;velocities&quot;</span><span class="p">:</span> <span class="n">velocities</span><span class="p">,</span>
-            <span class="s2">&quot;turbulence_intensities&quot;</span><span class="p">:</span> <span class="n">turbulence_intensities</span><span class="p">,</span>
-            <span class="s2">&quot;air_density&quot;</span><span class="p">:</span> <span class="n">air_density</span><span class="p">,</span>
-            <span class="s2">&quot;yaw_angles&quot;</span><span class="p">:</span> <span class="n">yaw_angles</span><span class="p">,</span>
-            <span class="s2">&quot;tilt_angles&quot;</span><span class="p">:</span> <span class="n">tilt_angles</span><span class="p">,</span>
-            <span class="s2">&quot;power_setpoints&quot;</span><span class="p">:</span> <span class="n">power_setpoints</span><span class="p">,</span>
-            <span class="s2">&quot;awc_modes&quot;</span><span class="p">:</span> <span class="n">awc_modes</span><span class="p">,</span>
-            <span class="s2">&quot;awc_amplitudes&quot;</span><span class="p">:</span> <span class="n">awc_amplitudes</span><span class="p">,</span>
-            <span class="s2">&quot;tilt_interp&quot;</span><span class="p">:</span> <span class="n">tilt_interps</span><span class="p">[</span><span class="n">turb_type</span><span class="p">],</span>
-            <span class="s2">&quot;average_method&quot;</span><span class="p">:</span> <span class="n">average_method</span><span class="p">,</span>
-            <span class="s2">&quot;cubature_weights&quot;</span><span class="p">:</span> <span class="n">cubature_weights</span><span class="p">,</span>
-            <span class="s2">&quot;correct_cp_ct_for_tilt&quot;</span><span class="p">:</span> <span class="n">correct_cp_ct_for_tilt</span><span class="p">,</span>
-        <span class="p">}</span>
+            <span class="c1"># Loop over conditions and mask onto power</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">md_cond</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">md_conditions</span><span class="p">):</span>
+                <span class="n">power_thrust_table</span> <span class="o">=</span> <span class="n">turbine_power_thrust_tables</span><span class="p">[</span><span class="n">turb_type</span><span class="p">][</span><span class="nb">tuple</span><span class="p">(</span><span class="n">md_cond</span><span class="p">)]</span>
 
-        <span class="c1"># Using a masked array, apply the power for all turbines of the current</span>
-        <span class="c1"># type to the main power</span>
-        <span class="n">p</span> <span class="o">+=</span> <span class="n">power_functions</span><span class="p">[</span><span class="n">turb_type</span><span class="p">](</span><span class="o">**</span><span class="n">power_model_kwargs</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">turbine_type_map</span> <span class="o">==</span> <span class="n">turb_type</span><span class="p">)</span>
+                <span class="n">power_model_kwargs</span><span class="p">[</span><span class="s2">&quot;power_thrust_table&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">power_thrust_table</span>
+                <span class="n">power_model_kwargs</span><span class="p">[</span><span class="s2">&quot;tilt_interp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tilt_interps</span><span class="p">[</span><span class="n">turb_type</span><span class="p">]</span>
+
+                <span class="n">p</span> <span class="o">+=</span> <span class="p">(</span>
+                    <span class="n">power_functions</span><span class="p">[</span><span class="n">turb_type</span><span class="p">](</span><span class="o">**</span><span class="n">power_model_kwargs</span><span class="p">)</span>
+                    <span class="o">*</span> <span class="p">(</span><span class="n">turbine_type_map</span> <span class="o">==</span> <span class="n">turb_type</span><span class="p">)</span>
+                    <span class="o">*</span> <span class="p">(</span><span class="n">md_conditions_map</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span><span class="p">)</span>
+                <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">p</span></div>
 
@@ -1244,46 +1285,57 @@ document.write(`
         <span class="k">else</span><span class="p">:</span>
             <span class="n">correct_cp_ct_for_tilt</span> <span class="o">=</span> <span class="n">correct_cp_ct_for_tilt</span><span class="p">[:,</span> <span class="n">ix_filter</span><span class="p">]</span>
 
+    <span class="c1"># Establish the main set of keyword arguments for thrust_coefficient()</span>
+    <span class="n">thrust_model_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;power_thrust_table&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="c1"># Will be filled below</span>
+        <span class="s2">&quot;velocities&quot;</span><span class="p">:</span> <span class="n">velocities</span><span class="p">,</span>
+        <span class="s2">&quot;turbulence_intensities&quot;</span><span class="p">:</span> <span class="n">turbulence_intensities</span><span class="p">,</span>
+        <span class="s2">&quot;air_density&quot;</span><span class="p">:</span> <span class="n">air_density</span><span class="p">,</span>
+        <span class="s2">&quot;yaw_angles&quot;</span><span class="p">:</span> <span class="n">yaw_angles</span><span class="p">,</span>
+        <span class="s2">&quot;tilt_angles&quot;</span><span class="p">:</span> <span class="n">tilt_angles</span><span class="p">,</span>
+        <span class="s2">&quot;power_setpoints&quot;</span><span class="p">:</span> <span class="n">power_setpoints</span><span class="p">,</span>
+        <span class="s2">&quot;awc_modes&quot;</span><span class="p">:</span> <span class="n">awc_modes</span><span class="p">,</span>
+        <span class="s2">&quot;awc_amplitudes&quot;</span><span class="p">:</span> <span class="n">awc_amplitudes</span><span class="p">,</span>
+        <span class="s2">&quot;tilt_interp&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="c1"># Will be filled below</span>
+        <span class="s2">&quot;average_method&quot;</span><span class="p">:</span> <span class="n">average_method</span><span class="p">,</span>
+        <span class="s2">&quot;cubature_weights&quot;</span><span class="p">:</span> <span class="n">cubature_weights</span><span class="p">,</span>
+        <span class="s2">&quot;correct_cp_ct_for_tilt&quot;</span><span class="p">:</span> <span class="n">correct_cp_ct_for_tilt</span><span class="p">,</span>
+    <span class="p">}</span>
+
     <span class="c1"># Loop over each turbine type given to get thrust coefficient for all turbines</span>
     <span class="n">thrust_coefficient</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">velocities</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">])</span>
     <span class="n">turb_types</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">turbine_type_map</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">turb_type</span> <span class="ow">in</span> <span class="n">turb_types</span><span class="p">:</span>
-        <span class="c1"># Handle possible multidimensional power thrust tables</span>
-        <span class="k">if</span> <span class="s2">&quot;thrust_coefficient&quot;</span> <span class="ow">in</span> <span class="n">turbine_power_thrust_tables</span><span class="p">[</span><span class="n">turb_type</span><span class="p">]:</span> <span class="c1"># normal</span>
+        <span class="k">if</span> <span class="s2">&quot;thrust_coefficient&quot;</span> <span class="ow">in</span> <span class="n">turbine_power_thrust_tables</span><span class="p">[</span><span class="n">turb_type</span><span class="p">]:</span>  <span class="c1"># Not multidimensional</span>
             <span class="n">power_thrust_table</span> <span class="o">=</span> <span class="n">turbine_power_thrust_tables</span><span class="p">[</span><span class="n">turb_type</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span> <span class="c1"># assumed multidimensional, use multidim lookup</span>
-            <span class="c1"># Currently, only works for single mutlidim condition. May need to</span>
-            <span class="c1"># loop in the case where there are multiple conditions.</span>
-            <span class="n">multidim_condition</span> <span class="o">=</span> <span class="n">_select_multidim_condition</span><span class="p">(</span>
+
+            <span class="n">thrust_model_kwargs</span><span class="p">[</span><span class="s2">&quot;power_thrust_table&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">power_thrust_table</span>
+            <span class="n">thrust_model_kwargs</span><span class="p">[</span><span class="s2">&quot;tilt_interp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tilt_interps</span><span class="p">[</span><span class="n">turb_type</span><span class="p">]</span>
+
+            <span class="n">thrust_coefficient</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="n">thrust_coefficient_functions</span><span class="p">[</span><span class="n">turb_type</span><span class="p">](</span><span class="o">**</span><span class="n">thrust_model_kwargs</span><span class="p">)</span>
+                <span class="o">*</span> <span class="p">(</span><span class="n">turbine_type_map</span> <span class="o">==</span> <span class="n">turb_type</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span> <span class="c1"># Multidimensional</span>
+            <span class="n">md_conditions</span><span class="p">,</span> <span class="n">md_conditions_map</span> <span class="o">=</span> <span class="n">_select_multidim_condition</span><span class="p">(</span>
                 <span class="n">multidim_condition</span><span class="p">,</span>
                 <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">turbine_power_thrust_tables</span><span class="p">[</span><span class="n">turb_type</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s2">&quot;condition_keys&quot;</span><span class="p">],</span>
-                <span class="n">turbine_power_thrust_tables</span><span class="p">[</span><span class="n">turb_type</span><span class="p">][</span><span class="s2">&quot;condition_keys&quot;</span><span class="p">]</span>
+                <span class="n">turbine_power_thrust_tables</span><span class="p">[</span><span class="n">turb_type</span><span class="p">][</span><span class="s2">&quot;condition_keys&quot;</span><span class="p">],</span>
+                <span class="n">velocities</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
             <span class="p">)</span>
-            <span class="n">power_thrust_table</span> <span class="o">=</span> <span class="n">turbine_power_thrust_tables</span><span class="p">[</span><span class="n">turb_type</span><span class="p">][</span><span class="n">multidim_condition</span><span class="p">]</span>
 
-        <span class="c1"># Construct full set of possible keyword arguments for thrust_coefficient()</span>
-        <span class="n">thrust_model_kwargs</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;power_thrust_table&quot;</span><span class="p">:</span> <span class="n">power_thrust_table</span><span class="p">,</span>
-            <span class="s2">&quot;velocities&quot;</span><span class="p">:</span> <span class="n">velocities</span><span class="p">,</span>
-            <span class="s2">&quot;turbulence_intensities&quot;</span><span class="p">:</span> <span class="n">turbulence_intensities</span><span class="p">,</span>
-            <span class="s2">&quot;air_density&quot;</span><span class="p">:</span> <span class="n">air_density</span><span class="p">,</span>
-            <span class="s2">&quot;yaw_angles&quot;</span><span class="p">:</span> <span class="n">yaw_angles</span><span class="p">,</span>
-            <span class="s2">&quot;tilt_angles&quot;</span><span class="p">:</span> <span class="n">tilt_angles</span><span class="p">,</span>
-            <span class="s2">&quot;power_setpoints&quot;</span><span class="p">:</span> <span class="n">power_setpoints</span><span class="p">,</span>
-            <span class="s2">&quot;awc_modes&quot;</span><span class="p">:</span> <span class="n">awc_modes</span><span class="p">,</span>
-            <span class="s2">&quot;awc_amplitudes&quot;</span><span class="p">:</span> <span class="n">awc_amplitudes</span><span class="p">,</span>
-            <span class="s2">&quot;tilt_interp&quot;</span><span class="p">:</span> <span class="n">tilt_interps</span><span class="p">[</span><span class="n">turb_type</span><span class="p">],</span>
-            <span class="s2">&quot;average_method&quot;</span><span class="p">:</span> <span class="n">average_method</span><span class="p">,</span>
-            <span class="s2">&quot;cubature_weights&quot;</span><span class="p">:</span> <span class="n">cubature_weights</span><span class="p">,</span>
-            <span class="s2">&quot;correct_cp_ct_for_tilt&quot;</span><span class="p">:</span> <span class="n">correct_cp_ct_for_tilt</span><span class="p">,</span>
-        <span class="p">}</span>
+            <span class="c1"># Loop over conditions and mask onto thrust_coefficient</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">md_cond</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">md_conditions</span><span class="p">):</span>
+                <span class="n">power_thrust_table</span> <span class="o">=</span> <span class="n">turbine_power_thrust_tables</span><span class="p">[</span><span class="n">turb_type</span><span class="p">][</span><span class="nb">tuple</span><span class="p">(</span><span class="n">md_cond</span><span class="p">)]</span>
 
-        <span class="c1"># Using a masked array, apply the thrust coefficient for all turbines of the current</span>
-        <span class="c1"># type to the main thrust coefficient array</span>
-        <span class="n">thrust_coefficient</span> <span class="o">+=</span> <span class="p">(</span>
-            <span class="n">thrust_coefficient_functions</span><span class="p">[</span><span class="n">turb_type</span><span class="p">](</span><span class="o">**</span><span class="n">thrust_model_kwargs</span><span class="p">)</span>
-            <span class="o">*</span> <span class="p">(</span><span class="n">turbine_type_map</span> <span class="o">==</span> <span class="n">turb_type</span><span class="p">)</span>
-        <span class="p">)</span>
+                <span class="n">thrust_model_kwargs</span><span class="p">[</span><span class="s2">&quot;power_thrust_table&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">power_thrust_table</span>
+                <span class="n">thrust_model_kwargs</span><span class="p">[</span><span class="s2">&quot;tilt_interp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tilt_interps</span><span class="p">[</span><span class="n">turb_type</span><span class="p">]</span>
+
+                <span class="n">thrust_coefficient</span> <span class="o">+=</span> <span class="p">(</span>
+                    <span class="n">thrust_coefficient_functions</span><span class="p">[</span><span class="n">turb_type</span><span class="p">](</span><span class="o">**</span><span class="n">thrust_model_kwargs</span><span class="p">)</span>
+                    <span class="o">*</span> <span class="p">(</span><span class="n">turbine_type_map</span> <span class="o">==</span> <span class="n">turb_type</span><span class="p">)</span>
+                    <span class="o">*</span> <span class="p">(</span><span class="n">md_conditions_map</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span><span class="p">)</span>
+                <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">thrust_coefficient</span></div>
 
@@ -1363,45 +1415,57 @@ document.write(`
         <span class="k">else</span><span class="p">:</span>
             <span class="n">correct_cp_ct_for_tilt</span> <span class="o">=</span> <span class="n">correct_cp_ct_for_tilt</span><span class="p">[:,</span> <span class="n">ix_filter</span><span class="p">]</span>
 
+    <span class="c1"># Establish the main set of keyword arguments for axial_induction()</span>
+    <span class="n">axial_induction_model_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;power_thrust_table&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="c1"># Will be filled below</span>
+        <span class="s2">&quot;velocities&quot;</span><span class="p">:</span> <span class="n">velocities</span><span class="p">,</span>
+        <span class="s2">&quot;turbulence_intensities&quot;</span><span class="p">:</span> <span class="n">turbulence_intensities</span><span class="p">,</span>
+        <span class="s2">&quot;air_density&quot;</span><span class="p">:</span> <span class="n">air_density</span><span class="p">,</span>
+        <span class="s2">&quot;yaw_angles&quot;</span><span class="p">:</span> <span class="n">yaw_angles</span><span class="p">,</span>
+        <span class="s2">&quot;tilt_angles&quot;</span><span class="p">:</span> <span class="n">tilt_angles</span><span class="p">,</span>
+        <span class="s2">&quot;power_setpoints&quot;</span><span class="p">:</span> <span class="n">power_setpoints</span><span class="p">,</span>
+        <span class="s2">&quot;awc_modes&quot;</span><span class="p">:</span> <span class="n">awc_modes</span><span class="p">,</span>
+        <span class="s2">&quot;awc_amplitudes&quot;</span><span class="p">:</span> <span class="n">awc_amplitudes</span><span class="p">,</span>
+        <span class="s2">&quot;tilt_interp&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="c1"># Will be filled below</span>
+        <span class="s2">&quot;average_method&quot;</span><span class="p">:</span> <span class="n">average_method</span><span class="p">,</span>
+        <span class="s2">&quot;cubature_weights&quot;</span><span class="p">:</span> <span class="n">cubature_weights</span><span class="p">,</span>
+        <span class="s2">&quot;correct_cp_ct_for_tilt&quot;</span><span class="p">:</span> <span class="n">correct_cp_ct_for_tilt</span><span class="p">,</span>
+    <span class="p">}</span>
+
     <span class="c1"># Loop over each turbine type given to get axial induction for all turbines</span>
     <span class="n">axial_induction</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">velocities</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">])</span>
     <span class="n">turb_types</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">turbine_type_map</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">turb_type</span> <span class="ow">in</span> <span class="n">turb_types</span><span class="p">:</span>
-        <span class="c1"># Handle possible multidimensional power thrust tables</span>
-        <span class="k">if</span> <span class="s2">&quot;thrust_coefficient&quot;</span> <span class="ow">in</span> <span class="n">turbine_power_thrust_tables</span><span class="p">[</span><span class="n">turb_type</span><span class="p">]:</span> <span class="c1"># normal</span>
+        <span class="k">if</span> <span class="s2">&quot;thrust_coefficient&quot;</span> <span class="ow">in</span> <span class="n">turbine_power_thrust_tables</span><span class="p">[</span><span class="n">turb_type</span><span class="p">]:</span>  <span class="c1"># Not multidimensional</span>
             <span class="n">power_thrust_table</span> <span class="o">=</span> <span class="n">turbine_power_thrust_tables</span><span class="p">[</span><span class="n">turb_type</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span> <span class="c1"># assumed multidimensional, use multidim lookup</span>
-            <span class="c1"># Currently, only works for single mutlidim condition. May need to</span>
-            <span class="n">multidim_condition</span> <span class="o">=</span> <span class="n">_select_multidim_condition</span><span class="p">(</span>
+
+            <span class="n">axial_induction_model_kwargs</span><span class="p">[</span><span class="s2">&quot;power_thrust_table&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">power_thrust_table</span>
+            <span class="n">axial_induction_model_kwargs</span><span class="p">[</span><span class="s2">&quot;tilt_interp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tilt_interps</span><span class="p">[</span><span class="n">turb_type</span><span class="p">]</span>
+
+            <span class="n">axial_induction</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="n">axial_induction_functions</span><span class="p">[</span><span class="n">turb_type</span><span class="p">](</span><span class="o">**</span><span class="n">axial_induction_model_kwargs</span><span class="p">)</span>
+                <span class="o">*</span> <span class="p">(</span><span class="n">turbine_type_map</span> <span class="o">==</span> <span class="n">turb_type</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span> <span class="c1"># Multidimensional</span>
+            <span class="n">md_conditions</span><span class="p">,</span> <span class="n">md_conditions_map</span> <span class="o">=</span> <span class="n">_select_multidim_condition</span><span class="p">(</span>
                 <span class="n">multidim_condition</span><span class="p">,</span>
                 <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">turbine_power_thrust_tables</span><span class="p">[</span><span class="n">turb_type</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s2">&quot;condition_keys&quot;</span><span class="p">],</span>
-                <span class="n">turbine_power_thrust_tables</span><span class="p">[</span><span class="n">turb_type</span><span class="p">][</span><span class="s2">&quot;condition_keys&quot;</span><span class="p">]</span>
+                <span class="n">turbine_power_thrust_tables</span><span class="p">[</span><span class="n">turb_type</span><span class="p">][</span><span class="s2">&quot;condition_keys&quot;</span><span class="p">],</span>
+                <span class="n">velocities</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
             <span class="p">)</span>
-            <span class="n">power_thrust_table</span> <span class="o">=</span> <span class="n">turbine_power_thrust_tables</span><span class="p">[</span><span class="n">turb_type</span><span class="p">][</span><span class="n">multidim_condition</span><span class="p">]</span>
 
-        <span class="c1"># Construct full set of possible keyword arguments for thrust_coefficient()</span>
-        <span class="n">axial_induction_model_kwargs</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;power_thrust_table&quot;</span><span class="p">:</span> <span class="n">power_thrust_table</span><span class="p">,</span>
-            <span class="s2">&quot;velocities&quot;</span><span class="p">:</span> <span class="n">velocities</span><span class="p">,</span>
-            <span class="s2">&quot;turbulence_intensities&quot;</span><span class="p">:</span> <span class="n">turbulence_intensities</span><span class="p">,</span>
-            <span class="s2">&quot;air_density&quot;</span><span class="p">:</span> <span class="n">air_density</span><span class="p">,</span>
-            <span class="s2">&quot;yaw_angles&quot;</span><span class="p">:</span> <span class="n">yaw_angles</span><span class="p">,</span>
-            <span class="s2">&quot;tilt_angles&quot;</span><span class="p">:</span> <span class="n">tilt_angles</span><span class="p">,</span>
-            <span class="s2">&quot;power_setpoints&quot;</span><span class="p">:</span> <span class="n">power_setpoints</span><span class="p">,</span>
-            <span class="s2">&quot;awc_modes&quot;</span><span class="p">:</span> <span class="n">awc_modes</span><span class="p">,</span>
-            <span class="s2">&quot;awc_amplitudes&quot;</span><span class="p">:</span> <span class="n">awc_amplitudes</span><span class="p">,</span>
-            <span class="s2">&quot;tilt_interp&quot;</span><span class="p">:</span> <span class="n">tilt_interps</span><span class="p">[</span><span class="n">turb_type</span><span class="p">],</span>
-            <span class="s2">&quot;average_method&quot;</span><span class="p">:</span> <span class="n">average_method</span><span class="p">,</span>
-            <span class="s2">&quot;cubature_weights&quot;</span><span class="p">:</span> <span class="n">cubature_weights</span><span class="p">,</span>
-            <span class="s2">&quot;correct_cp_ct_for_tilt&quot;</span><span class="p">:</span> <span class="n">correct_cp_ct_for_tilt</span><span class="p">,</span>
-        <span class="p">}</span>
+            <span class="c1"># Loop over conditions and mask onto axial_induction</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">md_cond</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">md_conditions</span><span class="p">):</span>
+                <span class="n">power_thrust_table</span> <span class="o">=</span> <span class="n">turbine_power_thrust_tables</span><span class="p">[</span><span class="n">turb_type</span><span class="p">][</span><span class="nb">tuple</span><span class="p">(</span><span class="n">md_cond</span><span class="p">)]</span>
 
-        <span class="c1"># Using a masked array, apply the thrust coefficient for all turbines of the current</span>
-        <span class="c1"># type to the main thrust coefficient array</span>
-        <span class="n">axial_induction</span> <span class="o">+=</span> <span class="p">(</span>
-            <span class="n">axial_induction_functions</span><span class="p">[</span><span class="n">turb_type</span><span class="p">](</span><span class="o">**</span><span class="n">axial_induction_model_kwargs</span><span class="p">)</span>
-            <span class="o">*</span> <span class="p">(</span><span class="n">turbine_type_map</span> <span class="o">==</span> <span class="n">turb_type</span><span class="p">)</span>
-        <span class="p">)</span>
+                <span class="n">axial_induction_model_kwargs</span><span class="p">[</span><span class="s2">&quot;power_thrust_table&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">power_thrust_table</span>
+                <span class="n">axial_induction_model_kwargs</span><span class="p">[</span><span class="s2">&quot;tilt_interp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tilt_interps</span><span class="p">[</span><span class="n">turb_type</span><span class="p">]</span>
+
+                <span class="n">axial_induction</span> <span class="o">+=</span> <span class="p">(</span>
+                    <span class="n">axial_induction_functions</span><span class="p">[</span><span class="n">turb_type</span><span class="p">](</span><span class="o">**</span><span class="n">axial_induction_model_kwargs</span><span class="p">)</span>
+                    <span class="o">*</span> <span class="p">(</span><span class="n">turbine_type_map</span> <span class="o">==</span> <span class="n">turb_type</span><span class="p">)</span>
+                    <span class="o">*</span> <span class="p">(</span><span class="n">md_conditions_map</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span><span class="p">)</span>
+                <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">axial_induction</span></div>
 

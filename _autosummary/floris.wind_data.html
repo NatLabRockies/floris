@@ -659,12 +659,14 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.wind_data.WindDataBase.unpack_for_reinitialize"><code class="docutils literal notranslate"><span class="pre">WindDataBase.unpack_for_reinitialize()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.wind_data.WindDataBase.unpack_freq"><code class="docutils literal notranslate"><span class="pre">WindDataBase.unpack_freq()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.wind_data.WindDataBase.unpack_value"><code class="docutils literal notranslate"><span class="pre">WindDataBase.unpack_value()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.wind_data.WindDataBase.unpack_multidim_conditions"><code class="docutils literal notranslate"><span class="pre">WindDataBase.unpack_multidim_conditions()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.wind_data.WindDataBase.check_heterogeneous_inflow_config"><code class="docutils literal notranslate"><span class="pre">WindDataBase.check_heterogeneous_inflow_config()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.wind_data.WindDataBase.set_layout"><code class="docutils literal notranslate"><span class="pre">WindDataBase.set_layout()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.wind_data.WindRose"><code class="docutils literal notranslate"><span class="pre">WindRose</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.wind_data.WindRose.unpack"><code class="docutils literal notranslate"><span class="pre">WindRose.unpack()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.wind_data.WindRose.unpack_multidim_conditions"><code class="docutils literal notranslate"><span class="pre">WindRose.unpack_multidim_conditions()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.wind_data.WindRose.aggregate"><code class="docutils literal notranslate"><span class="pre">WindRose.aggregate()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.wind_data.WindRose.downsample"><code class="docutils literal notranslate"><span class="pre">WindRose.downsample()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.wind_data.WindRose.resample_by_interpolation"><code class="docutils literal notranslate"><span class="pre">WindRose.resample_by_interpolation()</span></code></a></li>
@@ -681,6 +683,7 @@ document.write(`
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.wind_data.WindTIRose"><code class="docutils literal notranslate"><span class="pre">WindTIRose</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.wind_data.WindTIRose.unpack"><code class="docutils literal notranslate"><span class="pre">WindTIRose.unpack()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.wind_data.WindTIRose.unpack_multidim_conditions"><code class="docutils literal notranslate"><span class="pre">WindTIRose.unpack_multidim_conditions()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.wind_data.WindTIRose.aggregate"><code class="docutils literal notranslate"><span class="pre">WindTIRose.aggregate()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.wind_data.WindTIRose.downsample"><code class="docutils literal notranslate"><span class="pre">WindTIRose.downsample()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.wind_data.WindTIRose.resample_by_interpolation"><code class="docutils literal notranslate"><span class="pre">WindTIRose.resample_by_interpolation()</span></code></a></li>
@@ -781,6 +784,15 @@ method.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="floris.wind_data.WindDataBase.unpack_multidim_conditions">
+<span class="sig-name descname"><span class="pre">unpack_multidim_conditions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/floris/wind_data.html#WindDataBase.unpack_multidim_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#floris.wind_data.WindDataBase.unpack_multidim_conditions" title="Link to this definition">#</a></dt>
+<dd><p>Unpack multidimensional conditions</p>
+<p>NOTE: This is a temporary method for backwards compatibility and will be removed in a
+future release, when multidim_conditions are included in the unpack() method of child
+classes.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="floris.wind_data.WindDataBase.check_heterogeneous_inflow_config">
 <span class="sig-name descname"><span class="pre">check_heterogeneous_inflow_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">heterogeneous_inflow_config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/floris/wind_data.html#WindDataBase.check_heterogeneous_inflow_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#floris.wind_data.WindDataBase.check_heterogeneous_inflow_config" title="Link to this definition">#</a></dt>
 <dd><p>Check that the heterogeneous_inflow_config dictionary is properly formatted</p>
@@ -819,7 +831,7 @@ layout_y (list, optional): List of y-coordinates of the turbines. Defaults to No
 
 <dl class="py class">
 <dt class="sig sig-object py" id="floris.wind_data.WindRose">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">floris.wind_data.</span></span><span class="sig-name descname"><span class="pre">WindRose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wind_directions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind_speeds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ti_table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq_table</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_table</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_zero_freq_occurrence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heterogeneous_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heterogeneous_inflow_config_by_wd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/floris/wind_data.html#WindRose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#floris.wind_data.WindRose" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">floris.wind_data.</span></span><span class="sig-name descname"><span class="pre">WindRose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wind_directions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind_speeds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ti_table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq_table</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_table</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_zero_freq_occurrence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heterogeneous_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heterogeneous_inflow_config_by_wd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multidim_conditions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/floris/wind_data.html#WindRose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#floris.wind_data.WindRose" title="Link to this definition">#</a></dt>
 <dd><p>The WindRose class is used to drive FLORIS and optimization operations in
 which the inflow is characterized by the frequency of binned wind speed and
 wind direction values.  Turbulence intensities are defined as a function of
@@ -869,6 +881,10 @@ defined, then this should be a single row array</p>
 </ul>
 <p>Defaults to None.</p>
 </dd>
+<dt>multidim_conditions (dict, optional): A dictionary containing multidimensional inflow</dt><dd><p>conditions. Each key is the name of the condition, and each value is either a 2D NumPy
+array of size n_wind_directions x n_wind_speeds containing the condition values,
+or a scalar value that will be broadcast to size n_findex. Defaults to None.</p>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -883,6 +899,7 @@ defined, then this should be a single row array</p>
 <li><p><strong>compute_zero_freq_occurrence</strong> (<em>bool</em>)</p></li>
 <li><p><strong>heterogeneous_map</strong> (<em>HeterogeneousMap</em><em> | </em><em>dict</em><em> | </em><em>None</em>)</p></li>
 <li><p><strong>heterogeneous_inflow_config_by_wd</strong> (<em>dict</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>multidim_conditions</strong> (<em>dict</em><em> | </em><em>None</em>)</p></li>
 </ul>
 </dd>
 </dl>
@@ -891,6 +908,15 @@ defined, then this should be a single row array</p>
 <span class="sig-name descname"><span class="pre">unpack</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/floris/wind_data.html#WindRose.unpack"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#floris.wind_data.WindRose.unpack" title="Link to this definition">#</a></dt>
 <dd><p>Unpack the flattened versions of the matrices and return the values
 accounting for the non_zero_freq_mask</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="floris.wind_data.WindRose.unpack_multidim_conditions">
+<span class="sig-name descname"><span class="pre">unpack_multidim_conditions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/floris/wind_data.html#WindRose.unpack_multidim_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#floris.wind_data.WindRose.unpack_multidim_conditions" title="Link to this definition">#</a></dt>
+<dd><p>Unpack multidimensional conditions</p>
+<p>NOTE: This is a temporary method for backwards compatibility and will be removed in a
+future release, when multidim_conditions are included in the unpack() method of child
+classes.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1175,7 +1201,7 @@ ws_col (str): Name of the column in the CSV file that contains the wind speed</p
 
 <dl class="py class">
 <dt class="sig sig-object py" id="floris.wind_data.WindTIRose">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">floris.wind_data.</span></span><span class="sig-name descname"><span class="pre">WindTIRose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wind_directions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind_speeds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">turbulence_intensities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq_table</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_table</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_zero_freq_occurrence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heterogeneous_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heterogeneous_inflow_config_by_wd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/floris/wind_data.html#WindTIRose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#floris.wind_data.WindTIRose" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">floris.wind_data.</span></span><span class="sig-name descname"><span class="pre">WindTIRose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wind_directions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind_speeds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">turbulence_intensities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq_table</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_table</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_zero_freq_occurrence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heterogeneous_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heterogeneous_inflow_config_by_wd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multidim_conditions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/floris/wind_data.html#WindTIRose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#floris.wind_data.WindTIRose" title="Link to this definition">#</a></dt>
 <dd><p>WindTIRose is similar to the WindRose class, but contains turbulence
 intensity as an additional wind rose dimension instead of being defined
 as a function of wind direction and wind speed. The class is used to drive
@@ -1225,6 +1251,11 @@ defined, then this should be a single row array</p>
 </ul>
 <p>Defaults to None.</p>
 </dd>
+<dt>multidim_conditions (dict, optional): A dictionary containing multidimensional inflow</dt><dd><p>conditions. Each key is the name of the condition, and each value is either a 3D NumPy
+array of shape (n_wind_speeds, n_wind_directions, n_turbulence_intensities) containing
+the condition values, or a scalar value that will be broadcast to size n_findex.
+Defaults to None.</p>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -1239,6 +1270,7 @@ defined, then this should be a single row array</p>
 <li><p><strong>compute_zero_freq_occurrence</strong> (<em>bool</em>)</p></li>
 <li><p><strong>heterogeneous_map</strong> (<em>HeterogeneousMap</em><em> | </em><em>dict</em><em> | </em><em>None</em>)</p></li>
 <li><p><strong>heterogeneous_inflow_config_by_wd</strong> (<em>dict</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>multidim_conditions</strong> (<em>dict</em><em> | </em><em>None</em>)</p></li>
 </ul>
 </dd>
 </dl>
@@ -1247,6 +1279,15 @@ defined, then this should be a single row array</p>
 <span class="sig-name descname"><span class="pre">unpack</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/floris/wind_data.html#WindTIRose.unpack"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#floris.wind_data.WindTIRose.unpack" title="Link to this definition">#</a></dt>
 <dd><p>Unpack the flattened versions of the matrices and return the values
 accounting for the non_zero_freq_mask</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="floris.wind_data.WindTIRose.unpack_multidim_conditions">
+<span class="sig-name descname"><span class="pre">unpack_multidim_conditions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/floris/wind_data.html#WindTIRose.unpack_multidim_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#floris.wind_data.WindTIRose.unpack_multidim_conditions" title="Link to this definition">#</a></dt>
+<dd><p>Unpack multidimensional conditions</p>
+<p>NOTE: This is a temporary method for backwards compatibility and will be removed in a
+future release, when multidim_conditions are included in the unpack() method of child
+classes.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1506,7 +1547,7 @@ ws_col (str): Name of the column in the CSV file that contains the wind speed</p
 
 <dl class="py class">
 <dt class="sig sig-object py" id="floris.wind_data.TimeSeries">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">floris.wind_data.</span></span><span class="sig-name descname"><span class="pre">TimeSeries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wind_directions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind_speeds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">turbulence_intensities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heterogeneous_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heterogeneous_inflow_config_by_wd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heterogeneous_inflow_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/floris/wind_data.html#TimeSeries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#floris.wind_data.TimeSeries" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">floris.wind_data.</span></span><span class="sig-name descname"><span class="pre">TimeSeries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wind_directions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind_speeds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">turbulence_intensities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heterogeneous_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heterogeneous_inflow_config_by_wd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heterogeneous_inflow_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multidim_conditions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/floris/wind_data.html#TimeSeries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#floris.wind_data.TimeSeries" title="Link to this definition">#</a></dt>
 <dd><p>The TimeSeries class is used to drive FLORIS and optimization operations in
 which the inflow is by a sequence of wind direction, wind speed and
 turbulence intensity values.  Each input of wind direction, wind speed, and
@@ -1559,6 +1600,10 @@ defined, then this should be a single row array</p>
 <li><p>'y': A 1D NumPy array (size num_points) of y-coordinates (meters).</p></li>
 </ul>
 </dd>
+<dt>multidim_conditions (dict, optional): A dictionary containing multidimensional inflow</dt><dd><p>conditions. Each key is the name of the condition, and each value is either a 1D NumPy
+array of size n_findex containing the condition values, or a scalar value that will be
+broadcast to size n_findex. Defaults to None.</p>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -1572,6 +1617,7 @@ defined, then this should be a single row array</p>
 <li><p><strong>heterogeneous_map</strong> (<em>HeterogeneousMap</em><em> | </em><em>dict</em><em> | </em><em>None</em>)</p></li>
 <li><p><strong>heterogeneous_inflow_config_by_wd</strong> (<em>dict</em><em> | </em><em>None</em>)</p></li>
 <li><p><strong>heterogeneous_inflow_config</strong> (<em>dict</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>multidim_conditions</strong> (<em>dict</em><em> | </em><em>None</em>)</p></li>
 </ul>
 </dd>
 </dl>
@@ -1958,12 +2004,14 @@ wind_speeds (np.array): The wind speeds to calculate the frequencies for.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.wind_data.WindDataBase.unpack_for_reinitialize"><code class="docutils literal notranslate"><span class="pre">WindDataBase.unpack_for_reinitialize()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.wind_data.WindDataBase.unpack_freq"><code class="docutils literal notranslate"><span class="pre">WindDataBase.unpack_freq()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.wind_data.WindDataBase.unpack_value"><code class="docutils literal notranslate"><span class="pre">WindDataBase.unpack_value()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.wind_data.WindDataBase.unpack_multidim_conditions"><code class="docutils literal notranslate"><span class="pre">WindDataBase.unpack_multidim_conditions()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.wind_data.WindDataBase.check_heterogeneous_inflow_config"><code class="docutils literal notranslate"><span class="pre">WindDataBase.check_heterogeneous_inflow_config()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.wind_data.WindDataBase.set_layout"><code class="docutils literal notranslate"><span class="pre">WindDataBase.set_layout()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.wind_data.WindRose"><code class="docutils literal notranslate"><span class="pre">WindRose</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.wind_data.WindRose.unpack"><code class="docutils literal notranslate"><span class="pre">WindRose.unpack()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.wind_data.WindRose.unpack_multidim_conditions"><code class="docutils literal notranslate"><span class="pre">WindRose.unpack_multidim_conditions()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.wind_data.WindRose.aggregate"><code class="docutils literal notranslate"><span class="pre">WindRose.aggregate()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.wind_data.WindRose.downsample"><code class="docutils literal notranslate"><span class="pre">WindRose.downsample()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.wind_data.WindRose.resample_by_interpolation"><code class="docutils literal notranslate"><span class="pre">WindRose.resample_by_interpolation()</span></code></a></li>
@@ -1980,6 +2028,7 @@ wind_speeds (np.array): The wind speeds to calculate the frequencies for.</p>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.wind_data.WindTIRose"><code class="docutils literal notranslate"><span class="pre">WindTIRose</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.wind_data.WindTIRose.unpack"><code class="docutils literal notranslate"><span class="pre">WindTIRose.unpack()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.wind_data.WindTIRose.unpack_multidim_conditions"><code class="docutils literal notranslate"><span class="pre">WindTIRose.unpack_multidim_conditions()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.wind_data.WindTIRose.aggregate"><code class="docutils literal notranslate"><span class="pre">WindTIRose.aggregate()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.wind_data.WindTIRose.downsample"><code class="docutils literal notranslate"><span class="pre">WindTIRose.downsample()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.wind_data.WindTIRose.resample_by_interpolation"><code class="docutils literal notranslate"><span class="pre">WindTIRose.resample_by_interpolation()</span></code></a></li>

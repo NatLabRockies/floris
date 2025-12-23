@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1765401097676,
+  "lastUpdate": 1766455330864,
   "repoUrl": "https://github.com/NREL/floris",
   "entries": {
     "Python Benchmark with pytest-benchmark": [
@@ -3800,6 +3800,72 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.0004035411988444203",
             "extra": "mean: 8.362372369974764 msec\nrounds: 100"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "39596329+misi9170@users.noreply.github.com",
+            "name": "misi9170",
+            "username": "misi9170"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "bcfea64fd3fea6316e82fd33ce57553cd47260cc",
+          "message": "Allow `multidim_conditions` to be specified across multiple findices (#1152)\n\n* Working prototype for thrust\n\n* Add handling for power, axial_induction\n\n* Update examples to (optionally) remove looping\n\n* Add multidim_conditions handling to TimeSeries and FlorisModel\n\n* Add placeholders to WindRose\n\n* Add tests for wind data objects (WindRose currently fails\n\n* Check WRG and output WindRose have no multidim_conditions\n\n* FlorisModel integration of multiple conditions\n\n* Tests and code for ParFlorisModel\n\n* support new changes to multdim throuth UncFLORISmodel\n\n* Add utility for checking if dict all scalars\n\n* Tests for wind_ti_rose (may need work)\n\n* wind rose updates to meet tests\n\n* Return None if not defined\n\n* Pass through scalar multidim_conditions to improve performance\n\n* Use is_all_scalar_dict in ParFlorisModel\n\n* Explain new usage of multidim_conditions in script docstrings\n\n* Update mutlidim docs\n\n---------\n\nCo-authored-by: paulf81 <paul.fleming@nrel.gov>",
+          "timestamp": "2025-12-22T18:37:04-07:00",
+          "tree_id": "b23a1d53a2266459964c9f9a96dc126633ac2fb8",
+          "url": "https://github.com/NREL/floris/commit/bcfea64fd3fea6316e82fd33ce57553cd47260cc"
+        },
+        "date": 1766455328986,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_set",
+            "value": 41.40151565321404,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00047830570983586993",
+            "extra": "mean: 24.15370510529532 msec\nrounds: 38"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_run",
+            "value": 53.73337472589057,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00025920452673544397",
+            "extra": "mean: 18.61040750001816 msec\nrounds: 28"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_set",
+            "value": 24.74383437697115,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0012974373470448267",
+            "extra": "mean: 40.41410820833372 msec\nrounds: 24"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_run",
+            "value": 0.2839598810635041,
+            "unit": "iter/sec",
+            "range": "stddev: 0.01912503528719484",
+            "extra": "mean: 3.5216242387999954 sec\nrounds: 5"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_set",
+            "value": 35.39927877037824,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0018324409036004129",
+            "extra": "mean: 28.24916311110807 msec\nrounds: 36"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_run",
+            "value": 120.65585688404809,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00008760484772269538",
+            "extra": "mean: 8.288035291656115 msec\nrounds: 96"
           }
         ]
       }

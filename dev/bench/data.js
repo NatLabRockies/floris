@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1766455513100,
+  "lastUpdate": 1766517861414,
   "repoUrl": "https://github.com/NREL/floris",
   "entries": {
     "Python Benchmark with pytest-benchmark": [
@@ -3932,6 +3932,72 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.00006442988484256864",
             "extra": "mean: 8.225135494944649 msec\nrounds: 99"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "39596329+misi9170@users.noreply.github.com",
+            "name": "misi9170",
+            "username": "misi9170"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "e123aed8a7d65e21aefd2e5fb364dceef0882069",
+          "message": "[BUGFIX] Wind directions steps check (#1165)\n\n* Write test\n\n* Switch to allclose",
+          "timestamp": "2025-12-23T11:59:50-07:00",
+          "tree_id": "0bf3bc4674db6d9f69124b7d1bf93de8fb1286b7",
+          "url": "https://github.com/NREL/floris/commit/e123aed8a7d65e21aefd2e5fb364dceef0882069"
+        },
+        "date": 1766517859768,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_set",
+            "value": 42.694187043601865,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0003646542151595682",
+            "extra": "mean: 23.422392350011023 msec\nrounds: 40"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_run",
+            "value": 56.326005097336896,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00012861199174852932",
+            "extra": "mean: 17.75378882759218 msec\nrounds: 29"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_set",
+            "value": 26.0622725309567,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0009635242737453402",
+            "extra": "mean: 38.36963944000672 msec\nrounds: 25"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_run",
+            "value": 0.2941205667417858,
+            "unit": "iter/sec",
+            "range": "stddev: 0.015723875282629713",
+            "extra": "mean: 3.399966248800001 sec\nrounds: 5"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_set",
+            "value": 36.84463820886252,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00035256504481358334",
+            "extra": "mean: 27.14099116216759 msec\nrounds: 37"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_run",
+            "value": 120.8599991551094,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00008457905823650965",
+            "extra": "mean: 8.27403613263822 msec\nrounds: 98"
           }
         ]
       }

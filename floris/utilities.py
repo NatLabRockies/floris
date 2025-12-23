@@ -127,7 +127,7 @@ def check_and_identify_step_size(wind_directions):
             raise ValueError("wind_directions must be evenly spaced")
 
     else:
-        if np.all(steps == steps[0]):
+        if np.allclose(steps, steps[0]):
             return steps[0]
 
         # If all but one of the steps are the same

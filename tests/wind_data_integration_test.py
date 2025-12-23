@@ -114,6 +114,21 @@ def test_wind_rose_init():
     with pytest.raises(ValueError):
         WindRose(wind_directions, wind_speeds, 0.06, np.ones((3, 3)))
 
+    # Test that instantiating with non-integer wind directions and wind speeds works
+    wind_directions = np.array([270.0, 280.0, 290.0])
+    wind_speeds = np.array([6.0, 7.0])
+    _ = WindRose(wind_directions, wind_speeds, ti_table=0.06)
+
+    wind_directions = np.array([270.5, 280.5, 290.5])
+    wind_speeds = np.array([6.5, 7.5])
+    _ = WindRose(wind_directions, wind_speeds, ti_table=0.06)
+
+    # Test that instantiating with non-integer steps works
+    _ = WindRose(
+        wind_directions=np.linspace(0.0, 360.0, 100, endpoint=False),
+        wind_speeds=np.array([5.0]),
+        ti_table=0.06,
+    )
 
 def test_wind_rose_grid():
     wind_directions = np.array([270, 280, 290])
@@ -798,6 +813,16 @@ def test_wind_ti_rose_init():
     # match the wind directions and wind speeds
     with pytest.raises(ValueError):
         WindTIRose(wind_directions, wind_speeds, turbulence_intensities, np.ones((3, 3, 3)))
+
+    # Test that instantiating with non-integer wind directions and wind speeds works
+    _ = WindTIRose(wind_directions+0.5, wind_speeds+0.2, turbulence_intensities)
+
+    # Test that instantiating with non-integer steps works
+    _ = WindTIRose(
+        wind_directions=np.linspace(0.0, 360.0, 100, endpoint=False),
+        wind_speeds=np.array([5.0]),
+        turbulence_intensities=turbulence_intensities,
+    )
 
 
 def test_wind_ti_rose_grid():

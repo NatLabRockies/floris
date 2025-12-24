@@ -529,9 +529,9 @@ def cc_solver(
             + (flow_field.u_initial_sorted - turb_u_wake) * mask2
         )
 
-        turb_avg_vels = average_velocity(turb_inflow_field)
+        turb_avg_vels = average_velocity(turb_inflow_field)[:, :, None, None]
         turb_Cts = thrust_coefficient(
-            turb_avg_vels[:, :, None, None],
+            turb_avg_vels,
             flow_field.turbulence_intensity_field_sorted,
             flow_field.air_density,
             farm.yaw_angles_sorted,
@@ -550,7 +550,7 @@ def cc_solver(
         )
         turb_Cts = turb_Cts[:, :, None, None]
         turb_aIs = axial_induction(
-            turb_avg_vels[:, :, None, None],
+            turb_avg_vels,
             flow_field.turbulence_intensity_field_sorted,
             flow_field.air_density,
             farm.yaw_angles_sorted,

@@ -50,22 +50,27 @@ class FlorisModel(LoggingManager):
     underlying methods within the FLORIS framework. It is meant to act as a
     single entry-point for the majority of users, simplifying the calls to
     methods on objects within FLORIS.
-
-    Args:
-        configuration (:py:obj:`dict`): The Floris configuration dictionary or YAML file.
-            The configuration should have the following inputs specified.
-                - **flow_field**: See `floris.simulation.flow_field.FlowField` for more details.
-                - **farm**: See `floris.simulation.farm.Farm` for more details.
-                - **turbine**: See `floris.simulation.turbine.Turbine` for more details.
-                - **wake**: See `floris.simulation.wake.WakeManager` for more details.
-                - **logging**: See `floris.simulation.core.Core` for more details.
     """
 
     @staticmethod
     def get_defaults() -> dict:
+        """
+        Load the default FLORIS configuration dictionary.
+
+        Returns:
+            dict: The default FLORIS configuration dictionary.
+        """
         return copy.deepcopy(load_yaml(Path(__file__).parent / "default_inputs.yaml"))
 
     def __init__(self, configuration: dict | str | Path):
+        """
+        Initialize the FlorisModel object.
+
+        Args:
+            configuration: The Floris configuration dictionary or path to the input YAML file.
+                See floris.default_inputs.yaml for an example of the configuration dictionary
+                or visit https://nrel.github.io/floris/input_reference_main.html.
+        """
 
         if configuration == "defaults":
             configuration = FlorisModel.get_defaults()

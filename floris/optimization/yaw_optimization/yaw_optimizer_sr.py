@@ -13,6 +13,11 @@ from .yaw_optimization_base import YawOptimization
 
 
 class YawOptimizationSR(YawOptimization, LoggingManager):
+    """
+    Optimize yaw angles using the Serial Refine (SR) optimization method.
+
+    See :cite:`fleming_sr_2022` for full details on the SR method.
+    """
     def __init__(
         self,
         fmodel,
@@ -28,6 +33,22 @@ class YawOptimizationSR(YawOptimization, LoggingManager):
         """
         Instantiate YawOptimizationSR object with a FlorisModel object
         and assign parameter values.
+
+        Args:
+            fmodel: An instantiated FlorisModel object.
+            minimum_yaw_angle: Minimum yaw angle for all turbines [degrees]. Default is 0.0.
+            maximum_yaw_angle: Maximum yaw angle for all turbines [degrees]. Default is 25.0.
+            yaw_angles_baseline: TODO: Are these used?
+            x0: TODO: Are these used?
+            Ny_passes: List of integers defining the number of yaw angles to evaluate
+                per turbine in each pass of the SR algorithm. The length of the list
+                defines the number of passes. The first entry can be even or odd,
+                but all further entries must be even. Default is [5, 4].
+            turbine_weights: Weights for each turbine when calculating the
+                weighted power output during optimization. If None, all turbines
+                are weighted equally. Default is None.
+            exclude_downstream_turbines: TODO: Check this is used.
+            verify_convergence: TODO: Check this is used.
         """
 
         # Initialize base class
@@ -57,14 +78,6 @@ class YawOptimizationSR(YawOptimization, LoggingManager):
                     "The second and further entries of Ny_passes must be even numbers. "
                     "This is to ensure the same yaw angles are not evaluated twice between passes."
                 )
-
-        # # Set baseline and optimization settings
-        # if reduce_ngrid:
-        #     for ti in range(self.nturbs):
-        #         # Force number of grid points to 2
-        #         self.fmodel.core.farm.turbines[ti].ngrid = 2
-        #         self.fmodel.core.farm.turbines[ti].initialize_turbine()
-        #         print("Reducing ngrid. Unsure if this functionality works!")
 
         # Save optimization choices to self
         self.Ny_passes = Ny_passes
@@ -224,7 +237,7 @@ class YawOptimizationSR(YawOptimization, LoggingManager):
     def optimize(self, print_progress=True):
         """
         Find the yaw angles that maximize the power production for every wind direction,
-        wind speed and turbulence intensity.
+        wind speed and turbulence intensity using the SR optimization algorithm.
         """
         self.print_progress = print_progress
 

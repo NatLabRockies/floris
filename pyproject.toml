@@ -46,17 +46,17 @@ dependencies = [
 docs = [
     "jupyter-book~=1.0",
     "sphinx-book-theme~=1.0",
-    "sphinx-autodoc-typehints~=2.0",
+    "sphinx-autodoc-typehints>=2,<4",
     "sphinxcontrib-autoyaml~=1.0",
     "sphinxcontrib.mermaid~=1.0",
     "bokeh~=3.7",
 ]
 develop = [
-    "pytest~=8.0",
+    "pytest>=8,<10",
     "pytest-benchmark~=5.1",
     "pre-commit~=4.0",
     "ruff~=0.9",
-    "isort~=5.0"
+    "isort>=5,<8"
 ]
 
 [tool.setuptools.packages.find]

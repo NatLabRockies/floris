@@ -5,6 +5,8 @@ updates:
   target-branch: "develop"
   schedule:
     interval: "monthly"
+  labels:
+    - "package"
   ignore:
     - dependency-name: "*"
       update-types: ["version-update:semver-minor", "version-update:semver-patch"]

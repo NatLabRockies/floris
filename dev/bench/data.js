@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1767114559983,
+  "lastUpdate": 1767734988280,
   "repoUrl": "https://github.com/NREL/floris",
   "entries": {
     "Python Benchmark with pytest-benchmark": [
@@ -4130,6 +4130,72 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.0004218634935920517",
             "extra": "mean: 8.46059428769802 msec\nrounds: 73"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "michael.sinner@nrel.gov",
+            "name": "misi9170",
+            "username": "misi9170"
+          },
+          "committer": {
+            "email": "michael.sinner@nrel.gov",
+            "name": "misi9170",
+            "username": "misi9170"
+          },
+          "distinct": true,
+          "id": "bb9d6d7334ccda6f5c4bd40a1f15739891b20c19",
+          "message": "Specify ruamel.yaml version",
+          "timestamp": "2026-01-06T14:04:32-07:00",
+          "tree_id": "59f12108f4a56113f40e393b61fe9c4795a86c45",
+          "url": "https://github.com/NREL/floris/commit/bb9d6d7334ccda6f5c4bd40a1f15739891b20c19"
+        },
+        "date": 1767734985964,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_set",
+            "value": 42.55279926976112,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00015089042837265472",
+            "extra": "mean: 23.500216605270907 msec\nrounds: 38"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_run",
+            "value": 54.92950150791902,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00010145717014494954",
+            "extra": "mean: 18.20515337929715 msec\nrounds: 29"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_set",
+            "value": 25.88518991168021,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0010242478110436752",
+            "extra": "mean: 38.63212916003249 msec\nrounds: 25"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_run",
+            "value": 0.29153656930349076,
+            "unit": "iter/sec",
+            "range": "stddev: 0.022411082403791385",
+            "extra": "mean: 3.430101418800041 sec\nrounds: 5"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_set",
+            "value": 36.67833201848058,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0010095018013494157",
+            "extra": "mean: 27.26405332434813 msec\nrounds: 37"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_run",
+            "value": 119.7375553376458,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0003248869770011784",
+            "extra": "mean: 8.35159860396446 msec\nrounds: 101"
           }
         ]
       }

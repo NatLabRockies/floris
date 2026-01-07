@@ -1110,11 +1110,11 @@ class FlorisModel(LoggingManager):
     ):
         """
         Shortcut method to instantiate a :py:class:`~.tools.cut_plane.CutPlane`
-        object containing the velocity field in a horizontal plane cut through
-        the simulation domain at a specific height.
+        object containing the velocity field in a vertical plane cut through
+        the simulation domain at a specific downstream (x) distance.
 
         Args:
-            downstream_dist (float): Distance downstream of turbines to compute.
+            downstream_dist (float): Distance downstream to compute.
             y_resolution (float, optional): Output array resolution.
                 Defaults to 200 points.
             z_resolution (float, optional): Output array resolution.
@@ -1126,7 +1126,7 @@ class FlorisModel(LoggingManager):
             finder_for_viz (int, optional): Index of the condition to visualize.
         Returns:
             :py:class:`~.tools.cut_plane.CutPlane`: containing values
-            of x, y, u, v, w
+            of y, z, u, v, w
         """
         if self.n_findex > 1 and findex_for_viz is None:
             self.logger.warning(
@@ -1246,11 +1246,11 @@ class FlorisModel(LoggingManager):
     ):
         """
         Shortcut method to instantiate a :py:class:`~.tools.cut_plane.CutPlane`
-        object containing the velocity field in a horizontal plane cut through
-        the simulation domain at a specific height.
+        object containing the velocity field in a vertical plane cut through
+        the simulation domain at a specific cross-stream (y) distance.
 
         Args:
-            height (float): Height of cut plane. Defaults to Hub-height.
+            crossstream_dist (float): Cross-stream distance to compute.
             x_resolution (float, optional): Output array resolution.
                 Defaults to 200 points.
             z_resolution (float, optional): Output array resolution.
@@ -1264,7 +1264,7 @@ class FlorisModel(LoggingManager):
 
         Returns:
             :py:class:`~.tools.cut_plane.CutPlane`: containing values
-            of x, y, u, v, w
+            of x, z, u, v, w
         """
         if self.n_findex > 1 and findex_for_viz is None:
             self.logger.warning(
@@ -1291,7 +1291,7 @@ class FlorisModel(LoggingManager):
 
         # Get the points of data in a dataframe
         # TODO this just seems to be flattening and storing the data in a df; is this necessary?
-        # It seems the biggest depenedcy is on CutPlane and the subsequent visualization tools.
+        # It seems the biggest dependency is on CutPlane and the subsequent visualization tools.
         df = fmodel_viz.get_plane_of_points(
             normal_vector="y",
             planar_coordinate=crossstream_dist,

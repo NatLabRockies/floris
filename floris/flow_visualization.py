@@ -97,6 +97,14 @@ def visualize_cut_plane(
     """
     Generate pseudocolor mesh plot of the cut_plane.
 
+    Horizontal cut planes are plotted with "North" pointing up the page (assuming the
+    layout is defined with x pointing East and y pointing North).
+
+    y planes are plotted with flows coming from the left (that is, the layout is rotated
+    such that the wind is coming from the left).
+
+    Cross planes are plotted "looking downstream".
+
     Args:
         cut_plane (:py:class:`~.tools.cut_plane.CutPlane`): 2D
             plane through wind plant.

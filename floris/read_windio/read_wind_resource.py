@@ -315,7 +315,7 @@ def extract_time_series(wr: Dict[str, Any]) -> Dict[str, Any]:
 
     if "turbulence_intensity" not in wr_flat:
         raise ValueError("Time series wind resource requires 'turbulence_intensity' field.")
-    turbulence_intensities = np.asarray(wr_flat["turbulence_intensity"])
+    turbulence_intensities = np.asarray(wr_flat["turbulence_intensity"]) 
     
     # Extract optional fields
     if "shear" in wr_flat:
@@ -409,11 +409,11 @@ def extract_probability_distribution(wr: Dict[str, Any]) -> Dict[str, Any]:
     wind_speeds = wr_flat["wind_speed"]
 
     if "turbulence_intensity" in wr['coord']:
-        has_ti = True
+        has_ti_dim = True
         turbulence_intensities = wr_flat["turbulence_intensity"]
     else:
-        has_ti = False
-        turbulence_intensities = None
+        has_ti_dim = False
+        turbulence_intensities = wr['data'].get("turbulence_intensity", None)
 
     if "probability" not in wr['data']:
         raise ValueError("Probability distribution wind resource requires 'probability' data field.")
@@ -422,7 +422,7 @@ def extract_probability_distribution(wr: Dict[str, Any]) -> Dict[str, Any]:
     ALLOWED_DIMS = (
         ("wind_direction", (len(wind_directions),)),
         ("wind_speed", (len(wind_speeds),)),
-        ("turbulence_intensity", (len(turbulence_intensities),) if turbulence_intensities is has_ti else ()),
+        ("turbulence_intensity", (len(turbulence_intensities),) if turbulence_intensities is has_ti_dim else ()),
     )
     wr_flat['probability'] = validate_data(wr_flat, 'probability', ALLOWED_DIMS)
     
@@ -432,7 +432,7 @@ def extract_probability_distribution(wr: Dict[str, Any]) -> Dict[str, Any]:
     prob_dims = prob.dims
     
     desired_dims = ("wind_direction", "wind_speed")
-    if has_ti:
+    if has_ti_dim:
         desired_dims += ("turbulence_intensity",)
 
     if prob_dims != desired_dims:
@@ -443,7 +443,7 @@ def extract_probability_distribution(wr: Dict[str, Any]) -> Dict[str, Any]:
     else:
         prob_data = np.asarray(wr_flat['probability'])
     
-    if turbulence_intensities is not None:
+    if has_ti_dim:
         wind_rose = WindTIRose(
             wind_directions=wind_directions,
             wind_speeds=wind_speeds,
@@ -451,11 +451,21 @@ def extract_probability_distribution(wr: Dict[str, Any]) -> Dict[str, Any]:
             freq_table=wr_flat['probability']
         )
     else:
-        print("WARNING: TI missing! Creating WindRose with default TI=0.06.")
+        if turbulence_intensities is None:
+            print("WARNING: TI missing! Creating WindRose with default TI=0.06.")
+            turbulence_intensities = 0.06
+
+        if isinstance(turbulence_intensities, np.ndarray):
+            if turbulence_intensities.size != 1:
+                raise ValueError(
+                    "Turbulence intensity must be a single value when not provided as a coordinate."
+                )
+            turbulence_intensities = turbulence_intensities[()]
+        
         wind_rose = WindRose(
             wind_directions=wind_directions,
             wind_speeds=wind_speeds,
-            ti_table=0.06,
+            ti_table=turbulence_intensities,
             freq_table=wr_flat['probability']
         )
     

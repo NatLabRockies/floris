@@ -144,11 +144,6 @@ WAKE_MODEL_MAPPING = {
             "floris_name": "crespo_hernandez",
             "parameters": {
                 "coefficients": None,  # WindIO uses generic coefficients array
-                # FLORIS uses specific named parameters:
-                "initial": "initial",
-                "constant": "constant",
-                "ai": "ai",
-                "downstream": "downstream",
             }
         },
         "GCL": {
@@ -397,10 +392,6 @@ def _extract_superposition_model(analysis: TrackedDict) -> Dict[str, Any]:
     
     # Get ws_superposition for FLORIS combination_model
     ws_model_name = superposition_model.get("ws_superposition") if "ws_superposition" in superposition_model else None
-    
-    # Mark ti_superposition as visited (not used in FLORIS)
-    if "ti_superposition" in superposition_model:
-        _ = superposition_model["ti_superposition"]
     
     if not ws_model_name:
         return {}

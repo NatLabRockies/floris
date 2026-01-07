@@ -42,6 +42,7 @@ from floris.utilities import (
     nested_get,
     nested_set,
     print_nested_dict,
+    update_nested_dict,
 )
 from floris.wind_data import (
     TimeSeries,
@@ -1984,7 +1985,7 @@ class FlorisModel(LoggingManager):
         # Wake model parameters are set once and for all 
         from .read_windio import read_wake_model
         wake_model_floris = read_wake_model(model_attrs_windio)
-        default_param.update(**wake_model_floris)
+        update_nested_dict(default_param, wake_model_floris)
 
         # Instantiate FlorisModel
         fmodel = FlorisModel(default_param)
@@ -2038,4 +2039,6 @@ class FlorisModel(LoggingManager):
         self._reset_windio_metadata(category="wind_farm")
         self._windio_metadata["wind_farm"] = wind_farm_floris.pop('_metadata', {})
         
-        self.set(**wind_farm_floris)
+        # Set reference height to mean hub height 
+        hub_heights = [t["hub_height"] for t in wind_farm_floris["turbine_type"]]
+        self.set(**wind_farm_floris, reference_wind_height=np.mean(hub_heights))

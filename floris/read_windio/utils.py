@@ -146,7 +146,7 @@ class TrackedDict(UserDict, LoggingManager):
                     else:
                         self.data[key].close(issue_warning=issue_warning)
 
-                elif (issue_warning):
+                elif (issue_warning) and (key not in self._read_keys):
                     unread_data.append(key)
 
             if unread_data:

@@ -10,6 +10,8 @@ class SOSFS(BaseModel):
     """
     SOSFS uses sum of squares freestream superposition to combine the
     wake velocity deficits to the base flow field.
+
+    For more information, refer to :cite:`katic_sos_1986`.
     """
 
     def prepare_function(self) -> dict:

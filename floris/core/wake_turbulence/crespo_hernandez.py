@@ -36,7 +36,7 @@ class CrespoHernandez(BaseModel):
     is noted in :cite:`zehtabiyan_rezaie_CH_2023`. Moreover, :cite:`zehtabiyan_rezaie_CH_2023`
     argues that positive values for this exponent are not representative of the physical
     phenomena occurring. For more details, see https://github.com/NREL/floris/issues/773.
-    None-the-less, the default value here is set to 0.1 for consistency with previous
+    Nonetheless, the default value here is set to 0.1 for consistency with previous
     FLORIS versions. The default value may be updated in a future release.
 
     Args:

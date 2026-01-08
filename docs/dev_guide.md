@@ -1,6 +1,6 @@
 # Developer's Guide
 
-FLORIS is maintained at NREL's National Wind Technology Center.
+FLORIS is maintained by NLR.
 We are excited about community contribution, and this page outlines
 processes and procedures to follow when contributing to the
 source code. For technical questions regarding FLORIS usage, please
@@ -47,7 +47,7 @@ the [GitHub repository](http://github.com/nrel/floris). There,
 [pull requests](http://github.com/nrel/floris/pulls) are managed,
 questions and ideas are [discussed](https://github.com/NREL/floris/discussions),
 and [new versions](http://github.com/nrel/floris/releases)
-are released. It is the best mechanism for engaging with the NREL team
+are released. It is the best mechanism for engaging with the NLR team
 and other developers throughout the FLORIS community.
 
 FLORIS development should follow "Git Flow" when interacting with the GitHub
@@ -58,7 +58,7 @@ process is detailed nicely [here](http://nvie.com/posts/a-successful-git-branchi
 
 ### Syncing a local repository with NREL/FLORIS
 The "main" FLORIS repository is continuously updated along with ongoing
-research at NREL. From time to time, developers of FLORIS using their own
+research at NLR. From time to time, developers of FLORIS using their own
 "local" repositories (versions of the software that exist on a local computer)
 may want to sync with NREL/FLORIS. To do this, use the following git commands:
 
@@ -290,7 +290,7 @@ Be sure to complete each step in the sequence as described.
 
 ## Deploying to pip
 
-Generally, only NREL developers will have appropriate permissions to deploy
+Generally, only NLR developers will have appropriate permissions to deploy
 FLORIS updates. When the time comes, here is a great reference on doing it
 is available [here](https://medium.freecodecamp.org/how-to-publish-a-pyton-package-on-pypi-a89e9522ce24).
 

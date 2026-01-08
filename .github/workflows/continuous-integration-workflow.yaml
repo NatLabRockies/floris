@@ -8,8 +8,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
-        os: [ubuntu-latest] #, macos-latest, windows-latest]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+        os: [ubuntu-latest, macos-latest, windows-latest]
       fail-fast: False
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
@@ -25,11 +25,21 @@ jobs:
         python -m pip install --upgrade pip
         pip install ".[develop]"
     - uses: pre-commit/action@v3.0.0
-    - name: Run tests
-      if: success() || failure()  # Run this step even if the linting step fails
+    - name: Run tests (ubuntu, macos)
+      if: matrix.os != 'windows-latest' && (success() || failure())  # Run this step even if the linting step fails
       run: |
         mkdir -p temp1/temp2/temp3
         cp -rL tests temp1/temp2/temp3/.
+        cd temp1/temp2/temp3/
+
+        # -rA displays the captured output for all tests after they're run
+        # See the docs: https://doc.pytest.org/en/latest/reference/reference.html#command-line-flags
+        pytest -rA tests/ --ignore tests/timing.py --ignore tests/profiling.py
+    - name: Run tests (windows)
+      if: matrix.os == 'windows-latest' && (success() || failure())  # Run this step even if the linting step fails
+      run: |
+        mkdir -p temp1/temp2/temp3
+        cp -r tests temp1/temp2/temp3/.
         cd temp1/temp2/temp3/
 
         # -rA displays the captured output for all tests after they're run
@@ -44,7 +54,7 @@ jobs:
         pip install pytest-cov
         pytest --cov=./ --cov-report=xml tests/ --ignore tests/reg_tests --ignore tests/timing.py --ignore tests/profiling.py
     - name: Upload coverage to Codecov
-      if: ${{ env.CODECOV_TOKEN }}  # Don't attempt to upload if the codecov token is not configured
+      if: ${{ matrix.os == 'ubuntu-latest' && env.CODECOV_TOKEN }}  # Don't attempt to upload if the codecov token is not configured
       uses: codecov/codecov-action@v3
       with:
         token: ${{ env.CODECOV_TOKEN }}

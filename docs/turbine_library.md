@@ -35,6 +35,15 @@ Specified as `"iea_10MW"` in the `turbine_type` field of the FLORIS input dictio
 The IEA 10MW turbine is used in the following examples:
 - examples/examples_turbine/002_multiple_turbine_types.py
 
+## IEA 22MW reference wind turbine
+FLORIS representation of the IEA 22MW reference wind turbine {cite:t}`zahle_IEA22MW_2024`. Data
+generated using OpenFAST v4.1.2 and ROSCO v2.10.2. See
+[pull request](https://github.com/NREL/floris/pull/1146) for full OpenFAST and ROSCO input files.
+Specified as `"iea_22MW"` in the `turbine_type` field of the FLORIS input dictionary.
+
+The IEA 22MW is demonstrated, alongside other reference wind turbines, in:
+- examples/examples_turbine/001_reference_turbines.py
+
 ## IEA 15MW multidimensional
 
 Fictional IEA 15MW turbine model used to demonstrate the use of multidimensional power and thrust
@@ -47,10 +56,12 @@ This fictional turbine model is not currently used in examples.
 
 ## IEA 15MW floating, multidimensional
 
-The same as the multidimensional IEA 15MW turbine model above, but with an additional fictional
-floating platform tilt table. This model is used to demonstrate the floating wind turbine capabilities
+The same as the multidimensional IEA 15MW turbine model above, but with an additional floating
+platform tilt table. This model is used to demonstrate the floating wind turbine capabilities
 in FLORIS. Specified as `"iea_15MW_floating_multi_dim"` in the `turbine_type` field of the FLORIS input
-dictionary. This data should be treated as fictional and for demonstrative purposes only.
+dictionary. The data for the floating tilt table was generated using OpenFAST with the UMaine
+VolturnUS-S Reference Platform by Sam Kaufman-Martin, as seen
+[here](https://github.com/FLOWMAS-EERC/IEA15_FOWT/blob/main/iea_15MW_floating_power-from-fixed.yaml).
 
 This fictional turbine model is used in the following examples:
 - examples/examples_multidim/001_multi_dimensional_cp_ct.py

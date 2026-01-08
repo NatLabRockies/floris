@@ -2,8 +2,8 @@
 
 FLORIS is a controls-focused wind farm simulation software incorporating
 steady-state engineering wake models into a performance-focused Python
-framework. It has been in active development at NREL since 2013 and the latest
-release is [FLORIS v.4.5](https://github.com/NREL/floris/releases/latest).
+framework. It has been in active development at NLR since 2013 and the latest
+release is [FLORIS v.4.6](https://github.com/NREL/floris/releases/latest).
 Online documentation is available at https://nrel.github.io/floris.
 
 The software is in active development and engagement with the development team
@@ -14,7 +14,7 @@ the conversation in [GitHub Discussions](https://github.com/NREL/floris/discussi
 ## WETO software
 
 FLORIS is primarily developed with the support from the U.S. Department of Energy and
-is part of the `WETO Software Stack <https://nrel.github.io/WETOStack>`_.
+is part of the [WETO Software Stack](https://nrel.github.io/WETOStack).
 For more information and other integrated modeling software, see:
 
 - [Portfolio Overview](https://nrel.github.io/WETOStack/portfolio_analysis/overview.html)
@@ -68,7 +68,7 @@ and importing FLORIS:
 Help on package floris:
 
 NAME
-    floris - # Copyright 2024 NREL
+    floris
 
 PACKAGE CONTENTS
     convert_floris_input_v3_to_v4
@@ -89,7 +89,7 @@ PACKAGE CONTENTS
     wind_data
 
 VERSION
-    4.5
+    4.6
 
 FILE
     ~/floris/floris/__init__.py
@@ -156,7 +156,7 @@ space to show off the things you are doing with FLORIS.
 
 BSD 3-Clause License
 
-Copyright (c) 2024, Alliance for Sustainable Energy LLC, All rights reserved.
+Copyright (c) 2025, Alliance for Energy Innovation LLC, All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted
 provided that the following conditions are met:

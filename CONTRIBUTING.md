@@ -9,7 +9,7 @@ This document provides a high-level overview of how you can get involved.
 
 Have a question? Rather than opening an issue directly, please ask questions
 or post comments in [Q&A Discussions](https://github.com/NREL/floris/discussions/categories/q-a).
-The NREL team or other members of the community will assist. Your well-worded
+The NLR team or other members of the community will assist. Your well-worded
 question will serve as a resource to others searching for help.
 
 

@@ -1,6 +1,3 @@
-
-from __future__ import annotations
-
 import copy
 import inspect
 from pathlib import Path
@@ -140,7 +137,7 @@ class FlorisModel(LoggingManager):
         turbine_type: list | None = None,
         turbine_library_path: str | Path | None = None,
         solver_settings: dict | None = None,
-        heterogeneous_inflow_config=None,
+        heterogeneous_inflow_config: dict | None = None,
         wind_data: type[WindDataBase] | None = None,
         multidim_conditions: dict | None = None,
     ):
@@ -170,7 +167,7 @@ class FlorisModel(LoggingManager):
             turbine_library_path (str | Path | None, optional): Path to the turbine library.
                 Defaults to None.
             solver_settings (dict | None, optional): Solver settings. Defaults to None.
-            heterogeneous_inflow_config (None, optional): heterogeneous inflow configuration.
+            heterogeneous_inflow_config (dict | None, optional): heterogeneous inflow configuration.
                 Defaults to None.
             wind_data (type[WindDataBase] | None, optional): Wind data. Defaults to None.
         """
@@ -232,6 +229,19 @@ class FlorisModel(LoggingManager):
                 turbulence_intensities,
                 heterogeneous_inflow_config,
             ) = wind_data.unpack_for_reinitialize()
+
+            # For backwards compatibility, multidim_conditions are unpacked separately.
+            # multidim_conditions may be included in unpack_for_reinitialize in a future release.
+            if (multidim_conditions is not None
+                and wind_data.unpack_multidim_conditions() is not None):
+                self.logger.warning(
+                    "multidim_conditions passed to reinitialize() and also found in "
+                    "wind_data. Using multidim_conditions from wind_data."
+                )
+                multidim_conditions = wind_data.unpack_multidim_conditions()
+            elif wind_data.unpack_multidim_conditions() is not None:
+                multidim_conditions = wind_data.unpack_multidim_conditions()
+
             self._wind_data = wind_data
 
         ## FlowField
@@ -396,7 +406,7 @@ class FlorisModel(LoggingManager):
         turbine_type: list | None = None,
         turbine_library_path: str | Path | None = None,
         solver_settings: dict | None = None,
-        heterogeneous_inflow_config=None,
+        heterogeneous_inflow_config: dict | None = None,
         wind_data: type[WindDataBase] | None = None,
         yaw_angles: NDArrayFloat | list[float] | None = None,
         power_setpoints: NDArrayFloat | list[float] | list[float, None] | None = None,
@@ -428,7 +438,7 @@ class FlorisModel(LoggingManager):
             turbine_library_path (str | Path | None, optional): Path to the turbine library.
                 Defaults to None.
             solver_settings (dict | None, optional): Solver settings. Defaults to None.
-            heterogeneous_inflow_config (None, optional): heterogeneous inflow configuration.
+            heterogeneous_inflow_config (dict | None, optional): heterogeneous inflow configuration.
                 Defaults to None.
             wind_data (type[WindDataBase] | None, optional): Wind data. Defaults to None.
             yaw_angles (NDArrayFloat | list[float] | None, optional): Turbine yaw angles.

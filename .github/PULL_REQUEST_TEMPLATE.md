@@ -64,7 +64,7 @@ Add the results from unit tests and regression tests here along with justificati
 -->
 
 <!--
-__ For NREL use __
+__ For NLR use __
 Release checklist:
 - Update the version in
     - [ ] README.md (appears twice in README.md)

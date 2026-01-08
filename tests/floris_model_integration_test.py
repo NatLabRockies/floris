@@ -984,10 +984,35 @@ def test_set_multidim():
         turbine_type=[turbine],
         turbine_library_path=Path(__file__).resolve().parent / "data/"
     )
-
     with pytest.raises(ValueError):
         fmodel.set(multidim_conditions={"TI": 0.06, "Tp": 8.0})
         fmodel.run()
-
     fmodel.set(multidim_conditions={"TI": 0.06})
     fmodel.run()
+
+    # Test multiple conditions at once
+    fmodel.set(
+        wind_speeds=[8.0, 8.0],
+        wind_directions=[270.0, 270.0],
+        turbulence_intensities=[0.06, 0.06],
+        multidim_conditions={"TI": [0.06, 0.08, 0.09]} # Too many
+    )
+    with pytest.raises(ValueError):
+        fmodel.run()
+
+    # Correct number
+    fmodel.set(multidim_conditions={"TI": [0.06, 0.08]})
+    fmodel.run()
+    powers_multi = fmodel.get_turbine_powers()
+
+    # Loop over conditions and check individuals
+    for i, ti in enumerate([0.06, 0.08]):
+        fmodel.set(
+            wind_speeds=[8.0],
+            wind_directions=[270.0],
+            turbulence_intensities=[0.06],
+            multidim_conditions={"TI": ti}
+        )
+        fmodel.run()
+        powers_single = fmodel.get_turbine_powers()
+        assert np.array_equal(powers_single, powers_multi[i:i+1,:])

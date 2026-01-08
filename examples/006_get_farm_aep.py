@@ -13,7 +13,6 @@ If a wind_data object is provided to the model, the expected power and AEP
 """
 
 import numpy as np
-import pandas as pd
 
 from floris import (
     FlorisModel,
@@ -26,16 +25,16 @@ fmodel = FlorisModel("inputs/gch.yaml")
 
 
 # Set to a 3-turbine layout
-D = 126.
-fmodel.set(layout_x=[0.0, 5 * D, 10 * D],
-            layout_y=[0.0, 0.0, 0.0])
+D = 126.0
+fmodel.set(layout_x=[0.0, 5 * D, 10 * D], layout_y=[0.0, 0.0, 0.0])
 
 # Using TimeSeries
 
 # Randomly generated a time series with time steps = 365 * 24
 N = 365 * 24
-wind_directions = np.random.uniform(0, 360, N)
-wind_speeds = np.random.uniform(5, 25, N)
+rng = np.random.default_rng(0)
+wind_directions = rng.uniform(0, 360, N)
+wind_speeds = rng.uniform(5, 25, N)
 
 # Set up a time series
 time_series = TimeSeries(

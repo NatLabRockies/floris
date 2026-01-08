@@ -14,7 +14,6 @@ This example demonstrates the use of wind data objects in FLORIS:
 
 """
 
-
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -43,10 +42,11 @@ from floris import (
 
 # Generate wind speeds, directions, turbulence intensities, and values via random signals
 N = 100
-wind_speeds = 8 + 2 * np.random.randn(N)
-wind_directions = 270 + 30 * np.random.randn(N)
-turbulence_intensities = 0.06 + 0.02 * np.random.randn(N)
-values = 25 + 10 * np.random.randn(N)
+rng = np.random.default_rng(0)
+wind_speeds = 8 + 2 * rng.standard_normal(N)
+wind_directions = 270 + 30 * rng.standard_normal(N)
+turbulence_intensities = 0.06 + 0.02 * rng.standard_normal(N)
+values = 25 + 10 * rng.standard_normal(N)
 
 time_series = TimeSeries(
     wind_directions=wind_directions,
@@ -65,7 +65,7 @@ wind_speeds = np.arange(4, 20, 2.0)
 ti_table = 0.06 * np.ones((len(wind_directions), len(wind_speeds)))
 
 # Make value table 25 for all wind directions and speeds
-value_table =25 * np.ones((len(wind_directions), len(wind_speeds)))
+value_table = 25 * np.ones((len(wind_directions), len(wind_speeds)))
 
 # Uniform frequency
 freq_table = np.ones((len(wind_directions), len(wind_speeds)))
@@ -87,7 +87,7 @@ turbulence_intensities = np.arange(0.05, 0.15, 0.01)
 freq_table = np.ones((len(wind_directions), len(wind_speeds), len(turbulence_intensities)))
 
 # Uniform value
-value_table = 25* np.ones((len(wind_directions), len(wind_speeds), len(turbulence_intensities)))
+value_table = 25 * np.ones((len(wind_directions), len(wind_speeds), len(turbulence_intensities)))
 
 wind_ti_rose = WindTIRose(
     wind_directions=wind_directions,
@@ -109,7 +109,7 @@ wind_ti_rose = WindTIRose(
 # For TimeSeries, as long as one condition is given as an array, the other 2
 # conditions can be given as scalars.  The TimeSeries object will broadcast the
 # scalars to the full array (uniform)
-wind_directions = 270 + 30 * np.random.randn(N)
+wind_directions = 270 + 30 * rng.standard_normal(N)
 time_series = TimeSeries(
     wind_directions=wind_directions, wind_speeds=8.0, turbulence_intensities=0.06
 )

@@ -62,7 +62,7 @@ yaw_opt = YawOptimizationSR(
 df_opt = yaw_opt.optimize()
 end_time = timerpc()
 t_tot = end_time - start_time
-print("Optimization finished in {:.2f} seconds.".format(t_tot))
+print(f"Optimization finished in {t_tot:.2f} seconds.")
 
 
 # Calculate the AEP in the baseline case
@@ -97,12 +97,24 @@ for i in range(n_findex):
     yaw_opt_full = np.array(df_opt.loc[id_opt, "yaw_angles_opt"])[0]
 
     # Now decide what to do for different wind speeds
-    if (wind_speed < 4.0) | (wind_speed > 14.0):
+    wind_speed_low_no_steer = 4.0
+    wind_speed_high_no_steer = 14.0
+    wind_speed_low_steer = 6.0
+    wind_speed_high_steer = 12.0
+    if (wind_speed < wind_speed_low_no_steer) | (wind_speed > wind_speed_high_no_steer):
         yaw_opt = np.zeros(n_turbines)  # do nothing for very low/high speeds
-    elif wind_speed < 6.0:
-        yaw_opt = yaw_opt_full * (6.0 - wind_speed) / 2.0  # Linear ramp up
-    elif wind_speed > 12.0:
-        yaw_opt = yaw_opt_full * (14.0 - wind_speed) / 2.0  # Linear ramp down
+    elif wind_speed < wind_speed_low_steer:
+        yaw_opt = (
+            yaw_opt_full
+            * (wind_speed_low_steer - wind_speed)
+            / (wind_speed_low_steer - wind_speed_low_no_steer)
+        )  # Linear ramp up
+    elif wind_speed > wind_speed_high_steer:
+        yaw_opt = (
+            yaw_opt_full
+            * (wind_speed_high_no_steer - wind_speed)
+            / (wind_speed_high_no_steer - wind_speed_high_steer)
+        )  # Linear ramp down
     else:
         yaw_opt = yaw_opt_full  # Apply full offsets between 6.0 and 12.0 m/s
 
@@ -117,9 +129,9 @@ aep_opt = fmodel.get_farm_AEP()
 aep_uplift = 100.0 * (aep_opt / aep_baseline - 1)
 farm_power_opt = fmodel.get_farm_power()
 
-print("Baseline AEP: {:.2f} GWh.".format(aep_baseline/1E9))
-print("Optimal AEP: {:.2f} GWh.".format(aep_opt/1E9))
-print("Relative AEP uplift by wake steering: {:.3f} %.".format(aep_uplift))
+print(f"Baseline AEP: {aep_baseline / 1e9:.2f} GWh.")
+print(f"Optimal AEP: {aep_opt / 1e9:.2f} GWh.")
+print(f"Relative AEP uplift by wake steering: {aep_uplift:.3f} %.")
 
 # Use farm_power_baseline, farm_power_opt and wind_data to make a heat map of uplift by
 # wind direction and wind speed
@@ -129,7 +141,7 @@ relative_gain = farm_power_opt - farm_power_baseline
 
 # Plot the heatmap with wind speeds on x, wind directions on y and relative gain as the color
 fig, ax = plt.subplots(figsize=(10, 12))
-cax = ax.imshow(relative_gain, cmap='viridis', aspect='auto')
+cax = ax.imshow(relative_gain, cmap="viridis", aspect="auto")
 fig.colorbar(cax, ax=ax, label="Relative gain (%)")
 
 ax.set_yticks(np.arange(len(wind_directions)))

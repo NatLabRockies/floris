@@ -4,10 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "floris"
-version = "4.5"
+version = "4.6"
 description = "A controls-oriented engineering wake model."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10, <3.15"
 authors = [
     { name = "Rafael Mudafort", email = "Rafael.Mudafort@nrel.gov" },
     { name = "Paul Fleming", email = "Paul.Fleming@nrel.gov" },
@@ -46,17 +46,18 @@ dependencies = [
 docs = [
     "jupyter-book~=1.0",
     "sphinx-book-theme~=1.0",
-    "sphinx-autodoc-typehints~=2.0",
+    "sphinx-autodoc-typehints>=2,<4",
     "sphinxcontrib-autoyaml~=1.0",
     "sphinxcontrib.mermaid~=1.0",
     "bokeh~=3.7",
+    "ruamel.yaml~=0.18.0",
 ]
 develop = [
-    "pytest~=8.0",
+    "pytest>=8,<10",
     "pytest-benchmark~=5.1",
     "pre-commit~=4.0",
     "ruff~=0.9",
-    "isort~=5.0"
+    "isort>=5,<8"
 ]
 
 [tool.setuptools.packages.find]

@@ -8,8 +8,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
-        os: [ubuntu-latest] #, macos-latest, windows-latest]
+        python-version: ["3.10", "3.14"]
+        os: [ubuntu-latest]
       fail-fast: False
 
     steps:
@@ -23,12 +23,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install .
         pip install nbconvert  # For converting Jupyter notebook to python script in the next step
-    - name: Run examples
+
+    - name: Run examples (ubuntu, macos)
       # Run all examples and test that they finish successfully. Do not evaluate the results.
       # Copy the examples to a new directory outside of the repo to ensure that there is no
       # reliance on the repo directory structure.
       run: |
-
         mkdir -p temp1/temp2/temp3
         cp -rL examples temp1/temp2/temp3/.
         cd temp1/temp2/temp3/examples/

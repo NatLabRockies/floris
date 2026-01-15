@@ -73,7 +73,7 @@ floris = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/NREL/floris"
+Homepage = "https://github.com/NatLabRockies/floris"
 Documentation = "https://nrel.github.io/floris/"
 
 [coverage.run]

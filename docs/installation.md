@@ -48,7 +48,7 @@ git repository from GitHub with ``git`` and use ``pip`` to locally install it. T
 
 ```bash
 # Download the source code from the `main` branch
-git clone -b main https://github.com/NREL/floris.git
+git clone -b main https://github.com/NatLabRockies/floris.git
 
 # If using conda, be sure to activate your environment prior to installing
 # conda activate <env name>

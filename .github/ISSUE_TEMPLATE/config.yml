@@ -1,5 +1,5 @@
 blank_issues_enabled: false
 contact_links:
   - name: Usage question
-    url: https://github.com/NREL/floris/discussions
+    url: https://github.com/NatLabRockies/floris/discussions
     about: Have any questions about using FLORIS? Post in Discussions to engage with the NLR team and FLORIS community.

@@ -38,7 +38,7 @@ The IEA 10MW turbine is used in the following examples:
 ## IEA 22MW reference wind turbine
 FLORIS representation of the IEA 22MW reference wind turbine {cite:t}`zahle_IEA22MW_2024`. Data
 generated using OpenFAST v4.1.2 and ROSCO v2.10.2. See
-[pull request](https://github.com/NREL/floris/pull/1146) for full OpenFAST and ROSCO input files.
+[pull request](https://github.com/NatLabRockies/floris/pull/1146) for full OpenFAST and ROSCO input files.
 Specified as `"iea_22MW"` in the `turbine_type` field of the FLORIS input dictionary.
 
 The IEA 22MW is demonstrated, alongside other reference wind turbines, in:

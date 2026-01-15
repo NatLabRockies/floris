@@ -3,13 +3,13 @@
 FLORIS is a controls-focused wind farm simulation software incorporating
 steady-state engineering wake models into a performance-focused Python
 framework. It has been in active development at NLR since 2013 and the latest
-release is [FLORIS v.4.6](https://github.com/NREL/floris/releases/latest).
+release is [FLORIS v.4.6](https://github.com/NatLabRockies/floris/releases/latest).
 Online documentation is available at https://nrel.github.io/floris.
 
 The software is in active development and engagement with the development team
 is highly encouraged. If you are interested in using FLORIS to conduct studies
 of a wind farm or extending FLORIS to include your own wake model, please join
-the conversation in [GitHub Discussions](https://github.com/NREL/floris/discussions/)!
+the conversation in [GitHub Discussions](https://github.com/NatLabRockies/floris/discussions/)!
 
 ## WETO software
 
@@ -46,7 +46,7 @@ commands in a terminal or shell will download and install FLORIS.
 
 ```bash
     # Download the source code from the `main` branch
-    git clone -b main https://github.com/NREL/floris.git
+    git clone -b main https://github.com/NatLabRockies/floris.git
 
     # If using conda, be sure to activate your environment prior to installing
     # conda activate <env name>
@@ -132,23 +132,23 @@ such as
 and in two visualization packages: [layoutviz](https://nrel.github.io/floris/_autosummary/floris.layout_visualization.html) and [flowviz](https://nrel.github.io/floris/_autosummary/floris.flow_visualization.html).
 A collection of examples describing the creation of simulations as well as
 analysis and post processing are included in the
-[repository](https://github.com/NREL/floris/tree/main/examples). Examples are also listed
+[repository](https://github.com/NatLabRockies/floris/tree/main/examples). Examples are also listed
 in the [online documentation](https://nrel.github.io/floris/examples/001_opening_floris_computing_power.html).
 
 ## Engaging on GitHub
 
 FLORIS leverages the following GitHub features to coordinate support and development efforts:
 
-- [Discussions](https://github.com/NREL/floris/discussions): Collaborate to develop ideas for new use cases, features, and software designs, and get support for usage questions
-- [Issues](https://github.com/NREL/floris/issues): Report potential bugs and well-developed feature requests
+- [Discussions](https://github.com/NatLabRockies/floris/discussions): Collaborate to develop ideas for new use cases, features, and software designs, and get support for usage questions
+- [Issues](https://github.com/NatLabRockies/floris/issues): Report potential bugs and well-developed feature requests
 - [Projects](https://github.com/orgs/NREL/projects/96): Include current and future work on a timeline and assign a person to "own" it
 
 Generally, the first entry point for the community will be within one of the
 categories in Discussions.
-[Ideas](https://github.com/NREL/floris/discussions/categories/ideas) is a great spot to develop the
-details for a feature request. [Q&A](https://github.com/NREL/floris/discussions/categories/q-a)
+[Ideas](https://github.com/NatLabRockies/floris/discussions/categories/ideas) is a great spot to develop the
+details for a feature request. [Q&A](https://github.com/NatLabRockies/floris/discussions/categories/q-a)
 is where to get usage support.
-[Show and tell](https://github.com/NREL/floris/discussions/categories/show-and-tell) is a free-form
+[Show and tell](https://github.com/NatLabRockies/floris/discussions/categories/show-and-tell) is a free-form
 space to show off the things you are doing with FLORIS.
 
 

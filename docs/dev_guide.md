@@ -255,7 +255,7 @@ Be sure to complete each step in the sequence as described.
     surprises in this regard prior to a release. However, it's a good
     opportunity to ensure that the documentation is up to date and there
     are no obvious issues.
-    Check this by opening the documentation website at https://nrel.github.io/floris
+    Check this by opening the documentation website at https://natlabrockies.github.io/floris
     and scrolling through the pages.
     Also, verify that the automated build process has successfully completed
     for the commits to `develop` in [GitHub Actions](https://github.com/NatLabRockies/floris/actions/workflows/deploy-pages.yaml).

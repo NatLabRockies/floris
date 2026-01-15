@@ -4,7 +4,7 @@ FLORIS is a controls-focused wind farm simulation software incorporating
 steady-state engineering wake models into a performance-focused Python
 framework. It has been in active development at NLR since 2013 and the latest
 release is [FLORIS v.4.6](https://github.com/NatLabRockies/floris/releases/latest).
-Online documentation is available at https://nrel.github.io/floris.
+Online documentation is available at https://natlabrockies.github.io/floris.
 
 The software is in active development and engagement with the development team
 is highly encouraged. If you are interested in using FLORIS to conduct studies
@@ -14,11 +14,11 @@ the conversation in [GitHub Discussions](https://github.com/NatLabRockies/floris
 ## WETO software
 
 FLORIS is primarily developed with the support from the U.S. Department of Energy and
-is part of the [WETO Software Stack](https://nrel.github.io/WETOStack).
+is part of the [WETO Software Stack](https://natlabrockies.github.io/WETOStack).
 For more information and other integrated modeling software, see:
 
-- [Portfolio Overview](https://nrel.github.io/WETOStack/portfolio_analysis/overview.html)
-- [Entry Guide](https://nrel.github.io/WETOStack/_static/entry_guide/index.html)
+- [Portfolio Overview](https://natlabrockies.github.io/WETOStack/portfolio_analysis/overview.html)
+- [Entry Guide](https://natlabrockies.github.io/WETOStack/_static/entry_guide/index.html)
 - [Wind Farm Controls Workshop](https://www.youtube.com/watch?v=f-w6whxIBrA&list=PL6ksUtsZI1dwRXeWFCmJT6cEN1xijsHJz)
 
 ## Installation
@@ -102,14 +102,14 @@ features, improvements, and bug fixes will be issued on an ongoing basis.
 
 FLORIS is a Python package run on the command line typically by providing
 an input file with an initial configuration. It can be installed with
-```pip install floris``` (see [installation](https://nrel.github.io/floris/installation.html)).
+```pip install floris``` (see [installation](https://natlabrockies.github.io/floris/installation.html)).
 The typical entry point is
-[FlorisModel](https://nrel.github.io/floris/_autosummary/floris.floris_model.html)
+[FlorisModel](https://natlabrockies.github.io/floris/_autosummary/floris.floris_model.html)
 which accepts the path to the input file as an argument. From there,
 changes can be made to the initial configuration through the
-[FlorisModel.set](https://nrel.github.io/floris/_autosummary/floris.floris_model.html#floris.floris_model.FlorisModel.set)
+[FlorisModel.set](https://natlabrockies.github.io/floris/_autosummary/floris.floris_model.html#floris.floris_model.FlorisModel.set)
 routine, and the simulation is executed with
-[FlorisModel.run](https://nrel.github.io/floris/_autosummary/floris.floris_model.html#floris.floris_model.FlorisModel.run).
+[FlorisModel.run](https://natlabrockies.github.io/floris/_autosummary/floris.floris_model.html#floris.floris_model.FlorisModel.run).
 
 ```python
 from floris import FlorisModel
@@ -123,17 +123,17 @@ fmodel.run()
 ```
 
 Finally, results can be analyzed via post-processing functions available within
-[FlorisModel](https://nrel.github.io/floris/_autosummary/floris.floris_model.html#floris.floris_model.FlorisModel)
+[FlorisModel](https://natlabrockies.github.io/floris/_autosummary/floris.floris_model.html#floris.floris_model.FlorisModel)
 such as
-- [FlorisModel.get_turbine_layout](https://nrel.github.io/floris/_autosummary/floris.floris_model.html#floris.floris_model.FlorisModel.get_turbine_layout)
-- [FlorisModel.get_turbine_powers](https://nrel.github.io/floris/_autosummary/floris.floris_model.html#floris.floris_model.FlorisModel.get_turbine_powers)
-- [FlorisModel.get_farm_AEP](https://nrel.github.io/floris/_autosummary/floris.floris_model.html#floris.floris_model.FlorisModel.get_farm_AEP)
+- [FlorisModel.get_turbine_layout](https://natlabrockies.github.io/floris/_autosummary/floris.floris_model.html#floris.floris_model.FlorisModel.get_turbine_layout)
+- [FlorisModel.get_turbine_powers](https://natlabrockies.github.io/floris/_autosummary/floris.floris_model.html#floris.floris_model.FlorisModel.get_turbine_powers)
+- [FlorisModel.get_farm_AEP](https://natlabrockies.github.io/floris/_autosummary/floris.floris_model.html#floris.floris_model.FlorisModel.get_farm_AEP)
 
-and in two visualization packages: [layoutviz](https://nrel.github.io/floris/_autosummary/floris.layout_visualization.html) and [flowviz](https://nrel.github.io/floris/_autosummary/floris.flow_visualization.html).
+and in two visualization packages: [layoutviz](https://natlabrockies.github.io/floris/_autosummary/floris.layout_visualization.html) and [flowviz](https://natlabrockies.github.io/floris/_autosummary/floris.flow_visualization.html).
 A collection of examples describing the creation of simulations as well as
 analysis and post processing are included in the
 [repository](https://github.com/NatLabRockies/floris/tree/main/examples). Examples are also listed
-in the [online documentation](https://nrel.github.io/floris/examples/001_opening_floris_computing_power.html).
+in the [online documentation](https://natlabrockies.github.io/floris/examples/001_opening_floris_computing_power.html).
 
 ## Engaging on GitHub
 

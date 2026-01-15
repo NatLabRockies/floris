@@ -77,4 +77,4 @@ submit a new feature, let us know in
 
 We rely heavily on git and GitHub, so be sure to review the
 contributing guidelines in the
-[online documentation](https://nrel.github.io/floris/dev_guide.html).
+[online documentation](https://natlabrockies.github.io/floris/dev_guide.html).

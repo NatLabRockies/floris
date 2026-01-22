@@ -295,7 +295,6 @@ class ParFlorisModel(FlorisModel):
 
         # Prepare the input arguments for parallel execution
         fmodel_dict = self.core.as_dict()
-
         wind_condition_id_splits = np.array_split(
             np.arange(self.core.flow_field.n_findex),
             n_wind_condition_splits,

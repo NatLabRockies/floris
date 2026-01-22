@@ -105,8 +105,8 @@ def _attr_floris_filter(inst: Attribute, value: Any) -> bool:
         return False
 
     # This is removed to support initializing FLORIS with default values:
-    # - defaults added in https://github.com/NREL/floris/pull/1040
-    # - bug fix in https://github.com/NREL/floris/pull/1061
+    # - defaults added in https://github.com/NatLabRockies/floris/pull/1040
+    # - bug fix in https://github.com/NatLabRockies/floris/pull/1061
     # When Core is exported to a dict in _reinitialize, this filter removes empty arrays.
     # For init with defaults, this results in FlowField losing the wind speed, wind direction and TI
     # arrays if they weren't provided in the .set function.

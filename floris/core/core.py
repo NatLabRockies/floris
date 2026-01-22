@@ -389,8 +389,9 @@ def check_input_file_for_v3_keys(input_dict) -> None:
     """
     v3_deprecation_msg = (
         "Consider using the convert_floris_input_v3_to_v4.py utility in floris/tools "
-        + "to convert from a FLORIS v3 input file to FLORIS v4. "
-        "See https://nrel.github.io/floris/upgrade_guides/v3_to_v4.html for more information."
+        "to convert from a FLORIS v3 input file to FLORIS v4. "
+        "See https://natlabrockies.github.io/floris/upgrade_guides/v3_to_v4.html "
+        "for more information."
     )
     if "turbulence_intensity" in input_dict["flow_field"]:
         raise AttributeError(

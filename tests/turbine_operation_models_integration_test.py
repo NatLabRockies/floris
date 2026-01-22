@@ -69,6 +69,7 @@ def test_dynamic_user_defined_op_model():
         fmodel.run()
     # Now instantiate and try again
     instantiated_operation_model = UserDefinedDynamic()
+    import ipdb; ipdb.set_trace()
     fmodel.set_operation_model(instantiated_operation_model)
     fmodel.run()
     power = fmodel.get_turbine_powers()

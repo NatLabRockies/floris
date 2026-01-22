@@ -63,3 +63,25 @@ class BaseModel(BaseClass):
     @abstractmethod
     def function() -> None:
         raise NotImplementedError("BaseModel.function")
+
+@define
+class BaseLibrary(BaseClass):
+    """
+    Base class that writes the name and module of the class into the attrs dictionary.
+    """
+    def as_dict(self) -> dict:
+        """Convert instance to dictionary including class information"""
+        print("Im here")
+        data = super().as_dict()
+        data['__class__'] = {
+            'module': self.__class__.__module__,
+            'name': self.__class__.__name__
+        }
+        return data
+    # __class__: dict = field(init=False)
+    # def __attrs_post_init__(self) -> None:
+    #     #import ipdb; ipdb.set_trace()
+    #     self.__class__ = {
+    #         'module': self.__class__.__module__,
+    #         'name': self.__class__.__name__
+    #     }

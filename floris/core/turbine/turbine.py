@@ -622,7 +622,12 @@ class Turbine(BaseClass):
     def _initialize_power_thrust_functions(self) -> None:
         if isinstance(self.operation_model, str):
             turbine_function_model = TURBINE_MODEL_MAP["operation_model"][self.operation_model]
+        elif isinstance(self.operation_model, dict):
+            #import ipdb; ipdb.set_trace()
+            print(self.operation_model)
+            pass
         else:
+            #import ipdb; ipdb.set_trace()
             turbine_function_model = self.operation_model
         self.thrust_coefficient_function = turbine_function_model.thrust_coefficient
         self.axial_induction_function = turbine_function_model.axial_induction

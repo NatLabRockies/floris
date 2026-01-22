@@ -1,13 +1,11 @@
 from abc import abstractmethod
 
-import numpy as np
-from attrs import define, field
+from attrs import define
 
-from floris.core import BaseClass
-
+from floris.core import BaseLibrary
 
 @define
-class BaseOperationModel(BaseClass):
+class BaseOperationModel(BaseLibrary):
     """
     Base class for turbine operation models. All turbine operation models must implement static
     power(), thrust_coefficient(), and axial_induction() methods, which are called by power() and

@@ -10,7 +10,7 @@ import pandas as pd
 from attrs import define, field
 from scipy.interpolate import interp1d
 
-from floris.core import BaseClass
+from floris.core import BaseClass, BaseLibrary
 from floris.core.turbine import (
     AWCTurbine,
     ControllerDependentTurbine,
@@ -623,11 +623,8 @@ class Turbine(BaseClass):
         if isinstance(self.operation_model, str):
             turbine_function_model = TURBINE_MODEL_MAP["operation_model"][self.operation_model]
         elif isinstance(self.operation_model, dict):
-            #import ipdb; ipdb.set_trace()
-            print(self.operation_model)
-            pass
+            turbine_function_model = BaseLibrary.from_dict(self.operation_model)
         else:
-            #import ipdb; ipdb.set_trace()
             turbine_function_model = self.operation_model
         self.thrust_coefficient_function = turbine_function_model.thrust_coefficient
         self.axial_induction_function = turbine_function_model.axial_induction

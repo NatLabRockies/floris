@@ -4,6 +4,7 @@ from attrs import define
 
 from floris.core import BaseLibrary
 
+
 @define
 class BaseOperationModel(BaseLibrary):
     """

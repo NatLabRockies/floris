@@ -295,10 +295,6 @@ class ParFlorisModel(FlorisModel):
 
         # Prepare the input arguments for parallel execution
         fmodel_dict = self.core.as_dict()
-        # NOTE: as_dict loses dynamic turbine operation model classes; this replaces them.
-        # Could we come up with a better solution from attrs (where the floris_dict maintains the
-        # class, or better yet, retains its index so that it can be reinstantiated upon from_dict)?
-        fmodel_dict["farm"]["turbine_type"] = copy.deepcopy(self.core.farm.turbine_type)
 
         wind_condition_id_splits = np.array_split(
             np.arange(self.core.flow_field.n_findex),

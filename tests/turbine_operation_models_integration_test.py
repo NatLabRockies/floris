@@ -4,6 +4,7 @@ from attrs import define, field
 
 from floris import FlorisModel
 from floris.core.turbine import BaseOperationModel
+from floris.type_dec import floris_float_type
 
 
 # Establish a static class
@@ -19,15 +20,15 @@ class UserDefinedStatic(BaseOperationModel):
 # Establish a dynamic class
 @define
 class UserDefinedDynamic(BaseOperationModel):
-    _flat_power = field(init=True, default=500.0)
-    _flat_thrust_coefficient = field(init=True, default=0.7)
-    _flat_axial_induction = field(init=True, default=0.3)
+    flat_power: floris_float_type = field(init=True, default=500.0)
+    flat_thrust_coefficient: floris_float_type = field(init=True, default=0.7)
+    flat_axial_induction: floris_float_type = field(init=True, default=0.3)
     def power(self, velocities, **_):
-        return self._flat_power*np.ones(velocities.shape[:2])
+        return self.flat_power*np.ones(velocities.shape[:2])
     def thrust_coefficient(self, velocities, **_):
-        return self._flat_thrust_coefficient*np.ones(velocities.shape[:2])
+        return self.flat_thrust_coefficient*np.ones(velocities.shape[:2])
     def axial_induction(self, velocities, **_):
-        return self._flat_axial_induction*np.ones(velocities.shape[:2])
+        return self.flat_axial_induction*np.ones(velocities.shape[:2])
 
 
 def test_static_user_defined_op_model():
@@ -69,7 +70,6 @@ def test_dynamic_user_defined_op_model():
         fmodel.run()
     # Now instantiate and try again
     instantiated_operation_model = UserDefinedDynamic()
-    import ipdb; ipdb.set_trace()
     fmodel.set_operation_model(instantiated_operation_model)
     fmodel.run()
     power = fmodel.get_turbine_powers()

@@ -1,4 +1,5 @@
 
+import importlib
 from abc import abstractmethod
 from enum import Enum
 from typing import (
@@ -69,19 +70,27 @@ class BaseLibrary(BaseClass):
     """
     Base class that writes the name and module of the class into the attrs dictionary.
     """
-    def as_dict(self) -> dict:
-        """Convert instance to dictionary including class information"""
-        print("Im here")
-        data = super().as_dict()
-        data['__class__'] = {
-            'module': self.__class__.__module__,
-            'name': self.__class__.__name__
+    __classinfo__: dict = {"module": "", "name": ""}
+    def __attrs_post_init__(self) -> None:
+        #import ipdb; ipdb.set_trace()
+        self.__classinfo__ = {
+            "module": type(self).__module__,
+            "name": type(self).__name__
         }
-        return data
-    # __class__: dict = field(init=False)
-    # def __attrs_post_init__(self) -> None:
-    #     #import ipdb; ipdb.set_trace()
-    #     self.__class__ = {
-    #         'module': self.__class__.__module__,
-    #         'name': self.__class__.__name__
-    #     }
+
+    @staticmethod
+    def from_dict(data_dict):
+        """Recreate instance from dictionary with class information"""
+        if "__classinfo__" not in data_dict:
+            raise ValueError(
+                "Dictionary does not contain class information. ",
+                "Insure inheritance from BaseLibrary."
+            )
+        data_noinfo = data_dict.copy()
+        class_info = data_noinfo.pop("__classinfo__")
+
+        # Import the module and get the class
+        module = importlib.import_module(class_info["module"])
+        cls = getattr(module, class_info["name"])
+
+        return cls(**data_noinfo)

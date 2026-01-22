@@ -234,6 +234,7 @@ lines_after_imports = 2
 line_length = 100
 order_by_type = false
 split_on_trailing_comma = true
+skip = ["floris/core/turbine/__init__.py"]
 
 # length_sort = true
 # case_sensitive: False

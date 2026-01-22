@@ -177,8 +177,8 @@ class FlorisModel(LoggingManager):
         farm_dict = floris_dict["farm"]
 
         # NOTE: as_dict loses dynamic turbine operation model classes; this replaces them.
-        # Could we come up with a better solution from attrs (where the floris_dict maintains the class,
-        # or better yet, retains its index so that it can be reinstantiated upon from_dict)?
+        # Could we come up with a better solution from attrs (where the floris_dict maintains the
+        # class, or better yet, retains its index so that it can be reinstantiated upon from_dict)?
         farm_dict["turbine_type"] = copy.deepcopy(self.core.farm.turbine_type)
 
         ## Farm

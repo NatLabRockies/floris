@@ -91,7 +91,7 @@ PACKAGE CONTENTS
     wind_data
 
 VERSION
-    4.6.1
+    4.6.2
 
 FILE
     ~/floris/floris/__init__.py

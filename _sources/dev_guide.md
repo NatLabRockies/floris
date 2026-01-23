@@ -4,7 +4,7 @@ FLORIS is maintained by NLR.
 We are excited about community contribution, and this page outlines
 processes and procedures to follow when contributing to the
 source code. For technical questions regarding FLORIS usage, please
-post your questions to [GitHub Discussions](https://github.com/NREL/floris/discussions).
+post your questions to [GitHub Discussions](https://github.com/NatLabRockies/floris/discussions).
 
 ## Getting Started
 
@@ -42,11 +42,11 @@ developer's guide, so please read on to learn more about each of these steps.
 ## Git and GitHub Workflows
 
 The majority of the collaboration and development for FLORIS takes place in
-the [GitHub repository](http://github.com/nrel/floris). There,
-[issues](http://github.com/nrel/floris/issues) and
-[pull requests](http://github.com/nrel/floris/pulls) are managed,
-questions and ideas are [discussed](https://github.com/NREL/floris/discussions),
-and [new versions](http://github.com/nrel/floris/releases)
+the [GitHub repository](http://github.com/NatLabRockies/floris). There,
+[issues](http://github.com/NatLabRockies/floris/issues) and
+[pull requests](http://github.com/NatLabRockies/floris/pulls) are managed,
+questions and ideas are [discussed](https://github.com/NatLabRockies/floris/discussions),
+and [new versions](http://github.com/NatLabRockies/floris/releases)
 are released. It is the best mechanism for engaging with the NLR team
 and other developers throughout the FLORIS community.
 
@@ -96,7 +96,7 @@ are likely and should be resolved as early as possible.
 FLORIS is configured to use tools to automatically check and enforce
 aspects of code quality. In general, these should be adopted by all
 developers and incorporated into the development workflow. Most
-tools are configured in [pyproject.toml](https://github.com/NREL/floris/blob/main/pyproject.toml),
+tools are configured in [pyproject.toml](https://github.com/NatLabRockies/floris/blob/main/pyproject.toml),
 but some may have a dedicated configuration file.
 
 ### isort
@@ -111,7 +111,7 @@ isort <path to file>
 isort dir/*
 ```
 
-This tool was initially configured in [PR#535](https://github.com/NREL/floris/pull/535),
+This tool was initially configured in [PR#535](https://github.com/NatLabRockies/floris/pull/535),
 and additional information on specific decisions can be found there.
 
 ### Ruff
@@ -128,8 +128,8 @@ ruff . --fix
 This sets the configuration from `pyproject.toml`, applies the selected rules to Python files,
 and fixes errors in-place where possible.
 
-Ruff was initially configured in [PR#562](https://github.com/NREL/floris/pull/562), and discussed
-in more detail in [D#561](https://github.com/NREL/floris/discussions/561). See the Ruff
+Ruff was initially configured in [PR#562](https://github.com/NatLabRockies/floris/pull/562), and discussed
+in more detail in [D#561](https://github.com/NatLabRockies/floris/discussions/561). See the Ruff
 documentation for a list of [supported rules](https://github.com/charliermarsh/ruff#supported-rules)
 and [available options for various rules](https://github.com/charliermarsh/ruff#reference).
 
@@ -201,7 +201,7 @@ pytest tests/*_regression_test.py
 
 ### Continuous Integration
 
-Continuous integration is configured with [GitHub Actions](https://github.com/nrel/floris/actions)
+Continuous integration is configured with [GitHub Actions](https://github.com/NatLabRockies/floris/actions)
 and executes all of the existing tests for every push-event. The configuration file
 is located at `floris/.github/workflows/continuous-integration-workflow.yaml`.
 
@@ -245,8 +245,8 @@ Be sure to complete each step in the sequence as described.
 2. Update the version number and commit to the `develop`` branch
     with a commit message such as "Update version to vN.M".
     The version number must be updated in the following two files:
-    - [floris/README.md](https://github.com/NREL/floris/blob/main/README.md)
-    - [pyproject.toml](https://github.com/NREL/floris/blob/main/pyproject.toml)
+    - [floris/README.md](https://github.com/NatLabRockies/floris/blob/main/README.md)
+    - [pyproject.toml](https://github.com/NatLabRockies/floris/blob/main/pyproject.toml)
     Note that a `.0` version number is left off meaning that valid versions
     are `v3`, `v3.1`, `v3.1.1`, etc.
 
@@ -255,10 +255,10 @@ Be sure to complete each step in the sequence as described.
     surprises in this regard prior to a release. However, it's a good
     opportunity to ensure that the documentation is up to date and there
     are no obvious issues.
-    Check this by opening the documentation website at https://nrel.github.io/floris
+    Check this by opening the documentation website at https://natlabrockies.github.io/floris
     and scrolling through the pages.
     Also, verify that the automated build process has successfully completed
-    for the commits to `develop` in [GitHub Actions](https://github.com/NREL/floris/actions/workflows/deploy-pages.yaml).
+    for the commits to `develop` in [GitHub Actions](https://github.com/NatLabRockies/floris/actions/workflows/deploy-pages.yaml).
 
 4. The changes since the prior commit can be gotten from GitHub by going through the
     process to create a release, but stopping short of actually publishing it.
@@ -270,7 +270,7 @@ Be sure to complete each step in the sequence as described.
 5. Merge the pull request into `main`. Select "Create a merge commit" from the merge
     dropdown, and hit "Merge pull request".
 
-6. Create a [new release](https://github.com/NREL/floris/releases/new) on GitHub
+6. Create a [new release](https://github.com/NatLabRockies/floris/releases/new) on GitHub
     with the title "vN.M". Choose to create a new tag on publish with the same
     name. Also, autogenerate the release notes again. If you autogenerated the release
     notes in step 4, make sure to start this step from a new browser window.
@@ -280,7 +280,7 @@ Be sure to complete each step in the sequence as described.
 
 8. Hit "Publish release".
 
-9. Go to GitHub Actions and watch the [Upload Python Package](https://github.com/NREL/floris/actions/workflows/python-publish.yml)
+9. Go to GitHub Actions and watch the [Upload Python Package](https://github.com/NatLabRockies/floris/actions/workflows/python-publish.yml)
     job complete. Upon success, FLORIS will be uploaded to PyPI for installation with pip.
     If it fails, the latest release will not be distributed.
 
@@ -307,11 +307,11 @@ FLORIS framework:
 - Grid-points
 
 Initially, it's recommended to copy an existing model as a starting point, and the
-[Jensen](https://github.com/NREL/floris/blob/main/floris/simulation/wake_velocity/jensen.py) and
-[Jimenez](https://github.com/NREL/floris/blob/main/floris/simulation/wake_deflection/jimenez.py)
+[Jensen](https://github.com/NatLabRockies/floris/blob/main/floris/simulation/wake_velocity/jensen.py) and
+[Jimenez](https://github.com/NatLabRockies/floris/blob/main/floris/simulation/wake_deflection/jimenez.py)
 models are good choices due to their simplicity.
 New models must be registered in
-[Wake.model_map](https://github.com/NREL/floris/blob/main/floris/simulation/wake.py#L45)
+[Wake.model_map](https://github.com/NatLabRockies/floris/blob/main/floris/simulation/wake.py#L45)
 so that they can be enabled via the input dictionary.
 
 ```{mermaid}
@@ -404,7 +404,7 @@ def function(
 ```
 
 Some models require a special grid and/or solver, and that mapping happens in
-[floris.simulation.Floris](https://github.com/NREL/floris/blob/main/floris/simulation/floris.py#L145).
+[floris.simulation.Floris](https://github.com/NatLabRockies/floris/blob/main/floris/simulation/floris.py#L145).
 Generally, a specific kind of solver requires one or a number of specific grid-types.
 For example, `full_flow_sequential_solver` requires either `FlowFieldGrid` or
 `FlowFieldPlanarGrid`.

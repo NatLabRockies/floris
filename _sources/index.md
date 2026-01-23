@@ -16,7 +16,7 @@ FLORIS v4.3 also made the move to requiring `numpy` version 2. See the [numpy do
 ## WETO software
 
 FLORIS is primarily developed with the support from the U.S. Department of Energy and
-is part of the `WETO Software Stack <https://natlabrockies.github.io/WETOStack>`_.
+is part of the  [WETO Software Stack](https://natlabrockies.github.io/WETOStack).
 For more information and other integrated modeling software, see:
 
 - [Portfolio Overview](https://natlabrockies.github.io/WETOStack/portfolio_analysis/overview.html)

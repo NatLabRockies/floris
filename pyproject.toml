@@ -9,11 +9,11 @@ description = "A controls-oriented engineering wake model."
 readme = "README.md"
 requires-python = ">=3.10, <3.15"
 authors = [
-    { name = "Rafael Mudafort", email = "Rafael.Mudafort@nrel.gov" },
-    { name = "Paul Fleming", email = "Paul.Fleming@nrel.gov" },
-    { name = "Michael (Misha) Sinner", email = "Michael.Sinner@nrel.gov" },
-    { name = "Eric Simley", email = "Eric.Simley@nrel.gov" },
-    { name = "Christopher Bay", email = "Christopher.Bay@nrel.gov" },
+    { name = "Rafael Mudafort", email = "Rafael.Mudafort@nlr.gov" },
+    { name = "Paul Fleming", email = "Paul.Fleming@nlr.gov" },
+    { name = "Michael (Misha) Sinner", email = "Michael.Sinner@nlr.gov" },
+    { name = "Eric Simley", email = "Eric.Simley@nlr.gov" },
+    { name = "Christopher Bay", email = "Christopher.Bay@nlr.gov" },
 ]
 license = { file = "LICENSE.txt" }
 keywords = ["floris"]

@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1769138794599,
+  "lastUpdate": 1769556263188,
   "repoUrl": "https://github.com/NatLabRockies/floris",
   "entries": {
     "Python Benchmark with pytest-benchmark": [
@@ -4460,6 +4460,72 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.00005389483978141121",
             "extra": "mean: 8.217610454544733 msec\nrounds: 99"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "39596329+misi9170@users.noreply.github.com",
+            "name": "misi9170",
+            "username": "misi9170"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "94fe7e5c8ba7751f0dfe0fdecc460cb2c4af912f",
+          "message": "Improve various docstrings (#1171)\n\n* Update references to floris.simulation and add docstring to get_defaults\n\n* Improve docstrings for user-level functionality\n\n* Update args docstring\n\n* Formatting\n\n* Update docstring\n\n* Fix WETO software hyperlink\n\n* Fix documentation for cut planes and add documentation for visualizations\n\n* Add Katic reference\n\n* Switch from r to r_squared to be explicit and avoid confusion\n\n* Another reference to Katic\n\n* Add notes regarding CH initial exponent\n\n* Spelling fix\n\n* Square image, update email addresses\n\n* Update todo note",
+          "timestamp": "2026-01-27T15:58:06-07:00",
+          "tree_id": "2dc733785105d4671241e626eb4728c347894284",
+          "url": "https://github.com/NatLabRockies/floris/commit/94fe7e5c8ba7751f0dfe0fdecc460cb2c4af912f"
+        },
+        "date": 1769556260887,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_set",
+            "value": 42.14873110232005,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0006516727590958821",
+            "extra": "mean: 23.72550664864394 msec\nrounds: 37"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_run",
+            "value": 56.00633131103164,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00014414571328483932",
+            "extra": "mean: 17.85512417241707 msec\nrounds: 29"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_set",
+            "value": 25.377441140524134,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0009558504821005667",
+            "extra": "mean: 39.40507612499763 msec\nrounds: 24"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_run",
+            "value": 0.29186094593132744,
+            "unit": "iter/sec",
+            "range": "stddev: 0.013459922402810017",
+            "extra": "mean: 3.4262891761999983 sec\nrounds: 5"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_set",
+            "value": 35.743326158998535,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0016844929779584654",
+            "extra": "mean: 27.977250789466492 msec\nrounds: 38"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_run",
+            "value": 120.34031995256201,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00021254738504615923",
+            "extra": "mean: 8.309766837866134 msec\nrounds: 74"
           }
         ]
       }

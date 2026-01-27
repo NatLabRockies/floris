@@ -773,7 +773,7 @@ window.addEventListener("load", load);
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples - Turbine</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="examples/examples_turbine/001_reference_turbines.html">Example: Check turbine power curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/examples_turbine/001_reference_turbines.html">Example: Reference turbines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples/examples_turbine/002_multiple_turbine_types.html">Example: Multiple turbine types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples/examples_turbine/003_specify_turbine_power_curve.html">Example: Specify turbine power curve</a></li>
 </ul>
@@ -1213,7 +1213,7 @@ git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </sp
 <h2>Testing<a class="headerlink" href="#testing" title="Link to this heading">#</a></h2>
 <p>In order to maintain a level of confidence in the software, FLORIS is expected
 to maintain a reasonable level of test coverage. To that end, unit
-tests for a the low-level code in the <code class="docutils literal notranslate"><span class="pre">floris.simulation</span></code> package are included.</p>
+tests for a the low-level code in the <code class="docutils literal notranslate"><span class="pre">floris.core</span></code> package are included.</p>
 <p>The full testing suite can by executed by running the command <code class="docutils literal notranslate"><span class="pre">pytest</span></code> from
 the highest directory in the repository. A testing-only class is included
 to provide consistent and convenient inputs to modules at
@@ -1427,7 +1427,7 @@ Typically, these arguments are the ones returned from the <code class="docutils 
 </pre></div>
 </div>
 <p>Some models require a special grid and/or solver, and that mapping happens in
-<a class="reference external" href="https://github.com/NatLabRockies/floris/blob/main/floris/simulation/floris.py#L145">floris.simulation.Floris</a>.
+<a class="reference external" href="https://github.com/NatLabRockies/floris/blob/main/floris/core/core.py">floris.core.core.Core</a>.
 Generally, a specific kind of solver requires one or a number of specific grid-types.
 For example, <code class="docutils literal notranslate"><span class="pre">full_flow_sequential_solver</span></code> requires either <code class="docutils literal notranslate"><span class="pre">FlowFieldGrid</span></code> or
 <code class="docutils literal notranslate"><span class="pre">FlowFieldPlanarGrid</span></code>.

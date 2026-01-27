@@ -772,7 +772,7 @@ window.addEventListener("load", load);
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples - Turbine</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../../../../examples/examples_turbine/001_reference_turbines.html">Example: Check turbine power curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/examples_turbine/001_reference_turbines.html">Example: Reference turbines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../examples/examples_turbine/002_multiple_turbine_types.html">Example: Multiple turbine types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../examples/examples_turbine/003_specify_turbine_power_curve.html">Example: Specify turbine power curve</a></li>
 </ul>
@@ -983,13 +983,29 @@ document.write(`
 <span class="sd">    turbine. Implementation of the model follows the original formulation and</span>
 <span class="sd">    limitations outlined in :cite:`cht-crespo1996turbulence`.</span>
 
+<span class="sd">    Note: The values for default parameters provided here differ from those in</span>
+<span class="sd">    :cite:`cht-crespo1996turbulence. Following their recommendations, the</span>
+<span class="sd">    default parameters would instead be:</span>
+<span class="sd">        - initial: -0.0325*</span>
+<span class="sd">        - constant: 0.73</span>
+<span class="sd">        - ai: 0.8325</span>
+<span class="sd">        - downstream: -0.32</span>
+<span class="sd">    * The &quot;initial&quot; parameter is given as -0.0325 in :cite:`cht-crespo1996turbulence`,</span>
+<span class="sd">    but the negative exponent is not clear in the scans of the paper found on the internet,</span>
+<span class="sd">    and several subsequent paper cite the exponent as positive (0.0325). This discrepancy</span>
+<span class="sd">    is noted in :cite:`zehtabiyan_rezaie_CH_2023`. Moreover, :cite:`zehtabiyan_rezaie_CH_2023`</span>
+<span class="sd">    argues that positive values for this exponent are not representative of the physical</span>
+<span class="sd">    phenomena occurring. For more details, see https://github.com/NREL/floris/issues/773.</span>
+<span class="sd">    Nonetheless, the default value here is set to 0.1 for consistency with previous</span>
+<span class="sd">    FLORIS versions. The default value may be updated in a future release.</span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        parameter_dictionary (dict): Model-specific parameters.</span>
 <span class="sd">            Default values are used when a parameter is not included</span>
 <span class="sd">            in `parameter_dictionary`. Possible key-value pairs include:</span>
 
-<span class="sd">            -   **initial** (*float*): The initial ambient turbulence</span>
-<span class="sd">                intensity, expressed as a decimal fraction.</span>
+<span class="sd">            -   **initial** (*float*): The exponent on the initial ambient</span>
+<span class="sd">                turbulence intensity.</span>
 <span class="sd">            -   **constant** (*float*): The constant used to scale the</span>
 <span class="sd">                wake-added turbulence intensity.</span>
 <span class="sd">            -   **ai** (*float*): The axial induction factor exponent used</span>

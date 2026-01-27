@@ -174,7 +174,7 @@ git commit -m "Update so and so"
 
 In order to maintain a level of confidence in the software, FLORIS is expected
 to maintain a reasonable level of test coverage. To that end, unit
-tests for a the low-level code in the `floris.simulation` package are included.
+tests for a the low-level code in the `floris.core` package are included.
 
 The full testing suite can by executed by running the command ``pytest`` from
 the highest directory in the repository. A testing-only class is included
@@ -404,7 +404,7 @@ def function(
 ```
 
 Some models require a special grid and/or solver, and that mapping happens in
-[floris.simulation.Floris](https://github.com/NatLabRockies/floris/blob/main/floris/simulation/floris.py#L145).
+[floris.core.core.Core](https://github.com/NatLabRockies/floris/blob/main/floris/core/core.py).
 Generally, a specific kind of solver requires one or a number of specific grid-types.
 For example, `full_flow_sequential_solver` requires either `FlowFieldGrid` or
 `FlowFieldPlanarGrid`.

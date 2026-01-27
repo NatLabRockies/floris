@@ -772,7 +772,7 @@ window.addEventListener("load", load);
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples - Turbine</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../../../../examples/examples_turbine/001_reference_turbines.html">Example: Check turbine power curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/examples_turbine/001_reference_turbines.html">Example: Reference turbines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../examples/examples_turbine/002_multiple_turbine_types.html">Example: Multiple turbine types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../examples/examples_turbine/003_specify_turbine_power_curve.html">Example: Specify turbine power curve</a></li>
 </ul>
@@ -973,6 +973,11 @@ document.write(`
 <div class="viewcode-block" id="YawOptimizationSR">
 <a class="viewcode-back" href="../../../../_autosummary/floris.optimization.yaw_optimization.yaw_optimizer_sr.html#floris.optimization.yaw_optimization.yaw_optimizer_sr.YawOptimizationSR">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">YawOptimizationSR</span><span class="p">(</span><span class="n">YawOptimization</span><span class="p">,</span> <span class="n">LoggingManager</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Optimize yaw angles using the Serial Refine (SR) optimization method.</span>
+
+<span class="sd">    See :cite:`fleming_sr_2022` for full details on the SR method.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">fmodel</span><span class="p">,</span>
@@ -988,7 +993,36 @@ document.write(`
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Instantiate YawOptimizationSR object with a FlorisModel object</span>
 <span class="sd">        and assign parameter values.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            fmodel: An instantiated FlorisModel object.</span>
+<span class="sd">            minimum_yaw_angle: Minimum yaw angle for all turbines [degrees]. Default is 0.0.</span>
+<span class="sd">            maximum_yaw_angle: Maximum yaw angle for all turbines [degrees]. Default is 25.0.</span>
+<span class="sd">            yaw_angles_baseline: Yaw angles to use as a baseline for comparison to optimized</span>
+<span class="sd">               yaw angles [degrees]. If None, defaults to 0.0 for all turbines.</span>
+<span class="sd">            x0: Not used in this optimizer. Included for compatibility with base class. Defaults to</span>
+<span class="sd">                None.</span>
+<span class="sd">            Ny_passes: List of integers defining the number of yaw angles to evaluate</span>
+<span class="sd">                per turbine in each pass of the SR algorithm. The length of the list</span>
+<span class="sd">                defines the number of passes. The first entry can be even or odd,</span>
+<span class="sd">                but all further entries must be even. Default is [5, 4].</span>
+<span class="sd">            turbine_weights: Weights for each turbine when calculating the</span>
+<span class="sd">                weighted power output during optimization. If None, all turbines</span>
+<span class="sd">                are weighted equally. Default is None.</span>
+<span class="sd">            exclude_downstream_turbines: Not used in this optimizer. Included for compatibility with</span>
+<span class="sd">                base class. Default is True.</span>
+<span class="sd">            verify_convergence: If True, the optimizer will perform additional checks to verify</span>
+<span class="sd">                that the optimal yaw angles have been found. See</span>
+<span class="sd">                YawOptimization._verify_solutions_for_convergence() for more details.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Warn if non-default values are provided for unused inputs</span>
+        <span class="k">if</span> <span class="n">x0</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;The &#39;x0&#39; argument is not used in the Serial Refine optimization method &quot;</span>
+                <span class="s2">&quot;and will be ignored.&quot;</span><span class="p">,</span>
+                <span class="ne">UserWarning</span>
+            <span class="p">)</span>
 
         <span class="c1"># Initialize base class</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
@@ -1017,14 +1051,6 @@ document.write(`
                     <span class="s2">&quot;The second and further entries of Ny_passes must be even numbers. &quot;</span>
                     <span class="s2">&quot;This is to ensure the same yaw angles are not evaluated twice between passes.&quot;</span>
                 <span class="p">)</span>
-
-        <span class="c1"># # Set baseline and optimization settings</span>
-        <span class="c1"># if reduce_ngrid:</span>
-        <span class="c1">#     for ti in range(self.nturbs):</span>
-        <span class="c1">#         # Force number of grid points to 2</span>
-        <span class="c1">#         self.fmodel.core.farm.turbines[ti].ngrid = 2</span>
-        <span class="c1">#         self.fmodel.core.farm.turbines[ti].initialize_turbine()</span>
-        <span class="c1">#         print(&quot;Reducing ngrid. Unsure if this functionality works!&quot;)</span>
 
         <span class="c1"># Save optimization choices to self</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">Ny_passes</span> <span class="o">=</span> <span class="n">Ny_passes</span>
@@ -1138,13 +1164,6 @@ document.write(`
         <span class="k">for</span> <span class="n">iw</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_findex_subset</span><span class="p">):</span>
             <span class="n">turbid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">turbines_ordered_array_subset</span><span class="p">[</span><span class="n">iw</span><span class="p">,</span> <span class="n">turbine_depth</span><span class="p">]</span>  <span class="c1"># Turbine to manipulate</span>
 
-            <span class="c1"># # Check if this turbine needs to be optimized. If not, continue</span>
-            <span class="c1"># if not self._turbs_to_opt_subset[iw, 0, turbid]:</span>
-            <span class="c1">#     continue</span>
-
-            <span class="c1"># # Remove turbines that need not be optimized</span>
-            <span class="c1"># turbines_ordered = [ti for ti in turbines_ordered if ti in self.turbs_to_opt]</span>
-
             <span class="c1"># Grab yaw bounds from self</span>
             <span class="n">yaw_lb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_yaw_lbs</span><span class="p">[</span><span class="n">iw</span><span class="p">,</span> <span class="n">turbid</span><span class="p">]</span>
             <span class="n">yaw_ub</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_yaw_ubs</span><span class="p">[</span><span class="n">iw</span><span class="p">,</span> <span class="n">turbid</span><span class="p">]</span>
@@ -1186,7 +1205,7 @@ document.write(`
     <span class="k">def</span><span class="w"> </span><span class="nf">optimize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">print_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find the yaw angles that maximize the power production for every wind direction,</span>
-<span class="sd">        wind speed and turbulence intensity.</span>
+<span class="sd">        wind speed and turbulence intensity using the SR optimization algorithm.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">print_progress</span> <span class="o">=</span> <span class="n">print_progress</span>
 

@@ -772,7 +772,7 @@ window.addEventListener("load", load);
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples - Turbine</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../../../../examples/examples_turbine/001_reference_turbines.html">Example: Check turbine power curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/examples_turbine/001_reference_turbines.html">Example: Reference turbines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../examples/examples_turbine/002_multiple_turbine_types.html">Example: Multiple turbine types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../examples/examples_turbine/003_specify_turbine_power_curve.html">Example: Specify turbine power curve</a></li>
 </ul>
@@ -1097,7 +1097,7 @@ document.write(`
             <span class="n">sigma_z</span> <span class="o">*=</span> <span class="p">(</span><span class="n">x</span> <span class="o">&gt;=</span> <span class="n">xR</span><span class="p">)</span>
             <span class="n">sigma_z</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">sigma_z</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;</span> <span class="n">xR</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">rotor_diameter_i</span>
 
-            <span class="n">r</span><span class="p">,</span> <span class="n">C</span> <span class="o">=</span> <span class="n">rC</span><span class="p">(</span>
+            <span class="n">r_squared</span><span class="p">,</span> <span class="n">C</span> <span class="o">=</span> <span class="n">rC</span><span class="p">(</span>
                 <span class="n">wind_veer</span><span class="p">,</span>
                 <span class="n">sigma_y</span><span class="p">,</span>
                 <span class="n">sigma_z</span><span class="p">,</span>
@@ -1111,7 +1111,7 @@ document.write(`
                 <span class="n">rotor_diameter_i</span><span class="p">,</span>
             <span class="p">)</span>
 
-            <span class="n">near_wake_deficit</span> <span class="o">=</span> <span class="n">gaussian_function</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.5</span><span class="p">))</span>
+            <span class="n">near_wake_deficit</span> <span class="o">=</span> <span class="n">gaussian_function</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">r_squared</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.5</span><span class="p">))</span>
             <span class="n">near_wake_deficit</span> <span class="o">*=</span> <span class="n">near_wake_mask</span>
 
             <span class="n">velocity_deficit</span> <span class="o">+=</span> <span class="n">near_wake_deficit</span>
@@ -1125,7 +1125,7 @@ document.write(`
             <span class="n">sigma_y</span> <span class="o">=</span> <span class="p">(</span><span class="n">ky</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">x0</span><span class="p">)</span> <span class="o">+</span> <span class="n">sigma_y0</span><span class="p">)</span> <span class="o">*</span> <span class="n">far_wake_mask</span> <span class="o">+</span> <span class="n">sigma_y0</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;</span> <span class="n">x0</span><span class="p">)</span>
             <span class="n">sigma_z</span> <span class="o">=</span> <span class="p">(</span><span class="n">kz</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">x0</span><span class="p">)</span> <span class="o">+</span> <span class="n">sigma_z0</span><span class="p">)</span> <span class="o">*</span> <span class="n">far_wake_mask</span> <span class="o">+</span> <span class="n">sigma_z0</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;</span> <span class="n">x0</span><span class="p">)</span>
 
-            <span class="n">r</span><span class="p">,</span> <span class="n">C</span> <span class="o">=</span> <span class="n">rC</span><span class="p">(</span>
+            <span class="n">r_squared</span><span class="p">,</span> <span class="n">C</span> <span class="o">=</span> <span class="n">rC</span><span class="p">(</span>
                 <span class="n">wind_veer</span><span class="p">,</span>
                 <span class="n">sigma_y</span><span class="p">,</span>
                 <span class="n">sigma_z</span><span class="p">,</span>
@@ -1139,7 +1139,7 @@ document.write(`
                 <span class="n">rotor_diameter_i</span><span class="p">,</span>
             <span class="p">)</span>
 
-            <span class="n">far_wake_deficit</span> <span class="o">=</span> <span class="n">gaussian_function</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.5</span><span class="p">))</span>
+            <span class="n">far_wake_deficit</span> <span class="o">=</span> <span class="n">gaussian_function</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">r_squared</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.5</span><span class="p">))</span>
             <span class="n">far_wake_deficit</span> <span class="o">*=</span> <span class="n">far_wake_mask</span>
 
             <span class="n">velocity_deficit</span> <span class="o">+=</span> <span class="n">far_wake_deficit</span>
@@ -1158,7 +1158,7 @@ document.write(`
     <span class="c1"># a = cosd(wind_veer) ** 2 / (2 * sigma_y ** 2) + sind(wind_veer) ** 2 / (2 * sigma_z ** 2)</span>
     <span class="c1"># b = -sind(2 * wind_veer) / (4 * sigma_y ** 2) + sind(2 * wind_veer) / (4 * sigma_z ** 2)</span>
     <span class="c1"># c = sind(wind_veer) ** 2 / (2 * sigma_y ** 2) + cosd(wind_veer) ** 2 / (2 * sigma_z ** 2)</span>
-    <span class="c1"># r = (</span>
+    <span class="c1"># r_squared = (</span>
     <span class="c1">#     a * (y - y_i - delta) ** 2</span>
     <span class="c1">#     - 2 * b * (y - y_i - delta) * (z - HH)</span>
     <span class="c1">#     + c * (z - HH) ** 2</span>
@@ -1173,7 +1173,7 @@ document.write(`
     <span class="c1"># c = sind(wind_veer) ** 2 / (twox_sigmay_2) + cosd(wind_veer) ** 2 / (twox_sigmaz_2)</span>
     <span class="c1"># delta_y = y - y_i - delta</span>
     <span class="c1"># delta_z = z - HH</span>
-    <span class="c1"># r = (a * (delta_y ** 2) - 2 * b * (delta_y) * (delta_z) + c * (delta_z ** 2))</span>
+    <span class="c1"># r_squared = (a * (delta_y ** 2) - 2 * b * (delta_y) * (delta_z) + c * (delta_z ** 2))</span>
     <span class="c1"># C = 1 - np.sqrt(np.clip(1 - (Ct * cosd(yaw) / (8.0 * sigma_y * sigma_z / (D * D))), 0.0, 1.0))</span>
 
     <span class="c1">## Numexpr</span>
@@ -1187,12 +1187,12 @@ document.write(`
     <span class="n">c</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span>
         <span class="s2">&quot;sin(wind_veer) ** 2 / (2 * sigma_y ** 2) + cos(wind_veer) ** 2 / (2 * sigma_z ** 2)&quot;</span>
     <span class="p">)</span>
-    <span class="n">r</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span>
+    <span class="n">r_squared</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span>
         <span class="s2">&quot;a * ((y - y_i - delta) ** 2) - 2 * b * (y - y_i - delta) * (z - HH) + c * ((z - HH) ** 2)&quot;</span>
     <span class="p">)</span>
     <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">Ct</span> <span class="o">*</span> <span class="n">cosd</span><span class="p">(</span><span class="n">yaw</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span> <span class="mf">8.0</span> <span class="o">*</span> <span class="n">sigma_y</span> <span class="o">*</span> <span class="n">sigma_z</span> <span class="o">/</span> <span class="p">(</span><span class="n">D</span> <span class="o">*</span> <span class="n">D</span><span class="p">)</span> <span class="p">)),</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
     <span class="n">C</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;1 - sqrt(d)&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">r</span><span class="p">,</span> <span class="n">C</span></div>
+    <span class="k">return</span> <span class="n">r_squared</span><span class="p">,</span> <span class="n">C</span></div>
 
 
 
@@ -1207,8 +1207,8 @@ document.write(`
 
 <div class="viewcode-block" id="gaussian_function">
 <a class="viewcode-back" href="../../../../_autosummary/floris.core.wake_velocity.gauss.html#floris.core.wake_velocity.gauss.gaussian_function">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">gaussian_function</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">sigma</span><span class="p">):</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;C * exp(-1 * r ** n / (2 * sigma ** 2))&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">gaussian_function</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">r_squared</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">sigma</span><span class="p">):</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;C * exp(-1 * r_squared ** n / (2 * sigma ** 2))&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">result</span></div>
 
 </pre></div>

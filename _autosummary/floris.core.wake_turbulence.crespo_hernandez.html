@@ -408,7 +408,7 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples - Turbine</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../examples/examples_turbine/001_reference_turbines.html">Example: Check turbine power curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/examples_turbine/001_reference_turbines.html">Example: Reference turbines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/examples_turbine/002_multiple_turbine_types.html">Example: Multiple turbine types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/examples_turbine/003_specify_turbine_power_curve.html">Example: Specify turbine power curve</a></li>
 </ul>
@@ -691,14 +691,35 @@ document.write(`
 <dd><p>CrespoHernandez is a wake-turbulence model that is used to compute
 additional variability introduced to the flow field by operation of a wind
 turbine. Implementation of the model follows the original formulation and
-limitations outlined in <span id="id1">[<a class="reference internal" href="#id16" title="A Crespo and J Hernandez. Turbulence characteristics in wind-turbine wakes. Journal of wind engineering and industrial aerodynamics, 61(1):71–85, 1996.">1</a>]</span>.</p>
+limitations outlined in <span id="id1">[<a class="reference internal" href="#id21" title="A. Crespo and J. Hernández. Turbulence characteristics in wind-turbine wakes. Journal of wind engineering and industrial aerodynamics, 61(1):71–85, 1996.">1</a>]</span>.</p>
+<p>Note: The values for default parameters provided here differ from those in
+:cite:<a href="#id2"><span class="problematic" id="id3">`</span></a>cht-crespo1996turbulence. Following their recommendations, the
+default parameters would instead be:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>initial: -0.0325*</p></li>
+<li><p>constant: 0.73</p></li>
+<li><p>ai: 0.8325</p></li>
+<li><p>downstream: -0.32</p></li>
+</ul>
+</div></blockquote>
+<ul class="simple">
+<li><p>The &quot;initial&quot; parameter is given as -0.0325 in <span id="id4">[<a class="reference internal" href="#id21" title="A. Crespo and J. Hernández. Turbulence characteristics in wind-turbine wakes. Journal of wind engineering and industrial aerodynamics, 61(1):71–85, 1996.">1</a>]</span>,</p></li>
+</ul>
+<p>but the negative exponent is not clear in the scans of the paper found on the internet,
+and several subsequent paper cite the exponent as positive (0.0325). This discrepancy
+is noted in <span id="id5">[<a class="reference internal" href="../bibliography.html#id39" title="Navid Zehtabiyan-Rezaie and Mahdi Abkar. A short note on turbulence characteristics in wind-turbine wakes. Journal of Wind Engineering and Industrial Aerodynamics, 240:105504, 2023. doi:10.1016/j.jweia.2023.105504.">19</a>]</span>. Moreover, <span id="id6">[<a class="reference internal" href="../bibliography.html#id39" title="Navid Zehtabiyan-Rezaie and Mahdi Abkar. A short note on turbulence characteristics in wind-turbine wakes. Journal of Wind Engineering and Industrial Aerodynamics, 240:105504, 2023. doi:10.1016/j.jweia.2023.105504.">19</a>]</span>
+argues that positive values for this exponent are not representative of the physical
+phenomena occurring. For more details, see <a class="github reference external" href="https://github.com/NREL/floris/issues/773">NREL/floris#773</a>.
+Nonetheless, the default value here is set to 0.1 for consistency with previous
+FLORIS versions. The default value may be updated in a future release.</p>
 <dl>
 <dt>Args:</dt><dd><dl class="simple">
 <dt>parameter_dictionary (dict): Model-specific parameters.</dt><dd><p>Default values are used when a parameter is not included
 in <cite>parameter_dictionary</cite>. Possible key-value pairs include:</p>
 <ul class="simple">
-<li><p><strong>initial</strong> (<em>float</em>): The initial ambient turbulence
-intensity, expressed as a decimal fraction.</p></li>
+<li><p><strong>initial</strong> (<em>float</em>): The exponent on the initial ambient
+turbulence intensity.</p></li>
 <li><p><strong>constant</strong> (<em>float</em>): The constant used to scale the
 wake-added turbulence intensity.</p></li>
 <li><p><strong>ai</strong> (<em>float</em>): The axial induction factor exponent used
@@ -711,12 +732,12 @@ turbulence.</p></li>
 </dd>
 </dl>
 </dd>
-<dt>References:</dt><dd><div class="docutils container" id="id2">
+<dt>References:</dt><dd><div class="docutils container" id="id7">
 <div role="list" class="citation-list">
-<div class="citation" id="id16" role="doc-biblioentry">
+<div class="citation" id="id21" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id1">2</a>,<a role="doc-backlink" href="#id1">3</a>)</span>
-<p>A Crespo and J Hernandez. Turbulence characteristics in wind-turbine wakes. <em>Journal of wind engineering and industrial aerodynamics</em>, 61(1):71–85, 1996.</p>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id1">2</a>,<a role="doc-backlink" href="#id1">3</a>,<a role="doc-backlink" href="#id4">4</a>)</span>
+<p>A. Crespo and J. Hernández. Turbulence characteristics in wind-turbine wakes. <em>Journal of wind engineering and industrial aerodynamics</em>, 61(1):71–85, 1996.</p>
 </div>
 </div>
 </div>

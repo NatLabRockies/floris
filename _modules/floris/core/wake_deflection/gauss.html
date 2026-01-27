@@ -772,7 +772,7 @@ window.addEventListener("load", load);
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples - Turbine</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../../../../examples/examples_turbine/001_reference_turbines.html">Example: Check turbine power curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/examples_turbine/001_reference_turbines.html">Example: Reference turbines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../examples/examples_turbine/002_multiple_turbine_types.html">Example: Multiple turbine types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../examples/examples_turbine/003_specify_turbine_power_curve.html">Example: Specify turbine power curve</a></li>
 </ul>
@@ -1269,29 +1269,31 @@ document.write(`
     <span class="c1"># top vortex</span>
     <span class="c1"># NOTE: this is the top of the grid, not the top of the rotor</span>
     <span class="n">zT</span> <span class="o">=</span> <span class="n">z_i</span> <span class="o">-</span> <span class="p">(</span><span class="n">HH</span> <span class="o">+</span> <span class="n">D</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">NUM_EPS</span>  <span class="c1"># distance from the top of the grid</span>
-    <span class="n">rT</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;yLocs ** 2 + zT ** 2&quot;</span><span class="p">)</span>  <span class="c1"># TODO: This is (-) in the paper</span>
+    <span class="c1"># NOTE: This is (-) in the paper, but (+) is consistent with the</span>
+    <span class="c1"># Martínez-Tossas et al. (2019) source.</span>
+    <span class="n">rT_squared</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;yLocs ** 2 + zT ** 2&quot;</span><span class="p">)</span>
     <span class="c1"># This looks like spanwise decay;</span>
     <span class="c1"># it defines the vortex profile in the spanwise directions</span>
-    <span class="n">core_shape</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;1 - exp(-rT / (eps ** 2))&quot;</span><span class="p">)</span>
-    <span class="n">v_top</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;(Gamma_top * zT) / (2 * pi * rT) * core_shape&quot;</span><span class="p">)</span>
+    <span class="n">core_shape</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;1 - exp(-rT_squared / (eps ** 2))&quot;</span><span class="p">)</span>
+    <span class="n">v_top</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;(Gamma_top * zT) / (2 * pi * rT_squared) * core_shape&quot;</span><span class="p">)</span>
     <span class="n">v_top</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span> <span class="n">v_top</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span> <span class="p">)</span>
     <span class="c1"># w_top = (-1 * Gamma_top * yLocs) / (2 * pi * rT) * core_shape * decay</span>
 
     <span class="c1"># bottom vortex</span>
     <span class="n">zB</span> <span class="o">=</span> <span class="n">z_i</span> <span class="o">-</span> <span class="p">(</span><span class="n">HH</span> <span class="o">-</span> <span class="n">D</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">NUM_EPS</span>
-    <span class="n">rB</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;yLocs ** 2 + zB ** 2&quot;</span><span class="p">)</span>
-    <span class="n">core_shape</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;1 - exp(-rB / (eps ** 2))&quot;</span><span class="p">)</span>
-    <span class="n">v_bottom</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;(Gamma_bottom * zB) / (2 * pi * rB) * core_shape&quot;</span><span class="p">)</span>
+    <span class="n">rB_squared</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;yLocs ** 2 + zB ** 2&quot;</span><span class="p">)</span>
+    <span class="n">core_shape</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;1 - exp(-rB_squared / (eps ** 2))&quot;</span><span class="p">)</span>
+    <span class="n">v_bottom</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;(Gamma_bottom * zB) / (2 * pi * rB_squared) * core_shape&quot;</span><span class="p">)</span>
     <span class="n">v_bottom</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span> <span class="n">v_bottom</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span> <span class="p">)</span>
     <span class="c1"># w_bottom = (-1 * Gamma_bottom * yLocs) / (2 * pi * rB) * core_shape * decay</span>
 
     <span class="c1"># wake rotation vortex</span>
     <span class="n">zC</span> <span class="o">=</span> <span class="n">z_i</span> <span class="o">-</span> <span class="n">HH</span> <span class="o">+</span> <span class="n">NUM_EPS</span>
-    <span class="n">rC</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;yLocs ** 2 + zC ** 2&quot;</span><span class="p">)</span>
-    <span class="n">core_shape</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;1 - exp(-rC / (eps ** 2))&quot;</span><span class="p">)</span>
-    <span class="n">v_core</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;(Gamma_wake_rotation * zC) / (2 * pi * rC) * core_shape&quot;</span><span class="p">)</span>
+    <span class="n">rC_squared</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;yLocs ** 2 + zC ** 2&quot;</span><span class="p">)</span>
+    <span class="n">core_shape</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;1 - exp(-rC_squared / (eps ** 2))&quot;</span><span class="p">)</span>
+    <span class="n">v_core</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;(Gamma_wake_rotation * zC) / (2 * pi * rC_squared) * core_shape&quot;</span><span class="p">)</span>
     <span class="n">v_core</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span> <span class="n">v_core</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span> <span class="p">)</span>
-    <span class="c1"># w_core = (-1 * Gamma_wake_rotation * yLocs) / (2 * pi * rC) * core_shape * decay</span>
+    <span class="c1"># w_core = (-1 * Gamma_wake_rotation * yLocs) / (2 * pi * rC_squared) * core_shape * decay</span>
 
     <span class="c1"># Cap the effective yaw values between -45 and 45 degrees</span>
     <span class="n">val</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">avg_v</span> <span class="o">-</span> <span class="n">v_core</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">v_top</span> <span class="o">+</span> <span class="n">v_bottom</span><span class="p">)</span>
@@ -1373,51 +1375,59 @@ document.write(`
 
     <span class="c1"># top vortex</span>
     <span class="n">zT</span> <span class="o">=</span> <span class="n">z</span> <span class="o">-</span> <span class="p">(</span><span class="n">HH</span> <span class="o">+</span> <span class="n">D</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">NUM_EPS</span>
-    <span class="n">rT</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;yLocs ** 2 + zT ** 2&quot;</span><span class="p">)</span>  <span class="c1"># TODO: This is - in the paper</span>
+    <span class="c1"># NOTE: This is (-) in the paper, but (+) is consistent with the</span>
+    <span class="c1"># Martínez-Tossas et al. (2019) source.</span>
+    <span class="n">rT_squared</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;yLocs ** 2 + zT ** 2&quot;</span><span class="p">)</span>
     <span class="c1"># This looks like spanwise decay;</span>
     <span class="c1"># it defines the vortex profile in the spanwise directions</span>
-    <span class="n">core_shape</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;1 - exp(-rT / (eps ** 2))&quot;</span><span class="p">)</span>
-    <span class="n">V1</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;(Gamma_top * zT) / (2 * pi * rT) * core_shape * decay&quot;</span><span class="p">)</span>
-    <span class="n">W1</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;(-1 * Gamma_top * yLocs) / (2 * pi * rT) * core_shape * decay&quot;</span><span class="p">)</span>
+    <span class="n">core_shape</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;1 - exp(-rT_squared / (eps ** 2))&quot;</span><span class="p">)</span>
+    <span class="n">V1</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;(Gamma_top * zT) / (2 * pi * rT_squared) * core_shape * decay&quot;</span><span class="p">)</span>
+    <span class="n">W1</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;(-1 * Gamma_top * yLocs) / (2 * pi * rT_squared) * core_shape * decay&quot;</span><span class="p">)</span>
 
     <span class="c1"># bottom vortex</span>
     <span class="n">zB</span> <span class="o">=</span> <span class="n">z</span> <span class="o">-</span> <span class="p">(</span><span class="n">HH</span> <span class="o">-</span> <span class="n">D</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">NUM_EPS</span>
-    <span class="n">rB</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;yLocs ** 2 + zB ** 2&quot;</span><span class="p">)</span>
-    <span class="n">core_shape</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;1 - exp(-rB / (eps ** 2))&quot;</span><span class="p">)</span>
-    <span class="n">V2</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;(Gamma_bottom * zB) / (2 * pi * rB) * core_shape * decay&quot;</span><span class="p">)</span>
-    <span class="n">W2</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;(-1 * Gamma_bottom * yLocs) / (2 * pi * rB) * core_shape * decay&quot;</span><span class="p">)</span>
+    <span class="n">rB_squared</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;yLocs ** 2 + zB ** 2&quot;</span><span class="p">)</span>
+    <span class="n">core_shape</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;1 - exp(-rB_squared / (eps ** 2))&quot;</span><span class="p">)</span>
+    <span class="n">V2</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;(Gamma_bottom * zB) / (2 * pi * rB_squared) * core_shape * decay&quot;</span><span class="p">)</span>
+    <span class="n">W2</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;(-1 * Gamma_bottom * yLocs) / (2 * pi * rB_squared) * core_shape * decay&quot;</span><span class="p">)</span>
 
     <span class="c1"># wake rotation vortex</span>
     <span class="n">zC</span> <span class="o">=</span> <span class="n">z</span> <span class="o">-</span> <span class="n">HH</span> <span class="o">+</span> <span class="n">NUM_EPS</span>
-    <span class="n">rC</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;yLocs ** 2 + zC ** 2&quot;</span><span class="p">)</span>
-    <span class="n">core_shape</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;1 - exp(-rC / (eps ** 2))&quot;</span><span class="p">)</span>
-    <span class="n">V5</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;(Gamma_wake_rotation * zC) / (2 * pi * rC) * core_shape * decay&quot;</span><span class="p">)</span>
-    <span class="n">W5</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;(-1 * Gamma_wake_rotation * yLocs) / (2 * pi * rC) * core_shape * decay&quot;</span><span class="p">)</span>
+    <span class="n">rC_squared</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;yLocs ** 2 + zC ** 2&quot;</span><span class="p">)</span>
+    <span class="n">core_shape</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;1 - exp(-rC_squared / (eps ** 2))&quot;</span><span class="p">)</span>
+    <span class="n">V5</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;(Gamma_wake_rotation * zC) / (2 * pi * rC_squared) * core_shape * decay&quot;</span><span class="p">)</span>
+    <span class="n">W5</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span>
+        <span class="s2">&quot;(-1 * Gamma_wake_rotation * yLocs) / (2 * pi * rC_squared) * core_shape * decay&quot;</span>
+    <span class="p">)</span>
 
     <span class="c1">### Boundary condition - ground mirror vortex</span>
 
     <span class="c1"># top vortex - ground</span>
     <span class="n">zTb</span> <span class="o">=</span> <span class="n">z</span> <span class="o">+</span> <span class="p">(</span><span class="n">HH</span> <span class="o">+</span> <span class="n">D</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">NUM_EPS</span>
-    <span class="n">rTb</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;yLocs ** 2 + zTb ** 2&quot;</span><span class="p">)</span>
+    <span class="n">rTb_squared</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;yLocs ** 2 + zTb ** 2&quot;</span><span class="p">)</span>
     <span class="c1"># This looks like spanwise decay;</span>
     <span class="c1"># it defines the vortex profile in the spanwise directions</span>
-    <span class="n">core_shape</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;1 - exp(-rTb / (eps ** 2))&quot;</span><span class="p">)</span>
-    <span class="n">V3</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;(-1 * Gamma_top * zTb) / (2 * pi * rTb) * core_shape * decay&quot;</span><span class="p">)</span>
-    <span class="n">W3</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;(Gamma_top * yLocs) / (2 * pi * rTb) * core_shape * decay&quot;</span><span class="p">)</span>
+    <span class="n">core_shape</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;1 - exp(-rTb_squared / (eps ** 2))&quot;</span><span class="p">)</span>
+    <span class="n">V3</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;(-1 * Gamma_top * zTb) / (2 * pi * rTb_squared) * core_shape * decay&quot;</span><span class="p">)</span>
+    <span class="n">W3</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;(Gamma_top * yLocs) / (2 * pi * rTb_squared) * core_shape * decay&quot;</span><span class="p">)</span>
 
     <span class="c1"># bottom vortex - ground</span>
     <span class="n">zBb</span> <span class="o">=</span> <span class="n">z</span> <span class="o">+</span> <span class="p">(</span><span class="n">HH</span> <span class="o">-</span> <span class="n">D</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">NUM_EPS</span>
-    <span class="n">rBb</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;yLocs ** 2 + zBb ** 2&quot;</span><span class="p">)</span>
-    <span class="n">core_shape</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;1 - exp(-rBb / (eps ** 2))&quot;</span><span class="p">)</span>
-    <span class="n">V4</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;(-1 * Gamma_bottom * zBb) / (2 * pi * rBb) * core_shape * decay&quot;</span><span class="p">)</span>
-    <span class="n">W4</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;(Gamma_bottom * yLocs) / (2 * pi * rBb) * core_shape * decay&quot;</span><span class="p">)</span>
+    <span class="n">rBb_squared</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;yLocs ** 2 + zBb ** 2&quot;</span><span class="p">)</span>
+    <span class="n">core_shape</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;1 - exp(-rBb_squared / (eps ** 2))&quot;</span><span class="p">)</span>
+    <span class="n">V4</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;(-1 * Gamma_bottom * zBb) / (2 * pi * rBb_squared) * core_shape * decay&quot;</span><span class="p">)</span>
+    <span class="n">W4</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;(Gamma_bottom * yLocs) / (2 * pi * rBb_squared) * core_shape * decay&quot;</span><span class="p">)</span>
 
     <span class="c1"># wake rotation vortex - ground effect</span>
     <span class="n">zCb</span> <span class="o">=</span> <span class="n">z</span> <span class="o">+</span> <span class="n">HH</span> <span class="o">+</span> <span class="n">NUM_EPS</span>
-    <span class="n">rCb</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;yLocs ** 2 + zCb ** 2&quot;</span><span class="p">)</span>
-    <span class="n">core_shape</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;1 - exp(-rCb / (eps ** 2))&quot;</span><span class="p">)</span>
-    <span class="n">V6</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;(-1 * Gamma_wake_rotation * zCb) / (2 * pi * rCb) * core_shape * decay&quot;</span><span class="p">)</span>
-    <span class="n">W6</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;(Gamma_wake_rotation * yLocs) / (2 * pi * rCb) * core_shape * decay&quot;</span><span class="p">)</span>
+    <span class="n">rCb_squared</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;yLocs ** 2 + zCb ** 2&quot;</span><span class="p">)</span>
+    <span class="n">core_shape</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;1 - exp(-rCb_squared / (eps ** 2))&quot;</span><span class="p">)</span>
+    <span class="n">V6</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span>
+        <span class="s2">&quot;(-1 * Gamma_wake_rotation * zCb) / (2 * pi * rCb_squared) * core_shape * decay&quot;</span>
+    <span class="p">)</span>
+    <span class="n">W6</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span>
+        <span class="s2">&quot;(Gamma_wake_rotation * yLocs) / (2 * pi * rCb_squared) * core_shape * decay&quot;</span>
+    <span class="p">)</span>
 
     <span class="c1"># total spanwise velocity</span>
     <span class="n">V</span> <span class="o">=</span> <span class="n">V1</span> <span class="o">+</span> <span class="n">V2</span> <span class="o">+</span> <span class="n">V3</span> <span class="o">+</span> <span class="n">V4</span> <span class="o">+</span> <span class="n">V5</span> <span class="o">+</span> <span class="n">V6</span>

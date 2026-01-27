@@ -408,7 +408,7 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples - Turbine</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../examples/examples_turbine/001_reference_turbines.html">Example: Check turbine power curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/examples_turbine/001_reference_turbines.html">Example: Reference turbines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/examples_turbine/002_multiple_turbine_types.html">Example: Multiple turbine types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/examples_turbine/003_specify_turbine_power_curve.html">Example: Specify turbine power curve</a></li>
 </ul>
@@ -675,7 +675,7 @@ document.write(`
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#floris.optimization.yaw_optimization.yaw_optimizer_sr.YawOptimizationSR" title="floris.optimization.yaw_optimization.yaw_optimizer_sr.YawOptimizationSR"><code class="xref py py-obj docutils literal notranslate"><span class="pre">YawOptimizationSR</span></code></a>(fmodel[, ...])</p></td>
-<td><p></p></td>
+<td><p>Optimize yaw angles using the Serial Refine (SR) optimization method.</p></td>
 </tr>
 </tbody>
 </table>
@@ -683,11 +683,13 @@ document.write(`
 <dl class="py class">
 <dt class="sig sig-object py" id="floris.optimization.yaw_optimization.yaw_optimizer_sr.YawOptimizationSR">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">floris.optimization.yaw_optimization.yaw_optimizer_sr.</span></span><span class="sig-name descname"><span class="pre">YawOptimizationSR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fmodel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimum_yaw_angle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum_yaw_angle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yaw_angles_baseline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ny_passes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[5,</span> <span class="pre">4]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">turbine_weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_downstream_turbines</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verify_convergence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/floris/optimization/yaw_optimization/yaw_optimizer_sr.html#YawOptimizationSR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#floris.optimization.yaw_optimization.yaw_optimizer_sr.YawOptimizationSR" title="Link to this definition">#</a></dt>
-<dd><dl class="py method">
+<dd><p>Optimize yaw angles using the Serial Refine (SR) optimization method.</p>
+<p>See <span id="id1">[<a class="reference internal" href="../bibliography.html#id37" title="Paul A. Fleming, Andrew P. J. Stanley, Christopher J. Bay, Jennifer King, Eric Simley, Bart M. Doekemeijer, and Rafael Mudafort. Serial-refine method for fast wake-steering yaw optimization. Journal of Physics: Conference Series (TORQUE), 2265(3):032109, 2022. URL: https://iopscience.iop.org/article/10.1088/1742-6596/2265/3/032109, doi:10.1088/1742-6596/2265/3/032109.">21</a>]</span> for full details on the SR method.</p>
+<dl class="py method">
 <dt class="sig sig-object py" id="floris.optimization.yaw_optimization.yaw_optimizer_sr.YawOptimizationSR.optimize">
 <span class="sig-name descname"><span class="pre">optimize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">print_progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/floris/optimization/yaw_optimization/yaw_optimizer_sr.html#YawOptimizationSR.optimize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#floris.optimization.yaw_optimization.yaw_optimizer_sr.YawOptimizationSR.optimize" title="Link to this definition">#</a></dt>
 <dd><p>Find the yaw angles that maximize the power production for every wind direction,
-wind speed and turbulence intensity.</p>
+wind speed and turbulence intensity using the SR optimization algorithm.</p>
 </dd></dl>
 
 </dd></dl>

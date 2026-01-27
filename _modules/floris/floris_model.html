@@ -772,7 +772,7 @@ window.addEventListener("load", load);
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples - Turbine</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../../examples/examples_turbine/001_reference_turbines.html">Example: Check turbine power curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/examples_turbine/001_reference_turbines.html">Example: Reference turbines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples/examples_turbine/002_multiple_turbine_types.html">Example: Multiple turbine types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples/examples_turbine/003_specify_turbine_power_curve.html">Example: Specify turbine power curve</a></li>
 </ul>
@@ -1010,25 +1010,30 @@ document.write(`
 <span class="sd">    underlying methods within the FLORIS framework. It is meant to act as a</span>
 <span class="sd">    single entry-point for the majority of users, simplifying the calls to</span>
 <span class="sd">    methods on objects within FLORIS.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        configuration (:py:obj:`dict`): The Floris configuration dictionary or YAML file.</span>
-<span class="sd">            The configuration should have the following inputs specified.</span>
-<span class="sd">                - **flow_field**: See `floris.simulation.flow_field.FlowField` for more details.</span>
-<span class="sd">                - **farm**: See `floris.simulation.farm.Farm` for more details.</span>
-<span class="sd">                - **turbine**: See `floris.simulation.turbine.Turbine` for more details.</span>
-<span class="sd">                - **wake**: See `floris.simulation.wake.WakeManager` for more details.</span>
-<span class="sd">                - **logging**: See `floris.simulation.core.Core` for more details.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="FlorisModel.get_defaults">
 <a class="viewcode-back" href="../../_autosummary/floris.floris_model.html#floris.floris_model.FlorisModel.get_defaults">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_defaults</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load the default FLORIS configuration dictionary.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: The default FLORIS configuration dictionary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">load_yaml</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;default_inputs.yaml&quot;</span><span class="p">))</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configuration</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the FlorisModel object.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            configuration: The Floris configuration dictionary or path to the input YAML file.</span>
+<span class="sd">                See floris.default_inputs.yaml for an example of the configuration dictionary</span>
+<span class="sd">                or visit https://nrel.github.io/floris/input_reference_main.html.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">configuration</span> <span class="o">==</span> <span class="s2">&quot;defaults&quot;</span><span class="p">:</span>
             <span class="n">configuration</span> <span class="o">=</span> <span class="n">FlorisModel</span><span class="o">.</span><span class="n">get_defaults</span><span class="p">()</span>
@@ -2118,11 +2123,11 @@ document.write(`
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Shortcut method to instantiate a :py:class:`~.tools.cut_plane.CutPlane`</span>
-<span class="sd">        object containing the velocity field in a horizontal plane cut through</span>
-<span class="sd">        the simulation domain at a specific height.</span>
+<span class="sd">        object containing the velocity field in a vertical plane cut through</span>
+<span class="sd">        the simulation domain at a specific downstream (x) distance.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            downstream_dist (float): Distance downstream of turbines to compute.</span>
+<span class="sd">            downstream_dist (float): Distance downstream to compute.</span>
 <span class="sd">            y_resolution (float, optional): Output array resolution.</span>
 <span class="sd">                Defaults to 200 points.</span>
 <span class="sd">            z_resolution (float, optional): Output array resolution.</span>
@@ -2134,7 +2139,7 @@ document.write(`
 <span class="sd">            finder_for_viz (int, optional): Index of the condition to visualize.</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            :py:class:`~.tools.cut_plane.CutPlane`: containing values</span>
-<span class="sd">            of x, y, u, v, w</span>
+<span class="sd">            of y, z, u, v, w</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_findex</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">findex_for_viz</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
@@ -2260,11 +2265,11 @@ document.write(`
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Shortcut method to instantiate a :py:class:`~.tools.cut_plane.CutPlane`</span>
-<span class="sd">        object containing the velocity field in a horizontal plane cut through</span>
-<span class="sd">        the simulation domain at a specific height.</span>
+<span class="sd">        object containing the velocity field in a vertical plane cut through</span>
+<span class="sd">        the simulation domain at a specific cross-stream (y) distance.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            height (float): Height of cut plane. Defaults to Hub-height.</span>
+<span class="sd">            crossstream_dist (float): Cross-stream distance to compute.</span>
 <span class="sd">            x_resolution (float, optional): Output array resolution.</span>
 <span class="sd">                Defaults to 200 points.</span>
 <span class="sd">            z_resolution (float, optional): Output array resolution.</span>
@@ -2278,7 +2283,7 @@ document.write(`
 
 <span class="sd">        Returns:</span>
 <span class="sd">            :py:class:`~.tools.cut_plane.CutPlane`: containing values</span>
-<span class="sd">            of x, y, u, v, w</span>
+<span class="sd">            of x, z, u, v, w</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_findex</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">findex_for_viz</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
@@ -2305,7 +2310,7 @@ document.write(`
 
         <span class="c1"># Get the points of data in a dataframe</span>
         <span class="c1"># TODO this just seems to be flattening and storing the data in a df; is this necessary?</span>
-        <span class="c1"># It seems the biggest depenedcy is on CutPlane and the subsequent visualization tools.</span>
+        <span class="c1"># It seems the biggest dependency is on CutPlane and the subsequent visualization tools.</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">fmodel_viz</span><span class="o">.</span><span class="n">get_plane_of_points</span><span class="p">(</span>
             <span class="n">normal_vector</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span>
             <span class="n">planar_coordinate</span><span class="o">=</span><span class="n">crossstream_dist</span><span class="p">,</span>

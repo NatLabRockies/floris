@@ -775,7 +775,7 @@ window.addEventListener("load", load);
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples - Turbine</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="examples/examples_turbine/001_reference_turbines.html">Example: Check turbine power curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/examples_turbine/001_reference_turbines.html">Example: Reference turbines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples/examples_turbine/002_multiple_turbine_types.html">Example: Multiple turbine types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples/examples_turbine/003_specify_turbine_power_curve.html">Example: Specify turbine power curve</a></li>
 </ul>
@@ -1211,7 +1211,8 @@ which itself is based on the cumulative model of <span id="id8">Bastankhah <em>e
 <h3>Crespo-Hernandez<a class="headerlink" href="#crespo-hernandez" title="Link to this heading">#</a></h3>
 <p>CrespoHernandez is a wake-turbulence model that is used to compute additional variability introduced
 to the flow field by operation of a wind turbine. Implementation of the model follows the original
-formulation and limitations outlined in <span id="id12">Crespo and Hernandez [<a class="reference internal" href="bibliography.html#id15" title="A Crespo and J Hernandez. Turbulence characteristics in wind-turbine wakes. Journal of wind engineering and industrial aerodynamics, 61(1):71–85, 1996.">18</a>]</span>.</p>
+formulation and limitations outlined in <span id="id12">Crespo and Hernández [<a class="reference internal" href="bibliography.html#id15" title="A. Crespo and J. Hernández. Turbulence characteristics in wind-turbine wakes. Journal of wind engineering and industrial aerodynamics, 61(1):71–85, 1996.">18</a>]</span>.</p>
+<p>The default parameter values used in FLORIS for CrespoHernandez differ from those reported in <span id="id13">Crespo and Hernández [<a class="reference internal" href="bibliography.html#id15" title="A. Crespo and J. Hernández. Turbulence characteristics in wind-turbine wakes. Journal of wind engineering and industrial aerodynamics, 61(1):71–85, 1996.">18</a>]</span> following subsequent calibration. However, <span id="id14">Zehtabiyan-Rezaie and Abkar [<a class="reference internal" href="bibliography.html#id39" title="Navid Zehtabiyan-Rezaie and Mahdi Abkar. A short note on turbulence characteristics in wind-turbine wakes. Journal of Wind Engineering and Industrial Aerodynamics, 240:105504, 2023. doi:10.1016/j.jweia.2023.105504.">19</a>]</span> argue that the sign of certain parameters are not physically consistent (and also misreported in subsequent literature). See the <code class="docutils literal notranslate"><span class="pre">CrespoHernandez</span></code> class docstring for more details.</p>
 </section>
 </section>
 <section id="wake-combination-models">
@@ -1303,7 +1304,7 @@ flow field.</p>
 <section id="max">
 <h3>Max<a class="headerlink" href="#max" title="Link to this heading">#</a></h3>
 <p>The MAX model incorporates the velocity deficits into the base flow field by selecting the
-maximum of the two for each point. For more information, refer to <span id="id13">Gunn <em>et al.</em> [<a class="reference internal" href="bibliography.html#id16" title="Kester Gunn, Clym Stock-Williams, M Burke, Richard Willden, C Vogel, W Hunter, T Stallard, N Robinson, and SR Schmidt. Limitations to the validity of single wake superposition in wind farm yield assessment. In Journal of Physics: Conference Series, number 1. IOP Publishing: Conference Series, 2016.">19</a>]</span>.</p>
+maximum of the two for each point. For more information, refer to <span id="id15">Gunn <em>et al.</em> [<a class="reference internal" href="bibliography.html#id16" title="Kester Gunn, Clym Stock-Williams, M Burke, Richard Willden, C Vogel, W Hunter, T Stallard, N Robinson, and SR Schmidt. Limitations to the validity of single wake superposition in wind farm yield assessment. In Journal of Physics: Conference Series, number 1. IOP Publishing: Conference Series, 2016.">20</a>]</span>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">combination_plot</span><span class="p">(</span><span class="s2">&quot;max&quot;</span><span class="p">)</span>
@@ -1318,8 +1319,7 @@ maximum of the two for each point. For more information, refer to <span id="id13
 </section>
 <section id="sum-of-squares-freestream-superposition-sosfs">
 <h3>Sum of Squares Freestream Superposition (SOSFS)<a class="headerlink" href="#sum-of-squares-freestream-superposition-sosfs" title="Link to this heading">#</a></h3>
-<p>This model combines the wakes via a sum of squares of the new wake to add and the existing
-flow field.</p>
+<p>This model combines the wakes via a sum of squares of the new wake to add and the existing flow field. For more information, refer to :cite:<code class="docutils literal notranslate"><span class="pre">katic_sos_1986</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">combination_plot</span><span class="p">(</span><span class="s2">&quot;sosfs&quot;</span><span class="p">)</span>

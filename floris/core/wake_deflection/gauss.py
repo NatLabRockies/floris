@@ -297,7 +297,9 @@ def wake_added_yaw(
     # top vortex
     # NOTE: this is the top of the grid, not the top of the rotor
     zT = z_i - (HH + D / 2) + NUM_EPS  # distance from the top of the grid
-    rT_squared = ne.evaluate("yLocs ** 2 + zT ** 2")  # TODO: This is (-) in the paper
+    # NOTE: This is (-) in the paper, but (+) is consistent with the
+    # Martínez-Tossas et al. (2019) source.
+    rT_squared = ne.evaluate("yLocs ** 2 + zT ** 2")
     # This looks like spanwise decay;
     # it defines the vortex profile in the spanwise directions
     core_shape = ne.evaluate("1 - exp(-rT_squared / (eps ** 2))")
@@ -398,7 +400,9 @@ def calculate_transverse_velocity(
 
     # top vortex
     zT = z - (HH + D / 2) + NUM_EPS
-    rT_squared = ne.evaluate("yLocs ** 2 + zT ** 2")  # TODO: This is - in the paper
+    # NOTE: This is (-) in the paper, but (+) is consistent with the
+    # Martínez-Tossas et al. (2019) source.
+    rT_squared = ne.evaluate("yLocs ** 2 + zT ** 2")
     # This looks like spanwise decay;
     # it defines the vortex profile in the spanwise directions
     core_shape = ne.evaluate("1 - exp(-rT_squared / (eps ** 2))")

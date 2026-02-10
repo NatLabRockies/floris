@@ -1938,6 +1938,10 @@ class FlorisModel(LoggingManager):
 
     def _reset_windio_metadata(self, category: List[str] = None) -> None:
         METADATA_FILEDS = ['wind_farm', 'wind_resource']
+        
+        if not hasattr(self, "_windio_metadata"):
+            category = None
+
         if category is None:
             self._windio_metadata = {k: {} for k in METADATA_FILEDS}
         else:
@@ -2009,9 +2013,10 @@ class FlorisModel(LoggingManager):
         return fmodel
 
     def set_wind_data_from_windio(self, wind_resource_windio: Dict) -> None:
-        from .read_windio import read_wind_resource
+        from .read_windio import read_wind_resource, load_windio_input
         self._reset_windio_metadata(category="wind_resource")
 
+        wind_resource_windio = load_windio_input(wind_resource_windio)
         wind_data_floris = read_wind_resource(wind_resource_windio)
 
         self._reset_windio_metadata(category="wind_resource")
@@ -2031,9 +2036,10 @@ class FlorisModel(LoggingManager):
         )
 
     def set_farm_from_windio(self, wind_farm_windio: Dict) -> None:
-        from .read_windio import read_wind_farm
+        from .read_windio import read_wind_farm, load_windio_input
         self._reset_windio_metadata(category="wind_farm")
 
+        wind_farm_windio = load_windio_input(wind_farm_windio)
         wind_farm_floris = read_wind_farm(wind_farm_windio, logger=self.logger)
 
         self._reset_windio_metadata(category="wind_farm")

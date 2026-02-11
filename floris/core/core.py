@@ -104,6 +104,10 @@ class Core(BaseClass):
                 grid_resolution=self.solver["turbine_grid_points"],
             )
         elif self.solver["type"] == "flow_field_grid":
+            self.logger.warning(
+                "The flow_field_grid solver type is deprecated in favor of flow_field_planar_grid "
+                "and will be removed in a future release."
+            )
             self.grid = FlowFieldGrid(
                 turbine_coordinates=self.farm.coordinates,
                 turbine_diameters=self.farm.rotor_diameters,

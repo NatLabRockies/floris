@@ -97,6 +97,16 @@ class Grid(ABC, BaseClass):
         else:
             raise TypeError("`grid_resolution` must be of type int or Iterable(int,)")
 
+    @z_sorted.validator
+    def z_sorted_validator(self, instance: attrs.Attribute, value: NDArrayFloat) -> None:
+        """Check that the z coordinates are above the ground."""
+        if np.any(value <= 0):
+            self.logger.warning(
+                "Non-positive z coordinates detected. "
+                "This may cause issues with the flow model calculations. "
+                "To fix this, consider adjusting the z coordinates to be positive."
+            )
+
     @abstractmethod
     def set_grid(self) -> None:
         raise NotImplementedError("Grid.set_grid")

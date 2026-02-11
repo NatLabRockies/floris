@@ -52,7 +52,7 @@ def test_turbine_grid_init(caplog):
     assert "Non-positive z coordinates detected" in caplog.text
     caplog.clear()
 
-def test_flow_field_grid_init():
+def test_flow_field_planar_grid_init():
 
     # Basic instantiation
     FlowFieldPlanarGrid(

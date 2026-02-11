@@ -406,6 +406,5 @@ def function(
 Some models require a special grid and/or solver, and that mapping happens in
 [floris.core.core.Core](https://github.com/NatLabRockies/floris/blob/main/floris/core/core.py).
 Generally, a specific kind of solver requires one or a number of specific grid-types.
-For example, `full_flow_sequential_solver` requires either `FlowFieldGrid` or
-`FlowFieldPlanarGrid`.
+For example, `full_flow_sequential_solver` requires a `FlowFieldPlanarGrid`.
 So, it is often the case that adding a new solver will require adding a new grid type, as well.

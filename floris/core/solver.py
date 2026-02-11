@@ -6,7 +6,6 @@ from floris.core import (
     axial_induction,
     Farm,
     FlowField,
-    FlowFieldGrid,
     FlowFieldPlanarGrid,
     PointsGrid,
     thrust_coefficient,
@@ -258,7 +257,7 @@ def sequential_solver(
 def full_flow_sequential_solver(
     farm: Farm,
     flow_field: FlowField,
-    flow_field_grid: FlowFieldGrid | FlowFieldPlanarGrid | PointsGrid,
+    flow_field_grid: FlowFieldPlanarGrid | PointsGrid,
     model_manager: WakeModelManager
 ) -> None:
 
@@ -722,7 +721,7 @@ def cc_solver(
 def full_flow_cc_solver(
     farm: Farm,
     flow_field: FlowField,
-    flow_field_grid: FlowFieldGrid | FlowFieldPlanarGrid | PointsGrid,
+    flow_field_grid: FlowFieldPlanarGrid | PointsGrid,
     model_manager: WakeModelManager,
 ) -> None:
     # Get the flow quantities and turbine performance
@@ -1180,7 +1179,7 @@ def turbopark_solver(
 def full_flow_turbopark_solver(
     farm: Farm,
     flow_field: FlowField,
-    flow_field_grid: FlowFieldGrid,
+    flow_field_grid: FlowFieldPlanarGrid | PointsGrid,
     model_manager: WakeModelManager
 ) -> None:
     raise NotImplementedError("Plotting for the TurbOPark model is not currently implemented.")
@@ -1408,7 +1407,7 @@ def empirical_gauss_solver(
 def full_flow_empirical_gauss_solver(
     farm: Farm,
     flow_field: FlowField,
-    flow_field_grid: FlowFieldGrid,
+    flow_field_grid: FlowFieldPlanarGrid | PointsGrid,
     model_manager: WakeModelManager
 ) -> None:
 

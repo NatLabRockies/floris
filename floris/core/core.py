@@ -14,7 +14,6 @@ from floris.core import (
     empirical_gauss_solver,
     Farm,
     FlowField,
-    FlowFieldGrid,
     FlowFieldPlanarGrid,
     full_flow_cc_solver,
     full_flow_empirical_gauss_solver,
@@ -104,15 +103,9 @@ class Core(BaseClass):
                 grid_resolution=self.solver["turbine_grid_points"],
             )
         elif self.solver["type"] == "flow_field_grid":
-            self.logger.warning(
-                "The flow_field_grid solver type is deprecated in favor of flow_field_planar_grid "
-                "and will be removed in a future release."
-            )
-            self.grid = FlowFieldGrid(
-                turbine_coordinates=self.farm.coordinates,
-                turbine_diameters=self.farm.rotor_diameters,
-                wind_directions=self.flow_field.wind_directions,
-                grid_resolution=self.solver["flow_field_grid_points"],
+            raise ValueError(
+                "The flow_field_grid solver type is deprecated as of FLORIS v4.7 in favor of"
+                "flow_field_planar_grid."
             )
         elif self.solver["type"] == "flow_field_planar_grid":
             self.grid = FlowFieldPlanarGrid(

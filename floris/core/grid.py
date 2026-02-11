@@ -80,23 +80,6 @@ class Grid(ABC, BaseClass):
         """Using the validator method to keep the `n_findex` attribute up to date."""
         self.n_findex = value.size
 
-    @grid_resolution.validator
-    def grid_resolution_validator(self, instance: attrs.Attribute, value: int | Iterable) -> None:
-        # TODO move this to the grid types and off of the base class
-        """Check that grid resolution is given as appropriate for the chosen Grid-type."""
-        if isinstance(value, int) and \
-            isinstance(self, (TurbineGrid, TurbineCubatureGrid, PointsGrid)):
-            return
-        elif isinstance(value, Iterable) and isinstance(self, FlowFieldPlanarGrid):
-            assert type(value[0]) is int
-            assert type(value[1]) is int
-        elif isinstance(value, Iterable) and isinstance(self, FlowFieldGrid):
-            assert type(value[0]) is int
-            assert type(value[1]) is int
-            assert type(value[2]) is int
-        else:
-            raise TypeError("`grid_resolution` must be of type int or Iterable(int,)")
-
     @z_sorted.validator
     def z_sorted_validator(self, instance: attrs.Attribute, value: NDArrayFloat) -> None:
         """Check that the z coordinates are above the ground."""
@@ -133,6 +116,9 @@ class TurbineGrid(Grid):
     average_method = "cubic-mean"
 
     def __attrs_post_init__(self) -> None:
+        if not isinstance(self.grid_resolution, int):
+            raise TypeError("grid_resolution must be of type int for TurbineGrid")
+
         self.set_grid()
 
     def set_grid(self) -> None:
@@ -185,8 +171,6 @@ class TurbineGrid(Grid):
         Note that the x coordinates are all the same for the rotor plane.
 
         """
-        # TODO: Where should we locate the coordinate system? Currently, its at
-        # the foot of the turbine where the tower meets the ground.
 
         # These are the rotated coordinates of the wind turbines based on the wind direction
         x, y, z, self.x_center_of_rotation, self.y_center_of_rotation = rotate_coordinates_rel_west(
@@ -289,6 +273,9 @@ class TurbineCubatureGrid(Grid):
     average_method = "simple-cubature"
 
     def __attrs_post_init__(self) -> None:
+        if not isinstance(self.grid_resolution, int):
+            raise TypeError("grid_resolution must be of type int for TurbineGrid")
+
         self.set_grid()
 
     def set_grid(self) -> None:
@@ -459,6 +446,12 @@ class FlowFieldGrid(Grid):
     y_center_of_rotation: NDArrayFloat = field(init=False)
 
     def __attrs_post_init__(self) -> None:
+        if (not isinstance(self.grid_resolution, Iterable)
+            or (len(self.grid_resolution) != 3)
+            or any(not isinstance(v, int) for v in self.grid_resolution)
+        ):
+            raise TypeError("grid_resolution must be an Iterable of length 3 for FlowFieldGrid")
+
         self.set_grid()
 
     def set_grid(self) -> None:
@@ -536,6 +529,14 @@ class FlowFieldPlanarGrid(Grid):
     unsorted_indices: NDArrayInt = field(init=False)
 
     def __attrs_post_init__(self) -> None:
+        if (not isinstance(self.grid_resolution, Iterable)
+            or (len(self.grid_resolution) != 2)
+            or any(not isinstance(v, int) for v in self.grid_resolution)
+        ):
+            raise TypeError(
+                "grid_resolution must be an Iterable of length 2 for FlowFieldPlanarGrid"
+            )
+
         self.set_grid()
 
     def set_grid(self) -> None:
@@ -658,6 +659,9 @@ class PointsGrid(Grid):
     y_center_of_rotation: float | None = field(default=None)
 
     def __attrs_post_init__(self) -> None:
+        if not isinstance(self.grid_resolution, int):
+            raise TypeError("grid_resolution must be of type int for TurbineGrid")
+
         self.set_grid()
 
     def set_grid(self) -> None:

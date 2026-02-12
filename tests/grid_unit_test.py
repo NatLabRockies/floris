@@ -3,7 +3,11 @@ import logging
 import numpy as np
 import pytest
 
-from floris.core import Core, FlowFieldPlanarGrid, TurbineGrid
+from floris.core import (
+    Core,
+    FlowFieldPlanarGrid,
+    TurbineGrid,
+)
 
 
 def test_turbine_grid_init(caplog):

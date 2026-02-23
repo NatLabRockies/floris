@@ -132,7 +132,7 @@ class GaussVelocityDeficit(BaseModel):
             sigma_z *= (x >= xR)
             sigma_z += np.ones_like(sigma_z) * (x < xR) * 0.5 * rotor_diameter_i
 
-            r, C = rC(
+            r_squared, C = rC(
                 wind_veer,
                 sigma_y,
                 sigma_z,
@@ -146,7 +146,7 @@ class GaussVelocityDeficit(BaseModel):
                 rotor_diameter_i,
             )
 
-            near_wake_deficit = gaussian_function(C, r, 1, np.sqrt(0.5))
+            near_wake_deficit = gaussian_function(C, r_squared, 1, np.sqrt(0.5))
             near_wake_deficit *= near_wake_mask
 
             velocity_deficit += near_wake_deficit
@@ -160,7 +160,7 @@ class GaussVelocityDeficit(BaseModel):
             sigma_y = (ky * (x - x0) + sigma_y0) * far_wake_mask + sigma_y0 * (x < x0)
             sigma_z = (kz * (x - x0) + sigma_z0) * far_wake_mask + sigma_z0 * (x < x0)
 
-            r, C = rC(
+            r_squared, C = rC(
                 wind_veer,
                 sigma_y,
                 sigma_z,
@@ -174,7 +174,7 @@ class GaussVelocityDeficit(BaseModel):
                 rotor_diameter_i,
             )
 
-            far_wake_deficit = gaussian_function(C, r, 1, np.sqrt(0.5))
+            far_wake_deficit = gaussian_function(C, r_squared, 1, np.sqrt(0.5))
             far_wake_deficit *= far_wake_mask
 
             velocity_deficit += far_wake_deficit
@@ -189,7 +189,7 @@ def rC(wind_veer, sigma_y, sigma_z, y, y_i, delta, z, HH, Ct, yaw, D):
     # a = cosd(wind_veer) ** 2 / (2 * sigma_y ** 2) + sind(wind_veer) ** 2 / (2 * sigma_z ** 2)
     # b = -sind(2 * wind_veer) / (4 * sigma_y ** 2) + sind(2 * wind_veer) / (4 * sigma_z ** 2)
     # c = sind(wind_veer) ** 2 / (2 * sigma_y ** 2) + cosd(wind_veer) ** 2 / (2 * sigma_z ** 2)
-    # r = (
+    # r_squared = (
     #     a * (y - y_i - delta) ** 2
     #     - 2 * b * (y - y_i - delta) * (z - HH)
     #     + c * (z - HH) ** 2
@@ -204,7 +204,7 @@ def rC(wind_veer, sigma_y, sigma_z, y, y_i, delta, z, HH, Ct, yaw, D):
     # c = sind(wind_veer) ** 2 / (twox_sigmay_2) + cosd(wind_veer) ** 2 / (twox_sigmaz_2)
     # delta_y = y - y_i - delta
     # delta_z = z - HH
-    # r = (a * (delta_y ** 2) - 2 * b * (delta_y) * (delta_z) + c * (delta_z ** 2))
+    # r_squared = (a * (delta_y ** 2) - 2 * b * (delta_y) * (delta_z) + c * (delta_z ** 2))
     # C = 1 - np.sqrt(np.clip(1 - (Ct * cosd(yaw) / (8.0 * sigma_y * sigma_z / (D * D))), 0.0, 1.0))
 
     ## Numexpr
@@ -218,12 +218,12 @@ def rC(wind_veer, sigma_y, sigma_z, y, y_i, delta, z, HH, Ct, yaw, D):
     c = ne.evaluate(
         "sin(wind_veer) ** 2 / (2 * sigma_y ** 2) + cos(wind_veer) ** 2 / (2 * sigma_z ** 2)"
     )
-    r = ne.evaluate(
+    r_squared = ne.evaluate(
         "a * ((y - y_i - delta) ** 2) - 2 * b * (y - y_i - delta) * (z - HH) + c * ((z - HH) ** 2)"
     )
     d = np.clip(1 - (Ct * cosd(yaw) / ( 8.0 * sigma_y * sigma_z / (D * D) )), 0.0, 1.0)
     C = ne.evaluate("1 - sqrt(d)")
-    return r, C
+    return r_squared, C
 
 
 def mask_upstream_wake(mesh_y_rotated, x_coord_rotated, y_coord_rotated, turbine_yaw):
@@ -232,6 +232,6 @@ def mask_upstream_wake(mesh_y_rotated, x_coord_rotated, y_coord_rotated, turbine
     return xR, yR
 
 
-def gaussian_function(C, r, n, sigma):
-    result = ne.evaluate("C * exp(-1 * r ** n / (2 * sigma ** 2))")
+def gaussian_function(C, r_squared, n, sigma):
+    result = ne.evaluate("C * exp(-1 * r_squared ** n / (2 * sigma ** 2))")
     return result

@@ -4,16 +4,16 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "floris"
-version = "4.2.2"
+version = "4.6.2"
 description = "A controls-oriented engineering wake model."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10, <3.15"
 authors = [
-    { name = "Rafael Mudafort", email = "Rafael.Mudafort@nrel.gov" },
-    { name = "Paul Fleming", email = "Paul.Fleming@nrel.gov" },
-    { name = "Michael (Misha) Sinner", email = "Michael.Sinner@nrel.gov" },
-    { name = "Eric Simley", email = "Eric.Simley@nrel.gov" },
-    { name = "Christopher Bay", email = "Christopher.Bay@nrel.gov" },
+    { name = "Rafael Mudafort", email = "Rafael.Mudafort@nlr.gov" },
+    { name = "Paul Fleming", email = "Paul.Fleming@nlr.gov" },
+    { name = "Michael (Misha) Sinner", email = "Michael.Sinner@nlr.gov" },
+    { name = "Eric Simley", email = "Eric.Simley@nlr.gov" },
+    { name = "Christopher Bay", email = "Christopher.Bay@nlr.gov" },
 ]
 license = { file = "LICENSE.txt" }
 keywords = ["floris"]
@@ -46,16 +46,18 @@ dependencies = [
 docs = [
     "jupyter-book~=1.0",
     "sphinx-book-theme~=1.0",
-    "sphinx-autodoc-typehints~=2.0",
+    "sphinx-autodoc-typehints>=2,<4",
     "sphinxcontrib-autoyaml~=1.0",
     "sphinxcontrib.mermaid~=1.0",
+    "bokeh~=3.7",
+    "ruamel.yaml~=0.18.0",
 ]
 develop = [
-    "pytest~=8.0",
+    "pytest>=8,<10",
     "pytest-benchmark~=5.1",
     "pre-commit~=4.0",
     "ruff~=0.9",
-    "isort~=5.0"
+    "isort>=5,<8"
 ]
 
 [tool.setuptools.packages.find]
@@ -64,13 +66,15 @@ include = ["floris*"]
 [tool.setuptools.package-data]
 floris = [
     "turbine_library/*.yaml",
+    "turbine_library/*.csv",
+    "turbine_library/demo_cp_ct_surfaces/*.npz",
     "core/wake_velocity/turbopark_lookup_table.mat",
     "default_inputs.yaml"
 ]
 
 [project.urls]
-Homepage = "https://github.com/NREL/floris"
-Documentation = "https://nrel.github.io/floris/"
+Homepage = "https://github.com/NatLabRockies/floris"
+Documentation = "https://natlabrockies.github.io/floris/"
 
 [coverage.run]
 # Coverage.py configuration file

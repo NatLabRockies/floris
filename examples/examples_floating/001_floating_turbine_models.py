@@ -11,9 +11,9 @@ have been defined.
 If `correct_cp_ct_for_tilt` is True, then the difference between the current tilt as
 interpolated from the floating tilt table is used to scale the turbine power and thrust.
 
-If `correct_cp_ct_for_tilt` is False, then it is assumed that the Cp/Ct tables provided
-already account for the variation in tilt with wind speed (for example they were computed from
-a turbine simulator with tilt degree-of-freedom enabled and the floating platform simulated),
+If `correct_cp_ct_for_tilt` is False, then it is assumed that the power/thrust coefficient tables
+provided already account for the variation in tilt with wind speed (for example they were computed
+from a turbine simulator with tilt degree-of-freedom enabled and the floating platform simulated),
 and no correction is made.
 
 In the example below, three single-turbine simulations are run to show the different behaviors.
@@ -21,7 +21,7 @@ In the example below, three single-turbine simulations are run to show the diffe
 fmodel_fixed: Fixed bottom turbine (no tilt variation with wind speed)
 fmodel_floating: Floating turbine (tilt varies with wind speed)
 fmodel_floating_defined_floating: Floating turbine (tilt varies with wind speed, but
-    tilt does not scale cp/ct)
+    tilt does not scale power/thrust coefficient)
 """
 
 
@@ -89,7 +89,7 @@ ax.plot(
     tilt_angles_floating_defined_floating,
     color="m",
     ls="--",
-    label="Floating (cp/ct not scaled by tilt)",
+    label="Floating (power/thrust coefficient not scaled by tilt)",
 )
 ax.grid(True)
 ax.legend()
@@ -104,7 +104,7 @@ ax.plot(
     power_floating_defined_floating,
     color="m",
     ls="--",
-    label="Floating (cp/ct not scaled by tilt)",
+    label="Floating (power/thrust coefficient not scaled by tilt)",
 )
 ax.grid(True)
 ax.legend()
@@ -119,7 +119,7 @@ ax.plot(
     power_floating_defined_floating - power_fixed,
     color="m",
     ls="--",
-    label="Floating (cp/ct not scaled by tilt)",
+    label="Floating (power/thrust coefficient not scaled by tilt)",
 )
 ax.grid(True)
 ax.legend()
@@ -134,7 +134,7 @@ ax.plot(
     ct_floating_defined_floating,
     color="m",
     ls="--",
-    label="Floating (cp/ct not scaled by tilt)",
+    label="Floating (power/thrust coefficient not scaled by tilt)",
 )
 ax.grid(True)
 ax.legend()

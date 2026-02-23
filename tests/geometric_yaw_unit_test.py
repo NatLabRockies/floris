@@ -3,7 +3,10 @@ import numpy as np
 import pandas as pd
 
 from floris import FlorisModel
-from floris.optimization.yaw_optimization.yaw_optimizer_geometric import YawOptimizationGeometric
+from floris.optimization.yaw_optimization.yaw_optimizer_geometric import (
+    _process_layout,
+    YawOptimizationGeometric,
+)
 
 
 DEBUG = False
@@ -113,3 +116,40 @@ def test_disabled_turbines(sample_inputs_fixture):
     yaw_angles_opt_removed = df_opt.loc[3, "yaw_angles_opt"]
 
     assert np.allclose(yaw_angles_opt_disabled[[0, 2]], yaw_angles_opt_removed)
+
+def test_process_layout():
+
+    # Test inside Jensen-like wake
+    dx, dy = _process_layout(
+        turbine_x=np.array([0.0, 1000.0]),
+        turbine_y=np.array([0.0, 499.0]),
+        rotor_diameter=1.0,
+        spread=0.5
+    )
+    assert dx[0] == 1000.0 # Distance to downstream turbine, which is inside the wake
+
+    # Test outside Jensen-like wake
+    dx, dy, = _process_layout(
+        turbine_x=np.array([0.0, 1000.0]),
+        turbine_y=np.array([0.0, 501.0]),
+        rotor_diameter=1.0,
+        spread=0.5
+    )
+    assert dx[0] == np.inf # Distance to downstream turbine, which is outside the wake
+
+    # Test effect of rotor diameter
+    dx, dy, = _process_layout(
+        turbine_x=np.array([0.0, 1000.0]),
+        turbine_y=np.array([0.0, 549.0]),
+        rotor_diameter=100.0,
+        spread=0.5
+    )
+    assert dx[0] != np.inf # This turbine is now inside the wake
+
+    dx, dy = _process_layout(
+        turbine_x=np.array([0.0, 1000.0]),
+        turbine_y=np.array([0.0, 551.0]),
+        rotor_diameter=100.0,
+        spread=0.5
+    )
+    assert dx[0] == np.inf # This turbine is now outside the wake

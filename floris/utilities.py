@@ -1,6 +1,3 @@
-
-from __future__ import annotations
-
 import os
 from math import ceil
 from typing import (
@@ -15,7 +12,7 @@ import numpy as np
 import yaml
 from attrs import define, field
 
-from floris.type_dec import floris_array_converter, NDArrayFloat
+from floris.type_dec import floris_float_type, NDArrayFloat
 
 
 def pshape(array: np.ndarray, label: str = ""):
@@ -130,7 +127,7 @@ def check_and_identify_step_size(wind_directions):
             raise ValueError("wind_directions must be evenly spaced")
 
     else:
-        if np.all(steps == steps[0]):
+        if np.allclose(steps, steps[0]):
             return steps[0]
 
         # If all but one of the steps are the same
@@ -264,7 +261,10 @@ def rotate_coordinates_rel_west(
         + y_coord_offset * cosd(wind_deviation_from_west)
         + y_center_of_rotation
     )
-    z_coord_rotated = np.ones_like(wind_deviation_from_west) * z_coordinates
+    z_coord_rotated = np.ones_like(
+        wind_deviation_from_west,
+        dtype=floris_float_type
+    ) * z_coordinates
     return x_coord_rotated, y_coord_rotated, z_coord_rotated, x_center_of_rotation, \
         y_center_of_rotation
 
@@ -439,3 +439,21 @@ def print_nested_dict(dictionary: Dict[str, Any], indent: int = 0) -> None:
             print_nested_dict(value, indent + 4)
         else:
             print(" " * (indent + 4) + str(value))
+
+def is_all_scalar_dict(dictionary: Dict[str, Any]) -> bool:
+    """Check if all values in a dictionary are scalar.
+
+    A scalar is defined as a value that is not iterable (like int, float, str, bool)
+    or a numpy scalar (0-dimensional array).
+
+    Args:
+        dictionary (Dict[str, Any]): The dictionary to check.
+
+    Returns:
+        bool: True if all values are scalar, False otherwise.
+    """
+    for value in dictionary.values():
+        if not np.isscalar(value):
+            return False
+
+    return True

@@ -22,17 +22,17 @@ n_turbines = 25
 
 # Random walk on wind speed with values between 5 and 20 m/s
 ws = np.ones(N) * 10
+rng = np.random.default_rng(0)
+ws_ll = 5
+ws_ul = 20
 for i in range(1, N):
-    ws[i] = ws[i - 1] + np.random.normal(0, 0.25)
-    if ws[i] < 5:
-        ws[i] = 5
-    if ws[i] > 20:
-        ws[i] = 20
+    ws[i] = ws[i - 1] + rng.normal(0, 0.25)
+    if ws[i] < ws_ll:
+        ws[i] = ws_ll
+    if ws[i] > ws_ul:
+        ws[i] = ws_ul
 
-time_series = TimeSeries(
-    wind_directions=270.,
-    wind_speeds=ws,
-    turbulence_intensities=0.06)
+time_series = TimeSeries(wind_directions=270.0, wind_speeds=ws, turbulence_intensities=0.06)
 
 # Instantiate a FlorisModel and an ApproxFlorisModel
 fmodel = FlorisModel("../inputs/gch.yaml")

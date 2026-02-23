@@ -14,14 +14,17 @@ parts:
     - file: intro_concepts
     - file: wind_data_user
     - file: floris_models
+    - file: input_reference_main
+    - file: turbine_models
+      sections:
+      - file: input_reference_turbine
+      - file: operation_models_user
+      - file: floating_wind_turbine
+      - file: multidimensional_wind_turbine
+      - file: turbine_library
     - file: advanced_concepts
     - file: heterogeneous_map
-    - file: floating_wind_turbine
-    - file: turbine_interaction
-    - file: operation_models_user
     - file: layout_optimization
-    - file: input_reference_main
-    - file: input_reference_turbine
     - file: examples
 
   - caption: Theory and Background

@@ -1,6 +1,3 @@
-
-from __future__ import annotations
-
 import copy
 import inspect
 from pathlib import Path
@@ -53,22 +50,27 @@ class FlorisModel(LoggingManager):
     underlying methods within the FLORIS framework. It is meant to act as a
     single entry-point for the majority of users, simplifying the calls to
     methods on objects within FLORIS.
-
-    Args:
-        configuration (:py:obj:`dict`): The Floris configuration dictionary or YAML file.
-            The configuration should have the following inputs specified.
-                - **flow_field**: See `floris.simulation.flow_field.FlowField` for more details.
-                - **farm**: See `floris.simulation.farm.Farm` for more details.
-                - **turbine**: See `floris.simulation.turbine.Turbine` for more details.
-                - **wake**: See `floris.simulation.wake.WakeManager` for more details.
-                - **logging**: See `floris.simulation.core.Core` for more details.
     """
 
     @staticmethod
     def get_defaults() -> dict:
+        """
+        Load the default FLORIS configuration dictionary.
+
+        Returns:
+            dict: The default FLORIS configuration dictionary.
+        """
         return copy.deepcopy(load_yaml(Path(__file__).parent / "default_inputs.yaml"))
 
     def __init__(self, configuration: dict | str | Path):
+        """
+        Initialize the FlorisModel object.
+
+        Args:
+            configuration: The Floris configuration dictionary or path to the input YAML file.
+                See floris.default_inputs.yaml for an example of the configuration dictionary
+                or visit https://nrel.github.io/floris/input_reference_main.html.
+        """
 
         if configuration == "defaults":
             configuration = FlorisModel.get_defaults()
@@ -140,8 +142,9 @@ class FlorisModel(LoggingManager):
         turbine_type: list | None = None,
         turbine_library_path: str | Path | None = None,
         solver_settings: dict | None = None,
-        heterogeneous_inflow_config=None,
+        heterogeneous_inflow_config: dict | None = None,
         wind_data: type[WindDataBase] | None = None,
+        multidim_conditions: dict | None = None,
     ):
         """
         Instantiate a new Floris object with updated conditions set by arguments. Any parameters
@@ -169,7 +172,7 @@ class FlorisModel(LoggingManager):
             turbine_library_path (str | Path | None, optional): Path to the turbine library.
                 Defaults to None.
             solver_settings (dict | None, optional): Solver settings. Defaults to None.
-            heterogeneous_inflow_config (None, optional): heterogeneous inflow configuration.
+            heterogeneous_inflow_config (dict | None, optional): heterogeneous inflow configuration.
                 Defaults to None.
             wind_data (type[WindDataBase] | None, optional): Wind data. Defaults to None.
         """
@@ -231,6 +234,19 @@ class FlorisModel(LoggingManager):
                 turbulence_intensities,
                 heterogeneous_inflow_config,
             ) = wind_data.unpack_for_reinitialize()
+
+            # For backwards compatibility, multidim_conditions are unpacked separately.
+            # multidim_conditions may be included in unpack_for_reinitialize in a future release.
+            if (multidim_conditions is not None
+                and wind_data.unpack_multidim_conditions() is not None):
+                self.logger.warning(
+                    "multidim_conditions passed to reinitialize() and also found in "
+                    "wind_data. Using multidim_conditions from wind_data."
+                )
+                multidim_conditions = wind_data.unpack_multidim_conditions()
+            elif wind_data.unpack_multidim_conditions() is not None:
+                multidim_conditions = wind_data.unpack_multidim_conditions()
+
             self._wind_data = wind_data
 
         ## FlowField
@@ -264,6 +280,8 @@ class FlorisModel(LoggingManager):
 
             flow_field_dict["heterogeneous_inflow_config"] = heterogeneous_inflow_config
 
+        if multidim_conditions is not None:
+            flow_field_dict["multidim_conditions"] = multidim_conditions
 
 
         if solver_settings is not None:
@@ -393,7 +411,7 @@ class FlorisModel(LoggingManager):
         turbine_type: list | None = None,
         turbine_library_path: str | Path | None = None,
         solver_settings: dict | None = None,
-        heterogeneous_inflow_config=None,
+        heterogeneous_inflow_config: dict | None = None,
         wind_data: type[WindDataBase] | None = None,
         yaw_angles: NDArrayFloat | list[float] | None = None,
         power_setpoints: NDArrayFloat | list[float] | list[float, None] | None = None,
@@ -401,6 +419,7 @@ class FlorisModel(LoggingManager):
         awc_amplitudes: NDArrayFloat | list[float] | list[float, None] | None = None,
         awc_frequencies: NDArrayFloat | list[float] | list[float, None] | None = None,
         disable_turbines: NDArrayBool | list[bool] | None = None,
+        multidim_conditions: dict | None = None,
     ):
         """
         Set the wind conditions and operation setpoints for the wind farm.
@@ -424,7 +443,7 @@ class FlorisModel(LoggingManager):
             turbine_library_path (str | Path | None, optional): Path to the turbine library.
                 Defaults to None.
             solver_settings (dict | None, optional): Solver settings. Defaults to None.
-            heterogeneous_inflow_config (None, optional): heterogeneous inflow configuration.
+            heterogeneous_inflow_config (dict | None, optional): heterogeneous inflow configuration.
                 Defaults to None.
             wind_data (type[WindDataBase] | None, optional): Wind data. Defaults to None.
             yaw_angles (NDArrayFloat | list[float] | None, optional): Turbine yaw angles.
@@ -456,6 +475,7 @@ class FlorisModel(LoggingManager):
             solver_settings=solver_settings,
             heterogeneous_inflow_config=heterogeneous_inflow_config,
             wind_data=wind_data,
+            multidim_conditions=multidim_conditions,
         )
 
         # If the yaw angles or power setpoints are not the default, set them back to the
@@ -1058,6 +1078,7 @@ class FlorisModel(LoggingManager):
                 'y': self.core.flow_field.heterogeneous_inflow_config['y'],
                 'speed_multipliers':
                     self.core.flow_field.heterogeneous_inflow_config['speed_multipliers'][findex:findex+1],
+                'interp_method': self.core.flow_field.heterogeneous_inflow_config['interp_method'],
             }
             if 'z' in self.core.flow_field.heterogeneous_inflow_config:
                 heterogeneous_inflow_config['z'] = (
@@ -1089,11 +1110,11 @@ class FlorisModel(LoggingManager):
     ):
         """
         Shortcut method to instantiate a :py:class:`~.tools.cut_plane.CutPlane`
-        object containing the velocity field in a horizontal plane cut through
-        the simulation domain at a specific height.
+        object containing the velocity field in a vertical plane cut through
+        the simulation domain at a specific downstream (x) distance.
 
         Args:
-            downstream_dist (float): Distance downstream of turbines to compute.
+            downstream_dist (float): Distance downstream to compute.
             y_resolution (float, optional): Output array resolution.
                 Defaults to 200 points.
             z_resolution (float, optional): Output array resolution.
@@ -1105,7 +1126,7 @@ class FlorisModel(LoggingManager):
             finder_for_viz (int, optional): Index of the condition to visualize.
         Returns:
             :py:class:`~.tools.cut_plane.CutPlane`: containing values
-            of x, y, u, v, w
+            of y, z, u, v, w
         """
         if self.n_findex > 1 and findex_for_viz is None:
             self.logger.warning(
@@ -1167,7 +1188,7 @@ class FlorisModel(LoggingManager):
                 Defaults to None.
             y_bounds (tuple, optional): Limits of output array (in m).
                 Defaults to None.
-            finder_for_viz (int, optional): Index of the condition to visualize.
+            findex_for_viz (int, optional): Index of the condition to visualize.
 
         Returns:
             :py:class:`~.tools.cut_plane.CutPlane`: containing values
@@ -1225,11 +1246,11 @@ class FlorisModel(LoggingManager):
     ):
         """
         Shortcut method to instantiate a :py:class:`~.tools.cut_plane.CutPlane`
-        object containing the velocity field in a horizontal plane cut through
-        the simulation domain at a specific height.
+        object containing the velocity field in a vertical plane cut through
+        the simulation domain at a specific cross-stream (y) distance.
 
         Args:
-            height (float): Height of cut plane. Defaults to Hub-height.
+            crossstream_dist (float): Cross-stream distance to compute.
             x_resolution (float, optional): Output array resolution.
                 Defaults to 200 points.
             z_resolution (float, optional): Output array resolution.
@@ -1243,7 +1264,7 @@ class FlorisModel(LoggingManager):
 
         Returns:
             :py:class:`~.tools.cut_plane.CutPlane`: containing values
-            of x, y, u, v, w
+            of x, z, u, v, w
         """
         if self.n_findex > 1 and findex_for_viz is None:
             self.logger.warning(
@@ -1270,7 +1291,7 @@ class FlorisModel(LoggingManager):
 
         # Get the points of data in a dataframe
         # TODO this just seems to be flattening and storing the data in a df; is this necessary?
-        # It seems the biggest depenedcy is on CutPlane and the subsequent visualization tools.
+        # It seems the biggest dependency is on CutPlane and the subsequent visualization tools.
         df = fmodel_viz.get_plane_of_points(
             normal_vector="y",
             planar_coordinate=crossstream_dist,
@@ -1381,6 +1402,25 @@ class FlorisModel(LoggingManager):
             raise ValueError("x, y, and z must be the same size")
 
         return self.core.solve_for_points(x, y, z)
+
+    def sample_ti_at_points(self, x: NDArrayFloat, y: NDArrayFloat, z: NDArrayFloat):
+        """
+        Extract the turbulence intensity at points in the flow.
+
+        Args:
+            x (1DArrayFloat | list): x-locations of points where TI is desired.
+            y (1DArrayFloat | list): y-locations of points where TI is desired.
+            z (1DArrayFloat | list): z-locations of points where TI is desired.
+
+        Returns:
+            3DArrayFloat containing turbulence intensity with dimensions
+            (# of findex, # of sample points)
+        """
+
+        self.sample_flow_at_points(x, y, z) # Solve, but ignore returned velocities
+
+        # Remove grid dimensions and return sorted TI field
+        return self.core.flow_field.turbulence_intensity_field_sorted[:, :, 0, 0]
 
     def sample_velocity_deficit_profiles(
         self,
@@ -1576,8 +1616,13 @@ class FlorisModel(LoggingManager):
         )
 
     def copy(self):
-        """Create an independent copy of the current FlorisModel object"""
-        return FlorisModel(self.core.as_dict())
+        """Create an independent copy of the current FlorisModel object
+
+        When creating the copy, this method uses self.__class__(), rather than FlorisModel()
+        directly, so that subclasses of FlorisModel can inherit this method and return
+        instantiations of their own class, rather than the FlorisModel class.
+        """
+        return self.__class__(self.core.as_dict(), **self.secondary_init_kwargs)
 
     def get_param(
         self,
@@ -1616,7 +1661,7 @@ class FlorisModel(LoggingManager):
         """
         fm_dict_mod = self.core.as_dict()
         nested_set(fm_dict_mod, param, value, param_idx)
-        self.__init__(fm_dict_mod)
+        self.__init__(fm_dict_mod, **self.secondary_init_kwargs)
 
     def get_turbine_layout(self, z=False):
         """
@@ -1661,6 +1706,14 @@ class FlorisModel(LoggingManager):
         self.show_config(full=True)
 
     ### Properties
+
+    @property
+    def secondary_init_kwargs(self):
+        """
+        FlorisModel takes only the configuration argument. This method is a placeholder for
+        subclasses of FlorisModel.
+        """
+        return {}
 
     @property
     def layout_x(self):
@@ -1760,13 +1813,13 @@ class FlorisModel(LoggingManager):
     def calculate_wake(self, **_):
         raise NotImplementedError(
             "The calculate_wake method has been removed. Please use the run method. "
-            "See https://nrel.github.io/floris/v3_to_v4.html for more information."
+            "See https://natlabrockies.github.io/floris/v3_to_v4.html for more information."
         )
 
     def reinitialize(self, **_):
         raise NotImplementedError(
             "The reinitialize method has been removed. Please use the set method. "
-            "See https://nrel.github.io/floris/v3_to_v4.html for more information."
+            "See https://natlabrockies.github.io/floris/v3_to_v4.html for more information."
         )
 
 

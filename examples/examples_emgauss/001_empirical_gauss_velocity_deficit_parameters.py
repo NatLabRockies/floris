@@ -43,11 +43,10 @@ def generate_wake_visualization(fmodel: FlorisModel, title=None):
         x_bounds=x_bounds,
         z_bounds=z_bounds,
     )
-    cross_planes = []
-    for cpl in cross_plane_locations:
-        cross_planes.append(
-            fmodel.calculate_cross_plane(y_resolution=100, z_resolution=100, downstream_dist=cpl)
-        )
+    cross_planes = [
+        fmodel.calculate_cross_plane(y_resolution=100, z_resolution=100, downstream_dist=x)
+        for x in cross_plane_locations
+    ]
 
     # Create the plots
     # Cutplane settings

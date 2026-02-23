@@ -8,6 +8,7 @@ import pytest
 from floris.utilities import (
     check_and_identify_step_size,
     cosd,
+    is_all_scalar_dict,
     make_wind_directions_adjacent,
     nested_get,
     nested_set,
@@ -249,3 +250,29 @@ def test_nested_set():
 
     nested_set(example_dict, ['a', 'b', 'c'], 20)
     assert nested_get(example_dict, ['a', 'b', 'c']) == 20
+
+
+def test_is_all_scalar_dict():
+    example_dict_1 = {
+        "a": 10,
+        "b": 20.5,
+    }
+    assert is_all_scalar_dict(example_dict_1)
+
+    example_dict_2 = {
+        "a": 10,
+        "b": np.array([1, 2, 3]),
+    }
+    assert not is_all_scalar_dict(example_dict_2)
+
+    example_dict_3 = {
+        "a": "hello",
+        "b": 5,
+    }
+    assert is_all_scalar_dict(example_dict_3)
+
+    example_dict_4 = {
+        "a": 1,
+        "b": {"c": 2},
+    }
+    assert not is_all_scalar_dict(example_dict_4)

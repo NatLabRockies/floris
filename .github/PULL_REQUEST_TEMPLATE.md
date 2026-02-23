@@ -64,11 +64,11 @@ Add the results from unit tests and regression tests here along with justificati
 -->
 
 <!--
-__ For NREL use __
+__ For NLR use __
 Release checklist:
 - Update the version in
-    - [ ] README.md
-    - [ ] floris/VERSION
+    - [ ] README.md (appears twice in README.md)
+    - [ ] pyproject.toml
 - [ ] Verify docs builds correctly
 - [ ] Create a tag in the NREL/FLORIS repository
 -->

@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import copy
 from pathlib import Path
 from time import perf_counter as timerpc
@@ -11,6 +9,7 @@ from floris.floris_model import FlorisModel
 from floris.type_dec import (
     NDArrayFloat,
 )
+from floris.utilities import is_all_scalar_dict
 
 
 class ParFlorisModel(FlorisModel):
@@ -32,13 +31,9 @@ class ParFlorisModel(FlorisModel):
         Initialize the ParFlorisModel object.
 
         Args:
-            configuration: The Floris configuration dictionary or YAML file, or an instantiated
-                FlorisModel object. The configuration should have the following inputs specified.
-                - **flow_field**: See `floris.simulation.flow_field.FlowField` for more details.
-                - **farm**: See `floris.simulation.farm.Farm` for more details.
-                - **turbine**: See `floris.simulation.turbine.Turbine` for more details.
-                - **wake**: See `floris.simulation.wake.WakeManager` for more details.
-                - **logging**: See `floris.simulation.core.Core` for more details.
+            configuration (:py:obj:`dict`): The Floris configuration dictionary or YAML file.
+                See floris.default_inputs.yaml for an example of the configuration dictionary
+                or visit https://nrel.github.io/floris/input_reference_main.html.
             interface: The parallelization interface to use. Options are "multiprocessing",
                "pathos", and "concurrent", with possible future support for "mpi4py"
             max_workers: The maximum number of workers to use. Defaults to -1, which then
@@ -177,7 +172,7 @@ class ParFlorisModel(FlorisModel):
 
     def sample_flow_at_points(self, x: NDArrayFloat, y: NDArrayFloat, z: NDArrayFloat):
         """
-        Sample the flow field at specified points.
+        Sample the flow field velocity at specified points.
 
         Args:
             x: The x-coordinates of the points.
@@ -187,15 +182,59 @@ class ParFlorisModel(FlorisModel):
         Returns:
             NDArrayFloat: The wind speeds at the specified points.
         """
+        return self._sample_value_at_points(x, y, z, value="velocity")
+
+    def sample_ti_at_points(self, x: NDArrayFloat, y: NDArrayFloat, z: NDArrayFloat):
+        """
+        Sample the turbulence intensity at specified points.
+
+        Args:
+            x: The x-coordinates of the points.
+            y: The y-coordinates of the points.
+            z: The z-coordinates of the points.
+
+        Returns:
+            NDArrayFloat: The turbulence intensity at the specified points.
+        """
+        return self._sample_value_at_points(x, y, z, value="turbulence_intensity")
+
+    def _sample_value_at_points(
+            self,
+            x: NDArrayFloat,
+            y: NDArrayFloat,
+            z: NDArrayFloat,
+            value: str
+        ):
+        """
+        Underlying method for sample values at (x,y,z) points for ParFlorisModel.
+
+        Args:
+            x: The x-coordinates of the points.
+            y: The y-coordinates of the points.
+            z: The z-coordinates of the points.
+            value: The type of value to sample ("velocity" or "turbulence_intensity").
+
+        Returns:
+            NDArrayFloat: The values at the specified points.
+        """
         if self.return_turbine_powers_only:
             raise NotImplementedError(
-                "Sampling flow at points is not supported when "
+                "Sampling at points is not supported when "
                 "return_turbine_powers_only is set to True on ParFlorisModel."
+            )
+
+        valid_values = ["velocity", "turbulence_intensity"]
+        if value not in valid_values:
+            raise ValueError(
+                f"Invalid value '{value}' for sampling. Must be one of {valid_values}."
             )
 
         if self.interface is None:
             t0 = timerpc()
-            sampled_wind_speeds = super().sample_flow_at_points(x, y, z)
+            if value == "velocity":
+                output = super().sample_flow_at_points(x, y, z)
+            elif value == "turbulence_intensity":
+                output = super().sample_ti_at_points(x, y, z)
             t1 = timerpc()
             self._print_timings(t0, t1, None, None)
         else:
@@ -203,34 +242,41 @@ class ParFlorisModel(FlorisModel):
             self.core.initialize_domain()
             parallel_run_inputs = self._preprocessing()
             parallel_sample_flow_at_points_inputs = [
-                (fmodel_dict, control_setpoints, x, y, z)
-                for fmodel_dict, control_setpoints in parallel_run_inputs
+                (fmodel_dict, set_args, x, y, z)
+                for fmodel_dict, set_args in parallel_run_inputs
             ]
             t1 = timerpc()
+            if value == "velocity":
+                _parallel_func = _parallel_sample_flow_at_points
+                _parallel_fmap = _parallel_sample_flow_at_points_map
+            elif value == "turbulence_intensity":
+                _parallel_func = _parallel_sample_ti_at_points
+                _parallel_fmap = _parallel_sample_ti_at_points_map
+
             if self.interface == "multiprocessing":
                 with self._PoolExecutor(self.max_workers) as p:
                     sampled_wind_speeds_p = p.starmap(
-                        _parallel_sample_flow_at_points,
+                        _parallel_func,
                         parallel_sample_flow_at_points_inputs
                     )
             elif self.interface == "pathos":
                 sampled_wind_speeds_p = self.pathos_pool.map(
-                    _parallel_sample_flow_at_points_map,
+                    _parallel_fmap,
                     parallel_sample_flow_at_points_inputs
                 )
             elif self.interface == "concurrent":
                 with self._PoolExecutor(self.max_workers) as p:
                     sampled_wind_speeds_p = p.map(
-                        _parallel_sample_flow_at_points_map,
+                        _parallel_fmap,
                         parallel_sample_flow_at_points_inputs
                     )
                     sampled_wind_speeds_p = list(sampled_wind_speeds_p)
             t2 = timerpc()
-            sampled_wind_speeds = np.concatenate(sampled_wind_speeds_p, axis=0)
+            output = np.concatenate(sampled_wind_speeds_p, axis=0)
             t3 = timerpc()
             self._print_timings(t0, t1, t2, t3)
 
-        return sampled_wind_speeds
+        return output
 
     def _preprocessing(self):
         """
@@ -253,24 +299,47 @@ class ParFlorisModel(FlorisModel):
         for wc_id_split in wind_condition_id_splits:
             # for ws_id_split in wind_speed_id_splits:
             fmodel_dict_split = copy.deepcopy(fmodel_dict)
-            wind_directions = self.core.flow_field.wind_directions[wc_id_split]
-            wind_speeds = self.core.flow_field.wind_speeds[wc_id_split]
-            turbulence_intensities = self.core.flow_field.turbulence_intensities[wc_id_split]
 
-            # Extract and format all control setpoints as a dict that can be unpacked later
-            control_setpoints_subset = {
+            # Extract and format all arguments that are per-findex
+            # (scalar arguments are already broadcast on fmodel_dict_split)
+            set_args_subset = {
+                "wind_directions": self.core.flow_field.wind_directions[wc_id_split],
+                "wind_speeds": self.core.flow_field.wind_speeds[wc_id_split],
+                "turbulence_intensities": self.core.flow_field.turbulence_intensities[wc_id_split],
                 "yaw_angles": self.core.farm.yaw_angles[wc_id_split, :],
                 "power_setpoints": self.core.farm.power_setpoints[wc_id_split, :],
                 "awc_modes": self.core.farm.awc_modes[wc_id_split, :],
                 "awc_amplitudes": self.core.farm.awc_amplitudes[wc_id_split, :],
                 "awc_frequencies": self.core.farm.awc_frequencies[wc_id_split, :],
+                # disable_turbines is not saved on core, but passed through power_setpoints
             }
-            fmodel_dict_split["flow_field"]["wind_directions"] = wind_directions
-            fmodel_dict_split["flow_field"]["wind_speeds"] = wind_speeds
-            fmodel_dict_split["flow_field"]["turbulence_intensities"] = turbulence_intensities
+
+            # Handle heterogeneous_inflow_config
+            if self.core.flow_field.heterogeneous_inflow_config is not None:
+                heterogeneous_inflow_config_subset = {
+                    "x": self.core.flow_field.heterogeneous_inflow_config["x"],
+                    "y": self.core.flow_field.heterogeneous_inflow_config["y"],
+                    "speed_multipliers": self.core.flow_field.heterogeneous_inflow_config\
+                        ["speed_multipliers"][wc_id_split, :]
+                }
+                if "z" in self.core.flow_field.heterogeneous_inflow_config.keys():
+                    heterogeneous_inflow_config_subset["z"] = \
+                        self.core.flow_field.heterogeneous_inflow_config["z"]
+                set_args_subset["heterogeneous_inflow_config"] = heterogeneous_inflow_config_subset
+
+            # Handle multidim_conditions
+            if self.core.flow_field.multidim_conditions is not None:
+                if is_all_scalar_dict(self.core.flow_field.multidim_conditions):
+                    multidim_conditions_subset = self.core.flow_field.multidim_conditions
+                else:
+                    multidim_conditions_subset = {
+                        k: v[wc_id_split] for k, v in
+                        self.core.flow_field.multidim_conditions.items()
+                    }
+                set_args_subset["multidim_conditions"] = multidim_conditions_subset
 
             # Prepare lightweight data to pass along
-            multiargs.append((fmodel_dict_split, control_setpoints_subset))
+            multiargs.append((fmodel_dict_split, set_args_subset))
 
         return multiargs
 
@@ -351,6 +420,19 @@ class ParFlorisModel(FlorisModel):
             return super()._get_turbine_powers()
 
     @property
+    def secondary_init_kwargs(self):
+        """
+        ParFlorisModel secondary keyword arguments (after configuration).
+        """
+        return {
+            "interface": self.interface,
+            "max_workers": self.max_workers,
+            "n_wind_condition_splits": self.n_wind_condition_splits,
+            "return_turbine_powers_only": self.return_turbine_powers_only,
+            "print_timings": self.print_timings
+        }
+
+    @property
     def fmodel(self):
         """
         Raise deprecation warning.
@@ -425,3 +507,14 @@ def _parallel_sample_flow_at_points_map(x):
     Wrapper for unpacking inputs to _parallel_sample_flow_at_points() for use with map().
     """
     return _parallel_sample_flow_at_points(*x)
+
+def _parallel_sample_ti_at_points(fmodel_dict, set_kwargs, x, y, z):
+    fmodel = FlorisModel(fmodel_dict)
+    fmodel.set(**set_kwargs)
+    return fmodel.sample_ti_at_points(x, y, z)
+
+def _parallel_sample_ti_at_points_map(x):
+    """
+    Wrapper for unpacking inputs to _parallel_sample_ti_at_points() for use with map().
+    """
+    return _parallel_sample_ti_at_points(*x)

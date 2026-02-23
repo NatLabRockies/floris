@@ -185,8 +185,11 @@ def test_CosineLossTurbine():
         tilt_angles=tilt_angles_test,
         tilt_interp=None
     )
-    absolute_tilt = tilt_angles_test - turbine_data["power_thrust_table"]["ref_tilt"]
-    assert test_Ct == baseline_Ct * cosd(yaw_angles_test) * cosd(absolute_tilt)
+    assert test_Ct == (
+        baseline_Ct * cosd(yaw_angles_test)
+        * cosd(tilt_angles_test)
+        / cosd(turbine_data["power_thrust_table"]["ref_tilt"])
+    )
 
 
     # Check that thrust coefficient works as expected
@@ -200,7 +203,8 @@ def test_CosineLossTurbine():
     )
     baseline_misalignment_loss = (
         cosd(yaw_angles_nom)
-        * cosd(tilt_angles_nom - turbine_data["power_thrust_table"]["ref_tilt"])
+        * cosd(tilt_angles_nom)
+        / cosd(turbine_data["power_thrust_table"]["ref_tilt"])
     )
     baseline_ai = (
         1 - np.sqrt(1 - turbine_data["power_thrust_table"]["thrust_coefficient"][truth_index])
@@ -216,8 +220,13 @@ def test_CosineLossTurbine():
         tilt_angles=tilt_angles_test,
         tilt_interp=None
     )
-    absolute_tilt = tilt_angles_test - turbine_data["power_thrust_table"]["ref_tilt"]
-    assert test_Ct == baseline_Ct * cosd(yaw_angles_test) * cosd(absolute_tilt)
+
+    assert test_Ct == (
+        baseline_Ct
+        * cosd(yaw_angles_test)
+        * cosd(tilt_angles_test)
+        / cosd(turbine_data["power_thrust_table"]["ref_tilt"])
+    )
 
 
 def test_SimpleDeratingTurbine():
@@ -567,6 +576,36 @@ def test_AWCTurbine():
     )
     assert test_ai < base_ai
     assert test_ai > 0
+
+    # Test a mixture of "baseline" and "helix" modes
+    n_turbines = 3
+    awc_modes_test = np.array(
+        [
+            ["baseline", "baseline", "baseline"],
+            ["baseline", "helix", "helix"]
+        ]
+    )
+    test_power = AWCTurbine.power(
+        power_thrust_table=turbine_data["power_thrust_table"],
+        velocities=wind_speed * np.ones((2, n_turbines, 3, 3)), # 2 findices, 3 turbines, 3x3 grid
+        air_density=turbine_data["power_thrust_table"]["ref_air_density"],
+        awc_modes=awc_modes_test,
+        awc_amplitudes=2*np.ones((2, n_turbines)),
+    )
+    assert np.allclose(test_power[0,:], base_power)
+    assert np.allclose(test_power[1,0], base_power)
+    assert (test_power[1,1:] < base_power).all()
+
+    test_Ct = AWCTurbine.thrust_coefficient(
+        power_thrust_table=turbine_data["power_thrust_table"],
+        velocities=wind_speed * np.ones((2, n_turbines, 3, 3)), # 2 findices, 3 turbines, 3x3 grid
+        air_density=turbine_data["power_thrust_table"]["ref_air_density"],
+        awc_modes=awc_modes_test,
+        awc_amplitudes=2*np.ones((2, n_turbines)),
+    )
+    assert np.allclose(test_Ct[0,:], base_Ct)
+    assert np.allclose(test_Ct[1,0], base_Ct)
+    assert (test_Ct[1,1:] < base_Ct).all()
 
 def test_PeakShavingTurbine():
 

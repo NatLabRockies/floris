@@ -1,11 +1,10 @@
 # API Documentation
 
-FLORIS is divided into two primary packages.
-{py:mod}`floris.simulation` is the core code that models the wind turbines
-and wind farms. It is low-level code that generally is not accessed
-by typical users. {py:mod}`floris.tools` is the set of analysis routines
-that define, drive, and post process a simulation. This is where
-more users will interface with the software.
+FLORIS is primarily divided into the {py:mod}`floris` package, which contains the user-level API,
+and {py:mod}`floris.core` is the core code that models the wind turbines and wind farms.
+Additionally, the {py:mod}`turbine_library` package contains turbine models that ship with FLORIS;
+and the {py:mod}`optimization` package contains high-level optimization routines that accept and
+work on instantiated `FlorisModel` objects.
 
 ```{eval-rst}
 .. autosummary::

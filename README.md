@@ -2,19 +2,26 @@
 
 FLORIS is a controls-focused wind farm simulation software incorporating
 steady-state engineering wake models into a performance-focused Python
-framework. It has been in active development at NREL since 2013 and the latest
-release is [FLORIS v4.2.2](https://github.com/NREL/floris/releases/latest).
-Online documentation is available at https://nrel.github.io/floris.
+framework. It has been in active development at NLR since 2013 and the latest
+release is [FLORIS v.4.6.2](https://github.com/NatLabRockies/floris/releases/latest).
+Online documentation is available at https://natlabrockies.github.io/floris.
 
 The software is in active development and engagement with the development team
 is highly encouraged. If you are interested in using FLORIS to conduct studies
 of a wind farm or extending FLORIS to include your own wake model, please join
-the conversation in [GitHub Discussions](https://github.com/NREL/floris/discussions/)!
+the conversation in [GitHub Discussions](https://github.com/NatLabRockies/floris/discussions/)!
+
+## WETO software
+
+FLORIS is primarily developed with the support from the U.S. Department of Energy and
+is part of the [WETO Software Stack](https://natlabrockies.github.io/WETOStack).
+For more information and other integrated modeling software, see:
+
+- [Portfolio Overview](https://natlabrockies.github.io/WETOStack/portfolio_analysis/overview.html)
+- [Entry Guide](https://natlabrockies.github.io/WETOStack/_static/entry_guide/index.html)
+- [Wind Farm Controls Workshop](https://www.youtube.com/watch?v=f-w6whxIBrA&list=PL6ksUtsZI1dwRXeWFCmJT6cEN1xijsHJz)
 
 ## Installation
-
-**WARNING:**
-Support for python version 3.8 will be dropped in FLORIS v4.3. See [Installation documentation](https://nrel.github.io/floris/installation.html#installation) for details.
 
 **If upgrading from a previous version, it is recommended to install FLORIS v4 into a new virtual environment**.
 If you intend to use [pyOptSparse](https://mdolab-pyoptsparse.readthedocs-hosted.com/en/latest/) with FLORIS,
@@ -39,7 +46,7 @@ commands in a terminal or shell will download and install FLORIS.
 
 ```bash
     # Download the source code from the `main` branch
-    git clone -b main https://github.com/NREL/floris.git
+    git clone -b main https://github.com/NatLabRockies/floris.git
 
     # If using conda, be sure to activate your environment prior to installing
     # conda activate <env name>
@@ -61,7 +68,7 @@ and importing FLORIS:
 Help on package floris:
 
 NAME
-    floris - # Copyright 2024 NREL
+    floris
 
 PACKAGE CONTENTS
     convert_floris_input_v3_to_v4
@@ -82,7 +89,7 @@ PACKAGE CONTENTS
     wind_data
 
 VERSION
-    4.2.2
+    4.6.2
 
 FILE
     ~/floris/floris/__init__.py
@@ -95,14 +102,14 @@ features, improvements, and bug fixes will be issued on an ongoing basis.
 
 FLORIS is a Python package run on the command line typically by providing
 an input file with an initial configuration. It can be installed with
-```pip install floris``` (see [installation](https://nrel.github.io/floris/installation.html)).
+```pip install floris``` (see [installation](https://natlabrockies.github.io/floris/installation.html)).
 The typical entry point is
-[FlorisModel](https://nrel.github.io/floris/_autosummary/floris.floris_model.html)
+[FlorisModel](https://natlabrockies.github.io/floris/_autosummary/floris.floris_model.html)
 which accepts the path to the input file as an argument. From there,
 changes can be made to the initial configuration through the
-[FlorisModel.set](https://nrel.github.io/floris/_autosummary/floris.floris_model.html#floris.floris_model.FlorisModel.set)
+[FlorisModel.set](https://natlabrockies.github.io/floris/_autosummary/floris.floris_model.html#floris.floris_model.FlorisModel.set)
 routine, and the simulation is executed with
-[FlorisModel.run](https://nrel.github.io/floris/_autosummary/floris.floris_model.html#floris.floris_model.FlorisModel.run).
+[FlorisModel.run](https://natlabrockies.github.io/floris/_autosummary/floris.floris_model.html#floris.floris_model.FlorisModel.run).
 
 ```python
 from floris import FlorisModel
@@ -116,32 +123,32 @@ fmodel.run()
 ```
 
 Finally, results can be analyzed via post-processing functions available within
-[FlorisModel](https://nrel.github.io/floris/_autosummary/floris.floris_model.html#floris.floris_model.FlorisModel)
+[FlorisModel](https://natlabrockies.github.io/floris/_autosummary/floris.floris_model.html#floris.floris_model.FlorisModel)
 such as
-- [FlorisModel.get_turbine_layout](https://nrel.github.io/floris/_autosummary/floris.floris_model.html#floris.floris_model.FlorisModel.get_turbine_layout)
-- [FlorisModel.get_turbine_powers](https://nrel.github.io/floris/_autosummary/floris.floris_model.html#floris.floris_model.FlorisModel.get_turbine_powers)
-- [FlorisModel.get_farm_AEP](https://nrel.github.io/floris/_autosummary/floris.floris_model.html#floris.floris_model.FlorisModel.get_farm_AEP)
+- [FlorisModel.get_turbine_layout](https://natlabrockies.github.io/floris/_autosummary/floris.floris_model.html#floris.floris_model.FlorisModel.get_turbine_layout)
+- [FlorisModel.get_turbine_powers](https://natlabrockies.github.io/floris/_autosummary/floris.floris_model.html#floris.floris_model.FlorisModel.get_turbine_powers)
+- [FlorisModel.get_farm_AEP](https://natlabrockies.github.io/floris/_autosummary/floris.floris_model.html#floris.floris_model.FlorisModel.get_farm_AEP)
 
-and in two visualization packages: [layoutviz](https://nrel.github.io/floris/_autosummary/floris.layout_visualization.html) and [flowviz](https://nrel.github.io/floris/_autosummary/floris.flow_visualization.html).
+and in two visualization packages: [layoutviz](https://natlabrockies.github.io/floris/_autosummary/floris.layout_visualization.html) and [flowviz](https://natlabrockies.github.io/floris/_autosummary/floris.flow_visualization.html).
 A collection of examples describing the creation of simulations as well as
 analysis and post processing are included in the
-[repository](https://github.com/NREL/floris/tree/main/examples). Examples are also listed
-in the [online documentation](https://nrel.github.io/floris/examples/001_opening_floris_computing_power.html).
+[repository](https://github.com/NatLabRockies/floris/tree/main/examples). Examples are also listed
+in the [online documentation](https://natlabrockies.github.io/floris/examples/001_opening_floris_computing_power.html).
 
 ## Engaging on GitHub
 
 FLORIS leverages the following GitHub features to coordinate support and development efforts:
 
-- [Discussions](https://github.com/NREL/floris/discussions): Collaborate to develop ideas for new use cases, features, and software designs, and get support for usage questions
-- [Issues](https://github.com/NREL/floris/issues): Report potential bugs and well-developed feature requests
+- [Discussions](https://github.com/NatLabRockies/floris/discussions): Collaborate to develop ideas for new use cases, features, and software designs, and get support for usage questions
+- [Issues](https://github.com/NatLabRockies/floris/issues): Report potential bugs and well-developed feature requests
 - [Projects](https://github.com/orgs/NREL/projects/96): Include current and future work on a timeline and assign a person to "own" it
 
 Generally, the first entry point for the community will be within one of the
 categories in Discussions.
-[Ideas](https://github.com/NREL/floris/discussions/categories/ideas) is a great spot to develop the
-details for a feature request. [Q&A](https://github.com/NREL/floris/discussions/categories/q-a)
+[Ideas](https://github.com/NatLabRockies/floris/discussions/categories/ideas) is a great spot to develop the
+details for a feature request. [Q&A](https://github.com/NatLabRockies/floris/discussions/categories/q-a)
 is where to get usage support.
-[Show and tell](https://github.com/NREL/floris/discussions/categories/show-and-tell) is a free-form
+[Show and tell](https://github.com/NatLabRockies/floris/discussions/categories/show-and-tell) is a free-form
 space to show off the things you are doing with FLORIS.
 
 
@@ -149,7 +156,7 @@ space to show off the things you are doing with FLORIS.
 
 BSD 3-Clause License
 
-Copyright (c) 2024, Alliance for Sustainable Energy LLC, All rights reserved.
+Copyright (c) 2025, Alliance for Energy Innovation LLC, All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted
 provided that the following conditions are met:

@@ -6,13 +6,22 @@ framework.
 The software is in active development and engagement with the development team
 is highly encouraged. If you are interested in using FLORIS to conduct studies
 of a wind farm or extending FLORIS to include your own wake model, please join
-the conversation in [GitHub Discussions](https://github.com/NREL/floris/discussions/)!
+the conversation in [GitHub Discussions](https://github.com/NatLabRockies/floris/discussions/)!
 
 ```{note}
-Support for python version 3.8 will be dropped in FLORIS v4.3. See {ref}`installation` for details.
-
-FLORIS v4.3 will also move to requiring `numpy` version 2. See the [numpy documentation for details](https://numpy.org/doc/stable/numpy_2_0_migration_guide.html).
+FLORIS support for python version 3.8 and 3.9 was recently ended as they reached [end-of-life](https://devguide.python.org/versions/).
+FLORIS v4.3 also made the move to requiring `numpy` version 2. See the [numpy documentation for details](https://numpy.org/doc/stable/numpy_2_0_migration_guide.html).
 ```
+
+## WETO software
+
+FLORIS is primarily developed with the support from the U.S. Department of Energy and
+is part of the  [WETO Software Stack](https://natlabrockies.github.io/WETOStack).
+For more information and other integrated modeling software, see:
+
+- [Portfolio Overview](https://natlabrockies.github.io/WETOStack/portfolio_analysis/overview.html)
+- [Entry Guide](https://natlabrockies.github.io/WETOStack/_static/entry_guide/index.html)
+- [Wind Farm Controls Workshop](https://www.youtube.com/watch?v=f-w6whxIBrA&list=PL6ksUtsZI1dwRXeWFCmJT6cEN1xijsHJz)
 
 ## Quick Start
 
@@ -42,21 +51,21 @@ Finally, results can be analyzed via post-processing functions available within
 {py:meth}`.FlorisModel.get_turbine_powers` and
 {py:meth}`.FlorisModel.get_farm_AEP`, and
 a visualization package is available in {py:mod}`floris.flow_visualization`.
-A collection of examples are included in the [repository](https://github.com/NREL/floris/tree/main/examples)
+A collection of examples are included in the [repository](https://github.com/NatLabRockies/floris/tree/main/examples)
 and described in detail in {ref}`examples`.
 
 ## Engaging on GitHub
 
 FLORIS leverages the following GitHub features to coordinate support and development efforts:
 
-- [Discussions](https://github.com/NREL/floris/discussions): Collaborate to develop ideas for new use cases, features, and software designs, and get support for usage questions
-- [Issues](https://github.com/NREL/floris/issues): Report potential bugs and well-developed feature requests
+- [Discussions](https://github.com/NatLabRockies/floris/discussions): Collaborate to develop ideas for new use cases, features, and software designs, and get support for usage questions
+- [Issues](https://github.com/NatLabRockies/floris/issues): Report potential bugs and well-developed feature requests
 - [Projects](https://github.com/orgs/NREL/projects/18/): Include current and future work on a timeline and assign a person to "own" it
 
 Generally, the first entry point for the community will be within one of the
 categories in Discussions.
-[Ideas](https://github.com/NREL/floris/discussions/categories/ideas) is a great spot to develop the
-details for a feature request. [Q&A](https://github.com/NREL/floris/discussions/categories/q-a)
+[Ideas](https://github.com/NatLabRockies/floris/discussions/categories/ideas) is a great spot to develop the
+details for a feature request. [Q&A](https://github.com/NatLabRockies/floris/discussions/categories/q-a)
 is where to get usage support.
-[Show and tell](https://github.com/NREL/floris/discussions/categories/show-and-tell) is a free-form
+[Show and tell](https://github.com/NatLabRockies/floris/discussions/categories/show-and-tell) is a free-form
 space to show off the things you are doing with FLORIS.

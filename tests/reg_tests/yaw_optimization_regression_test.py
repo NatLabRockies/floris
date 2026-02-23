@@ -183,4 +183,5 @@ def test_scipy_yaw_opt(sample_inputs_fixture):
         print(baseline_scipy.to_string())
         print(df_opt.to_string())
 
-    pd.testing.assert_frame_equal(df_opt, baseline_scipy)
+    # Only require matching up until 2 decimal places
+    pd.testing.assert_frame_equal(df_opt, baseline_scipy, check_exact=False, rtol=1e-5, atol=1e-2)

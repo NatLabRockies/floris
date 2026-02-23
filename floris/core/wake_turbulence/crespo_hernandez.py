@@ -23,13 +23,29 @@ class CrespoHernandez(BaseModel):
     turbine. Implementation of the model follows the original formulation and
     limitations outlined in :cite:`cht-crespo1996turbulence`.
 
+    Note: The values for default parameters provided here differ from those in
+    :cite:`cht-crespo1996turbulence. Following their recommendations, the
+    default parameters would instead be:
+        - initial: -0.0325*
+        - constant: 0.73
+        - ai: 0.8325
+        - downstream: -0.32
+    * The "initial" parameter is given as -0.0325 in :cite:`cht-crespo1996turbulence`,
+    but the negative exponent is not clear in the scans of the paper found on the internet,
+    and several subsequent paper cite the exponent as positive (0.0325). This discrepancy
+    is noted in :cite:`zehtabiyan_rezaie_CH_2023`. Moreover, :cite:`zehtabiyan_rezaie_CH_2023`
+    argues that positive values for this exponent are not representative of the physical
+    phenomena occurring. For more details, see https://github.com/NREL/floris/issues/773.
+    Nonetheless, the default value here is set to 0.1 for consistency with previous
+    FLORIS versions. The default value may be updated in a future release.
+
     Args:
         parameter_dictionary (dict): Model-specific parameters.
             Default values are used when a parameter is not included
             in `parameter_dictionary`. Possible key-value pairs include:
 
-            -   **initial** (*float*): The initial ambient turbulence
-                intensity, expressed as a decimal fraction.
+            -   **initial** (*float*): The exponent on the initial ambient
+                turbulence intensity.
             -   **constant** (*float*): The constant used to scale the
                 wake-added turbulence intensity.
             -   **ai** (*float*): The axial induction factor exponent used

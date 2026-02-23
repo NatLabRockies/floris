@@ -1,6 +1,3 @@
-
-from __future__ import annotations
-
 import copy
 from collections.abc import Callable
 from pathlib import Path
@@ -154,6 +151,9 @@ class Farm(BaseClass):
                             "Please specify a unique 'turbine_type' for each turbine definition."
                         )
                 self._turbine_definition_cache[t["turbine_type"]] = t
+                self._turbine_definition_cache[t["turbine_type"]]["turbine_library_path"] = (
+                    self.turbine_library_path
+                )
 
             # If a turbine type is a string, then it is expected in the internal or external
             # turbine library
@@ -186,6 +186,9 @@ class Farm(BaseClass):
                         " external turbine library."
                     )
                 self._turbine_definition_cache[t] = load_yaml(full_path)
+                self._turbine_definition_cache[t]["turbine_library_path"] = (
+                    self.turbine_library_path
+                )
 
         # Convert any dict entries in the turbine_type list to the type string. Since the
         # definition is saved above, we can make the whole list consistent now to use it
@@ -492,7 +495,7 @@ def check_turbine_definition_for_v3_keys(turbine_definition: dict):
     v3_deprecation_msg = (
         "Consider using the convert_turbine_v3_to_v4.py utility in floris/tools "
         + "to convert from a FLORIS v3 turbine definition to FLORIS v4. "
-        + "See https://nrel.github.io/floris/v3_to_v4.html for more information."
+        + "See https://natlabrockies.github.io/floris/v3_to_v4.html for more information."
     )
     if "generator_efficiency" in turbine_definition:
         raise ValueError(

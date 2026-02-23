@@ -9,7 +9,7 @@ import pandas as pd
 from floris.floris_model import FlorisModel
 from floris.logging_manager import LoggingManager
 from floris.optimization.yaw_optimization.yaw_optimizer_sr import YawOptimizationSR
-from floris.uncertain_floris_model import map_turbine_powers_uncertain, UncertainFlorisModel
+from floris.uncertain_floris_model import map_turbine_values_uncertain, UncertainFlorisModel
 
 
 def _get_turbine_powers_serial(fmodel_information, yaw_angles=None):
@@ -367,8 +367,8 @@ class ParallelFlorisModel(LoggingManager):
         t2 = timerpc()
         turbine_powers = self._postprocessing(out)
         if self._is_uncertain:
-            turbine_powers = map_turbine_powers_uncertain(
-                unique_turbine_powers=turbine_powers,
+            turbine_powers = map_turbine_values_uncertain(
+                unique_turbine_values=turbine_powers,
                 map_to_expanded_inputs=self._map_to_expanded_inputs,
                 weights=self._weights,
                 n_unexpanded=self._n_unexpanded,

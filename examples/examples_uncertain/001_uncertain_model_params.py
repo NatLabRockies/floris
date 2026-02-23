@@ -66,15 +66,17 @@ verbose = True
 # Define the UncertainFlorisModel
 ################################################
 print('*** Instantiating UncertainFlorisModel ***')
-ufmodel = UncertainFlorisModel("../inputs/gch.yaml",
-                               wd_resolution=wd_resolution,
-                                 ws_resolution=ws_resolution,
-                                    ti_resolution=ti_resolution,
-                                    yaw_resolution=yaw_resolution,
-                                    power_setpoint_resolution=power_setpoint_resolution,
-                                    wd_std=wd_std,
-                                    wd_sample_points=wd_sample_points,
-                                    verbose=verbose)
+ufmodel = UncertainFlorisModel(
+    "../inputs/gch.yaml",
+    wd_resolution=wd_resolution,
+    ws_resolution=ws_resolution,
+    ti_resolution=ti_resolution,
+    yaw_resolution=yaw_resolution,
+    power_setpoint_resolution=power_setpoint_resolution,
+    wd_std=wd_std,
+    wd_sample_points=wd_sample_points,
+    verbose=verbose,
+)
 
 
 ################################################
@@ -130,6 +132,7 @@ ax.plot(
     color="r",
     label="Power with uncertainty",
 )
+ax.set_ylim(bottom=0)
 
 ax.grid(True)
 ax.legend()
@@ -145,6 +148,7 @@ ax.plot(
     color="r",
     label="Power with uncertainty",
 )
+ax.set_ylim(bottom=0)
 
 ax.set_title("Downstream Turbine")
 ax.grid(True)
@@ -160,7 +164,7 @@ ax.plot(
     color="r",
     label="Farm power with uncertainty",
 )
-
+ax.set_ylim(bottom=0)
 
 ax.set_title("Farm Power")
 ax.grid(True)

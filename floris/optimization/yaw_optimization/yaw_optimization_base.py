@@ -231,7 +231,10 @@ class YawOptimization(LoggingManager):
 
         # Initialize subset variables as full set
         self.fmodel_subset = copy.deepcopy(self.fmodel)
-        self.fmodel_subset._wind_data = None # Accessing private attribute!
+        if hasattr(self.fmodel_subset, "_wind_data"): # Normal FlorisModel, ParFlorisModel
+            self.fmodel_subset._wind_data = None # Accessing private attribute!
+        elif hasattr(self.fmodel_subset, "fmodel_expanded"): # UncertainFlorisModel
+            self.fmodel_subset.fmodel_unexpanded._wind_data = None # Accessing private attribute!
         n_findex_subset = copy.deepcopy(self.fmodel.core.flow_field.n_findex)
         minimum_yaw_angle_subset = copy.deepcopy(self.minimum_yaw_angle)
         maximum_yaw_angle_subset = copy.deepcopy(self.maximum_yaw_angle)

@@ -4,6 +4,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
+import floris
 from floris import (
     FlorisModel,
     UncertainFlorisModel,
@@ -11,12 +12,10 @@ from floris import (
 )
 
 
-WRG_FILE_FILE = (
-    Path(__file__).resolve().parent / "../examples/examples_wind_resource_grid/wrg_example.wrg"
-)
-
 TEST_DATA = Path(__file__).resolve().parent / "data"
 YAML_INPUT = TEST_DATA / "input_full.yaml"
+
+WRG_FILE_FILE = TEST_DATA / "wrg_test.wrg"
 
 def test_load_wrg():
     WindRoseWRG(WRG_FILE_FILE)
@@ -204,6 +203,10 @@ def test_wind_rose_wrg_integration():
 
     # Show these are the same by compare the freq_table
     assert np.allclose(wind_rose.freq_table, wind_rose2.freq_table)
+
+    # Check multidim_conditions are None
+    assert wind_rose_wrg.unpack_multidim_conditions() is None
+    assert wind_rose.unpack_multidim_conditions() is None
 
 def test_apply_wrg_to_floris_model():
     fmodel = FlorisModel(configuration=YAML_INPUT)

@@ -1,7 +1,8 @@
-"""Example: Check turbine power curves
+"""Example: Reference turbines
 
-For each turbine in the turbine library, make a small figure showing that its power
-curve and power loss to yaw are reasonable and reasonably smooth
+For each reference wind turbine in the turbine library, make a small figure
+showing its power and thrust coefficient curves and demonstrate its power loss
+to yaw.
 """
 
 
@@ -29,7 +30,7 @@ fmodel.set(
 )
 
 # Get a list of available turbine models provided through FLORIS, and remove
-# multi-dimensional Cp/Ct turbine definitions as they require different handling
+# multi-dimensional power/thrust coefficient turbine definitions as they require different handling
 turbines = [
     t.stem
     for t in fmodel.core.farm.internal_turbine_library.iterdir()

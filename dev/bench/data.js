@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1769556263188,
+  "lastUpdate": 1771883481742,
   "repoUrl": "https://github.com/NatLabRockies/floris",
   "entries": {
     "Python Benchmark with pytest-benchmark": [
@@ -4526,6 +4526,72 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.00021254738504615923",
             "extra": "mean: 8.309766837866134 msec\nrounds: 74"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "39596329+misi9170@users.noreply.github.com",
+            "name": "misi9170",
+            "username": "misi9170"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "4199b5ef91a841f66e223b5a32a52a754523cbc3",
+          "message": "[BUGFIX] Enable Cumulative Curl model to work with a cubature grid (#1170)\n\n* Add null dimensions to turb_avg_vels\n\n* Move to single location",
+          "timestamp": "2026-02-23T14:25:54-07:00",
+          "tree_id": "6fe1e1fdea8d60295447b846a212969c202dba1c",
+          "url": "https://github.com/NatLabRockies/floris/commit/4199b5ef91a841f66e223b5a32a52a754523cbc3"
+        },
+        "date": 1771883479766,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_set",
+            "value": 41.695745395289755,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00021818133140261533",
+            "extra": "mean: 23.983262333354688 msec\nrounds: 39"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_run",
+            "value": 54.84559073100856,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0001103872888821712",
+            "extra": "mean: 18.23300627582849 msec\nrounds: 29"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_set",
+            "value": 25.366617674259857,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0011833753104611925",
+            "extra": "mean: 39.42188954165241 msec\nrounds: 24"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_run",
+            "value": 0.294141007132026,
+            "unit": "iter/sec",
+            "range": "stddev: 0.014144385119813212",
+            "extra": "mean: 3.399729978999994 sec\nrounds: 5"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_set",
+            "value": 36.273267266700906,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0006634089787902124",
+            "extra": "mean: 27.568511891896943 msec\nrounds: 37"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_run",
+            "value": 122.24163668178346,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00006589400930250267",
+            "extra": "mean: 8.180518742588308 msec\nrounds: 101"
           }
         ]
       }

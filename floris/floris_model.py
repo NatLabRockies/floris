@@ -12,6 +12,7 @@ import pandas as pd
 
 from floris.core import Core, State
 from floris.core.rotor_velocity import average_velocity
+from floris.core.turbine import BaseOperationModel
 from floris.core.turbine.operation_models import (
     POWER_SETPOINT_DEFAULT,
     POWER_SETPOINT_DISABLED,
@@ -1579,11 +1580,19 @@ class FlorisModel(LoggingManager):
         else:
             return operation_models
 
-    def set_operation_model(self, operation_model: str | List[str]):
+    def set_operation_model(
+        self,
+        operation_model: str | List[str] | BaseOperationModel | List[BaseOperationModel]
+    ):
         """Set the turbine operation model(s).
 
+        Can be provided either as a string representing one of the built-in operation
+        models, or as a custom operation model object that inherits from
+        :py:class:`~.turbine_operation.BaseOperationModel`. Also, a list of operation
+        models can be provided to set different operation models for each turbine.
+
         Args:
-            operation_model (str): The operation model to set.
+            operation_model (str, BaseOperationModel, list): The operation model to set.
         """
         if (not isinstance(operation_model, (list, np.ndarray))):
             if len(self.core.farm.turbine_type) == 1:

@@ -1498,7 +1498,7 @@ document.write(`
             <span class="o">+</span> <span class="p">(</span><span class="n">flow_field</span><span class="o">.</span><span class="n">u_initial_sorted</span> <span class="o">-</span> <span class="n">turb_u_wake</span><span class="p">)</span> <span class="o">*</span> <span class="n">mask2</span>
         <span class="p">)</span>
 
-        <span class="n">turb_avg_vels</span> <span class="o">=</span> <span class="n">average_velocity</span><span class="p">(</span><span class="n">turb_inflow_field</span><span class="p">)</span>
+        <span class="n">turb_avg_vels</span> <span class="o">=</span> <span class="n">average_velocity</span><span class="p">(</span><span class="n">turb_inflow_field</span><span class="p">)[:,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
         <span class="n">turb_Cts</span> <span class="o">=</span> <span class="n">thrust_coefficient</span><span class="p">(</span>
             <span class="n">turb_avg_vels</span><span class="p">,</span>
             <span class="n">flow_field</span><span class="o">.</span><span class="n">turbulence_intensity_field_sorted</span><span class="p">,</span>

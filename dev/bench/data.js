@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1771883481742,
+  "lastUpdate": 1771885101839,
   "repoUrl": "https://github.com/NatLabRockies/floris",
   "entries": {
     "Python Benchmark with pytest-benchmark": [
@@ -4592,6 +4592,72 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.00006589400930250267",
             "extra": "mean: 8.180518742588308 msec\nrounds: 101"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "39596329+misi9170@users.noreply.github.com",
+            "name": "misi9170",
+            "username": "misi9170"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "6ef30f15ca2247c743be15dbefef2fac4bb886f9",
+          "message": "Use PyPI Trusted Publishing workflow (#1184)\n\n* Update workflow for PyPI trusted publishing\n\n* Apply suggestions from code review\n\nBump to latest action versions and remove PyPI secret\n\nCo-authored-by: Rob Hammond <13874373+RHammond2@users.noreply.github.com>\n\n* Formatting\n\n---------\n\nCo-authored-by: Rob Hammond <13874373+RHammond2@users.noreply.github.com>",
+          "timestamp": "2026-02-23T14:52:47-07:00",
+          "tree_id": "2ca26cb24a586a6172f9805cde8ba18dade47e2f",
+          "url": "https://github.com/NatLabRockies/floris/commit/6ef30f15ca2247c743be15dbefef2fac4bb886f9"
+        },
+        "date": 1771885100118,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_set",
+            "value": 41.730080249406534,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00028765814126670465",
+            "extra": "mean: 23.963529282075164 msec\nrounds: 39"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_run",
+            "value": 54.40335451830915,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0001214936529576351",
+            "extra": "mean: 18.38121948277023 msec\nrounds: 29"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_set",
+            "value": 25.411908561208683,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0008779124468698019",
+            "extra": "mean: 39.35162908332283 msec\nrounds: 24"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_run",
+            "value": 0.2872598306346173,
+            "unit": "iter/sec",
+            "range": "stddev: 0.018202224158863765",
+            "extra": "mean: 3.4811689396000474 sec\nrounds: 5"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_set",
+            "value": 36.25227962172167,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0005369107262446864",
+            "extra": "mean: 27.584472216219453 msec\nrounds: 37"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_run",
+            "value": 121.89704515562421,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0004157029660309054",
+            "extra": "mean: 8.203644302643385 msec\nrounds: 76"
           }
         ]
       }

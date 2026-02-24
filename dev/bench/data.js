@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1771885101839,
+  "lastUpdate": 1771900543282,
   "repoUrl": "https://github.com/NatLabRockies/floris",
   "entries": {
     "Python Benchmark with pytest-benchmark": [
@@ -4658,6 +4658,72 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.0004157029660309054",
             "extra": "mean: 8.203644302643385 msec\nrounds: 76"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "2d3b87ca81755f25c26492f6340ce2b6596ee654",
+          "message": "Update sphinxcontrib-mermaid requirement from ~=1.0 to >=1,<3 (#1181)\n\n* Update sphinxcontrib-mermaid requirement from ~=1.0 to >=1,<3\n\nUpdates the requirements on [sphinxcontrib-mermaid](https://github.com/mgaitan/sphinxcontrib-mermaid) to permit the latest version.\n- [Changelog](https://github.com/mgaitan/sphinxcontrib-mermaid/blob/master/CHANGELOG.md)\n- [Commits](https://github.com/mgaitan/sphinxcontrib-mermaid/compare/1.0.0...2.0.0)\n\n---\nupdated-dependencies:\n- dependency-name: sphinxcontrib-mermaid\n  dependency-version: 2.0.0\n  dependency-type: direct:development\n...\n\nSigned-off-by: dependabot[bot] <support@github.com>\n\n* Fix spacing in sphinxcontrib.mermaid version spec\n\nCommitting to rerun checks.\n\n* Revert to normal spacing.\n\n---------\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>\nCo-authored-by: misi9170 <39596329+misi9170@users.noreply.github.com>",
+          "timestamp": "2026-02-23T19:10:49-07:00",
+          "tree_id": "f3b68a04caf4b13d2a888327212477dec3833449",
+          "url": "https://github.com/NatLabRockies/floris/commit/2d3b87ca81755f25c26492f6340ce2b6596ee654"
+        },
+        "date": 1771900540386,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_set",
+            "value": 42.47834284161412,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00028902425783262735",
+            "extra": "mean: 23.54140800003961 msec\nrounds: 40"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_run",
+            "value": 55.20131864754701,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00013139837937678904",
+            "extra": "mean: 18.115509275871933 msec\nrounds: 29"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_set",
+            "value": 26.09650003448752,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0009709096665232491",
+            "extra": "mean: 38.319314800010034 msec\nrounds: 25"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_run",
+            "value": 0.2947649078301012,
+            "unit": "iter/sec",
+            "range": "stddev: 0.006785438732067986",
+            "extra": "mean: 3.3925340955999674 sec\nrounds: 5"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_set",
+            "value": 36.69880811101022,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00011018052686359655",
+            "extra": "mean: 27.248841351334903 msec\nrounds: 37"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_run",
+            "value": 120.34514152495998,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00006026124343244951",
+            "extra": "mean: 8.309433910903637 msec\nrounds: 101"
           }
         ]
       }

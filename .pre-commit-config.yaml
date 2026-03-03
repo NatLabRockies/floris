@@ -23,4 +23,4 @@ repos:
   hooks:
   - id: isort
     name: isort
-    stages: [commit]
+    stages: [pre-commit]

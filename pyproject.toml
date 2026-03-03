@@ -57,7 +57,7 @@ develop = [
     "pytest-benchmark~=5.1",
     "pre-commit~=4.0",
     "ruff~=0.9",
-    "isort>=5,<8"
+    "isort>=5,<9"
 ]
 
 [tool.setuptools.packages.find]

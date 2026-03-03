@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1771913649414,
+  "lastUpdate": 1772510865086,
   "repoUrl": "https://github.com/NatLabRockies/floris",
   "entries": {
     "Python Benchmark with pytest-benchmark": [
@@ -4988,6 +4988,72 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.00006950673532909318",
             "extra": "mean: 8.216134290009904 msec\nrounds: 100"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "6e4d5ae17bfd4487c44a4529922f89877035e4d9",
+          "message": "Update isort requirement from <8,>=5 to >=5,<9 (#1188)\n\n* Update isort requirement from <8,>=5 to >=5,<9\n\nUpdates the requirements on [isort](https://github.com/PyCQA/isort) to permit the latest version.\n- [Release notes](https://github.com/PyCQA/isort/releases)\n- [Changelog](https://github.com/PyCQA/isort/blob/main/CHANGELOG.md)\n- [Commits](https://github.com/PyCQA/isort/compare/5.0.0...8.0.1)\n\n---\nupdated-dependencies:\n- dependency-name: isort\n  dependency-version: 8.0.1\n  dependency-type: direct:development\n...\n\nSigned-off-by: dependabot[bot] <support@github.com>\n\n* Change isort hook stage from commit to pre-commit\n\nAvoids deprecation warning and works on isort 5 through 8\n\n---------\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>\nCo-authored-by: misi9170 <39596329+misi9170@users.noreply.github.com>",
+          "timestamp": "2026-03-02T20:42:34-07:00",
+          "tree_id": "d14ff1d62023dcac0ebbd7adf27c786dbec617bd",
+          "url": "https://github.com/NatLabRockies/floris/commit/6e4d5ae17bfd4487c44a4529922f89877035e4d9"
+        },
+        "date": 1772510863107,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_set",
+            "value": 42.74602480049436,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0005150220237135466",
+            "extra": "mean: 23.393988205154344 msec\nrounds: 39"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_run",
+            "value": 51.749069479184456,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0002012289779713464",
+            "extra": "mean: 19.324018964287657 msec\nrounds: 28"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_set",
+            "value": 25.71498903760643,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0011909594041819515",
+            "extra": "mean: 38.887825249995934 msec\nrounds: 24"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_run",
+            "value": 0.28945603002522513,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0059397162762088096",
+            "extra": "mean: 3.454756150399953 sec\nrounds: 5"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_set",
+            "value": 37.06581721565041,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00026878527119696176",
+            "extra": "mean: 26.979035540534824 msec\nrounds: 37"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_run",
+            "value": 123.07955798179486,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0000778338339426742",
+            "extra": "mean: 8.124826058831912 msec\nrounds: 102"
           }
         ]
       }

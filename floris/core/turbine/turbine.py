@@ -627,7 +627,8 @@ class Turbine(BaseClass):
         if isinstance(self.operation_model, str):
             turbine_function_model = TURBINE_MODEL_MAP["operation_model"][self.operation_model]
         elif isinstance(self.operation_model, dict):
-            turbine_function_model = BaseLibrary.from_dict(self.operation_model)
+            self.operation_model = BaseLibrary.from_dict(self.operation_model)
+            turbine_function_model = self.operation_model
         else:
             turbine_function_model = self.operation_model
         self.thrust_coefficient_function = turbine_function_model.thrust_coefficient

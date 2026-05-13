@@ -16,41 +16,44 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-
-  
-  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="_static/documentation_options.js?v=30a733bc"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=f281be69"></script>
-    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="_static/togglebutton.js?v=1ae7504c"></script>
+    <script src="_static/togglebutton.js?v=b8b12719"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/design-tabs.js?v=f930bc37"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-JV2SK7CNPR"></script>
@@ -79,6 +82,7 @@
     <link rel="prev" title="Turbine Input File Reference" href="input_reference_turbine.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="python"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -94,19 +98,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="search.html"
       method="get">
@@ -114,7 +107,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search this book..."
          aria-label="Search this book..."
          autocomplete="off"
@@ -122,8 +114,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -139,7 +131,8 @@
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -169,21 +162,17 @@
     
     
     <img src="_static/docs_image.png" class="logo__image only-light" alt="FLORIS - Home"/>
-    <script>document.write(`<img src="_static/docs_image.png" class="logo__image only-dark" alt="FLORIS - Home"/>`);</script>
+    <img src="_static/docs_image.png" class="logo__image only-dark pst-js-only" alt="FLORIS - Home"/>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
@@ -452,9 +441,14 @@
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -601,7 +595,7 @@
 
 
 <button onclick="toggleFullScreen()"
-  class="btn btn-sm btn-fullscreen-button"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
   title="Fullscreen mode"
   data-bs-placement="bottom" data-bs-toggle="tooltip"
 >
@@ -615,25 +609,17 @@
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
-<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
 </div></div>
@@ -752,8 +738,8 @@ We also describe the different parameters that must be specified in the turbine
 cosine-loss operation model powers [kW]:  [[1561.31837381  778.04338242  651.77709894]]
 </pre></div>
 </div>
-<img alt="_images/4eb83b8a22f8bf4c90e3353598aff7b1771b2729c204a2a30b6af57aaa7e0a86.png" src="_images/4eb83b8a22f8bf4c90e3353598aff7b1771b2729c204a2a30b6af57aaa7e0a86.png" />
-<img alt="_images/dca1400efca3f34317613fe92c3b35d4b32773e9fbd8b527f3c59d508336bbba.png" src="_images/dca1400efca3f34317613fe92c3b35d4b32773e9fbd8b527f3c59d508336bbba.png" />
+<img alt="_images/3dfbc7e91e2b61918160447974d00edf1f1b77f2669343258e96b3a433280dfb.png" src="_images/3dfbc7e91e2b61918160447974d00edf1f1b77f2669343258e96b3a433280dfb.png" />
+<img alt="_images/a30106a5417c231ba32a0ccdb6e502185659906f7c40a1f2fbd01e1ba3829b6a.png" src="_images/a30106a5417c231ba32a0ccdb6e502185659906f7c40a1f2fbd01e1ba3829b6a.png" />
 </div>
 </div>
 </section>
@@ -837,7 +823,7 @@ thus vary as a function of the turbine's yaw angle, set using the <code class="d
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0, 0.5, &#39;Power [kW]&#39;)
 </pre></div>
 </div>
-<img alt="_images/dbcc0e9026c40292d16ffdb366619bc1bf15b76ba23008729555516c22fc4cd1.png" src="_images/dbcc0e9026c40292d16ffdb366619bc1bf15b76ba23008729555516c22fc4cd1.png" />
+<img alt="_images/5b97d80651e0f8c9b147a2732f1ceb2a9a531588521206d2f636653a6d87b8e6.png" src="_images/5b97d80651e0f8c9b147a2732f1ceb2a9a531588521206d2f636653a6d87b8e6.png" />
 </div>
 </div>
 </section>
@@ -900,7 +886,7 @@ appropriate entries of <code class="docutils literal notranslate"><span class="p
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0, 0.5, &#39;Power [kW]&#39;)
 </pre></div>
 </div>
-<img alt="_images/b55c2ab0376657379e311fe20cd8d3b2b6eb2b555c31b0cc65dd31c0351d48e1.png" src="_images/b55c2ab0376657379e311fe20cd8d3b2b6eb2b555c31b0cc65dd31c0351d48e1.png" />
+<img alt="_images/32d823ba0841ecb891d9febc30449b36a94ff8d6116f715b6dac9170c9786954.png" src="_images/32d823ba0841ecb891d9febc30449b36a94ff8d6116f715b6dac9170c9786954.png" />
 </div>
 </div>
 </section>
@@ -1096,7 +1082,7 @@ i.e. the lesser solution to <span class="math notranslate nohighlight">\(C_T=4a(
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0, 0.5, &#39;Power [kW]&#39;)
 </pre></div>
 </div>
-<img alt="_images/ab5e4157c7471ef479352f0d738b10ae0c974f4acb740bc14b1d924110b0647c.png" src="_images/ab5e4157c7471ef479352f0d738b10ae0c974f4acb740bc14b1d924110b0647c.png" />
+<img alt="_images/bcb45b44d6cba7b586c8b6f699059fbdef9135d6b4540d7d8bdf869428c6930c.png" src="_images/bcb45b44d6cba7b586c8b6f699059fbdef9135d6b4540d7d8bdf869428c6930c.png" />
 </div>
 </div>
 </section>
@@ -1121,7 +1107,7 @@ surface to optimize performance under yaw misalignment.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">&quot;controller-dependent&quot;</span></code> operation model determines the wind turbine power output in yaw misalignment conditions, taking into account the effects of the control system.
 When the rotor operates in below-rated conditions, the models assumes that blade pitch is equal to the optimal value (corresponding to maximum power coefficient <span class="math notranslate nohighlight">\(C_P\)</span>),
 while the generator torque is scheduled as a function of rotational speed <span class="math notranslate nohighlight">\(\omega\)</span> according to the <span class="math notranslate nohighlight">\(K\omega^2\)</span> law.
-The <span class="math notranslate nohighlight">\(K\)</span> coefficient is computed using the condition of maximum efficiency as shown in Chapter 7 of <span id="id1">Hansen [<a class="reference internal" href="bibliography.html#id31" title="M.O.L. Hansen. Aerodynamics of wind turbines: Third edition. Routledge, 05 2015. ISBN 9781315769981. doi:10.4324/9781315769981.">4</a>]</span>.
+The <span class="math notranslate nohighlight">\(K\)</span> coefficient is computed using the condition of maximum efficiency as shown in Chapter 7 of <span class="bibtex-citation" id="id1">Hansen [<a class="reference internal" href="bibliography.html#id31" title="M.O.L. Hansen. Aerodynamics of wind turbines: Third edition. Routledge, 05 2015. ISBN 9781315769981. doi:10.4324/9781315769981.">4</a>]</span>.
 When the turbine operates above rated wind speed, the rotor speed is fixed and equal to the rated value, while the pitch angle is used to keep the power output equal to rated.
 The <code class="docutils literal notranslate"><span class="pre">&quot;controller-dependent&quot;</span></code> operation model solves a balance equation between electrical power and aerodynamic power, assuming the aforementioned control strategies.
 This yields the pitch and torque values that correspond to the current inflow and yaw misalignment. Based on these quantities, the power output of the turbine is computed.
@@ -1134,12 +1120,12 @@ To include the effects of shear, ensure that <code class="docutils literal notra
 <li><p>Rated rotation speed (<code class="docutils literal notranslate"><span class="pre">rated_rpm</span></code>), generator efficiency (<code class="docutils literal notranslate"><span class="pre">generator_efficiency</span></code>), and rated power, specified in kW (<code class="docutils literal notranslate"><span class="pre">rated_power</span></code>).</p></li>
 <li><p>Three parameters that describe the aerodynamics of the blade, namely <code class="docutils literal notranslate"><span class="pre">beta</span></code> (twist), <code class="docutils literal notranslate"><span class="pre">cd</span></code> (drag) and <code class="docutils literal notranslate"><span class="pre">cl_alfa</span></code> (lift slope).
 These parameters are provided for the NREL 5MW, IEA 10MW, and IEA 15MW turbines in the &quot;floris/turbine_library/&quot;.
-When using a different turbine model, these parameters can be estimated as shown in Section 3.5 of <span id="id2">Tamaro <em>et al.</em> [<a class="reference internal" href="bibliography.html#id30" title="S. Tamaro, F. Campagnolo, and C. L. Bottasso. On the power and control of a misaligned rotor – beyond the cosine law. Wind Energy Science, 9(7):1547–1575, 2024. URL: https://wes.copernicus.org/articles/9/1547/2024/, doi:10.5194/wes-9-1547-2024.">5</a>]</span>.</p></li>
+When using a different turbine model, these parameters can be estimated as shown in Section 3.5 of <span class="bibtex-citation" id="id2">Tamaro <em>et al.</em> [<a class="reference internal" href="bibliography.html#id30" title="S. Tamaro, F. Campagnolo, and C. L. Bottasso. On the power and control of a misaligned rotor – beyond the cosine law. Wind Energy Science, 9(7):1547–1575, 2024. URL: https://wes.copernicus.org/articles/9/1547/2024/, doi:10.5194/wes-9-1547-2024.">5</a>]</span>.</p></li>
 <li><p>Look-up tables of the power coefficient (<span class="math notranslate nohighlight">\(C_P\)</span>) and thrust coefficient <span class="math notranslate nohighlight">\(C_T\)</span> as functions of tip-speed ratio and blade pitch angle.
 Approximate values for these are provided for the reference turbines in &quot;floris/turbine_library/&quot;.</p></li>
 <li><p>Rotor solidity (<code class="docutils literal notranslate"><span class="pre">rotor_solidity</span></code>), i.e. the fraction of the rotor area occupied by the blades.</p></li>
 </ol>
-<p>Further details can be found in <span id="id3">Tamaro <em>et al.</em> [<a class="reference internal" href="bibliography.html#id30" title="S. Tamaro, F. Campagnolo, and C. L. Bottasso. On the power and control of a misaligned rotor – beyond the cosine law. Wind Energy Science, 9(7):1547–1575, 2024. URL: https://wes.copernicus.org/articles/9/1547/2024/, doi:10.5194/wes-9-1547-2024.">5</a>]</span>.
+<p>Further details can be found in <span class="bibtex-citation" id="id3">Tamaro <em>et al.</em> [<a class="reference internal" href="bibliography.html#id30" title="S. Tamaro, F. Campagnolo, and C. L. Bottasso. On the power and control of a misaligned rotor – beyond the cosine law. Wind Energy Science, 9(7):1547–1575, 2024. URL: https://wes.copernicus.org/articles/9/1547/2024/, doi:10.5194/wes-9-1547-2024.">5</a>]</span>.
 Developed and implemented by Simone Tamaro, Filippo Campagnolo, and Carlo L. Bottasso at Technische Universität München (TUM) (email: <a class="reference external" href="mailto:simone&#46;tamaro&#37;&#52;&#48;tum&#46;de">simone<span>&#46;</span>tamaro<span>&#64;</span>tum<span>&#46;</span>de</a>).</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1195,7 +1181,7 @@ Evaluating model: controller-dependent
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0, 0.5, &#39;Normalized turbine power [deg]&#39;)
 </pre></div>
 </div>
-<img alt="_images/da64acd496222834cba270fee56f04d07659b41006c3372bd04126b8d9ee549d.png" src="_images/da64acd496222834cba270fee56f04d07659b41006c3372bd04126b8d9ee549d.png" />
+<img alt="_images/4389fd4ed9a92d1ec3f87fa0625a0249c306df200a11a9a9998ec20bdac77a7c.png" src="_images/4389fd4ed9a92d1ec3f87fa0625a0249c306df200a11a9a9998ec20bdac77a7c.png" />
 </div>
 </div>
 <p><strong>WARNING</strong>: The power and thrust curves generated by querying tabulated data as a function of blade pitch and tip-speed ratio for the reference wind turbines is <em>not</em> an exact match for the reference power and thrust curves found at the IEA Wind Task 37's <a class="reference external" href="https://github.com/IEAWindTask37">Github page</a> or the NREL 5MW <a class="reference external" href="https://github.com/NREL/turbine-models/blob/master/Offshore/NREL_5MW_126_RWT_corrected.csv">reference data</a>. As such, results using the Controller-dependent model, which rely on these <span class="math notranslate nohighlight">\(C_P\)</span> and <span class="math notranslate nohighlight">\(C_T\)</span> tables, should be considered demonstrative only and not necessarily consistent with other results using the reference wind turbines.</p>
@@ -1284,9 +1270,9 @@ Evaluating model: controller-dependent
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Powers more than 1% above rated detected. Consider checking Cp-Ct data.
 </pre></div>
 </div>
-<img alt="_images/67b6f2ceab5bb2d2e4fde519d406d0087a6ed1ad0a30e53d112c9fc032164105.png" src="_images/67b6f2ceab5bb2d2e4fde519d406d0087a6ed1ad0a30e53d112c9fc032164105.png" />
-<img alt="_images/41097982e872e51a8c35ece0ba1c65fa7947ba2705bedc9f6b3e3fc9e64369ef.png" src="_images/41097982e872e51a8c35ece0ba1c65fa7947ba2705bedc9f6b3e3fc9e64369ef.png" />
-<img alt="_images/319e4fce236e7760a900108b0439b59dcc002652488be6b95041aae640908a32.png" src="_images/319e4fce236e7760a900108b0439b59dcc002652488be6b95041aae640908a32.png" />
+<img alt="_images/16d29027ef9ce71a36c595ea1736327d4631df24067b20cf7700bdfaaaed8765.png" src="_images/16d29027ef9ce71a36c595ea1736327d4631df24067b20cf7700bdfaaaed8765.png" />
+<img alt="_images/ae8b829218ec39557f7290ebe487686c7a8a97e2299689ae617776373d1f8a15.png" src="_images/ae8b829218ec39557f7290ebe487686c7a8a97e2299689ae617776373d1f8a15.png" />
+<img alt="_images/1db247f7cfec31824e8039c3866ce6c0993d2bea262bc48932c6d994be944d40.png" src="_images/1db247f7cfec31824e8039c3866ce6c0993d2bea262bc48932c6d994be944d40.png" />
 </div>
 </div>
 </section>
@@ -1303,7 +1289,7 @@ Evaluating model: controller-dependent
 <li><p><code class="docutils literal notranslate"><span class="pre">thrust_coefficient</span></code> (list)</p></li>
 </ul>
 <p>An extension of the classical one-dimensional momentum theory to model the induction of an
-actuator disk is presented in <span id="id4">K.S. Heck and Howland [<a class="reference internal" href="bibliography.html#id32" title="H.M. Johlas K.S. Heck and M.F. Howland. Modelling the induction, thrust and power of a yaw-misaligned actuator disk. Journal of Fluid Mechanics, mar 2023. URL: https://doi.org/10.1017/jfm.2023.129, doi:10.1017/jfm.2023.129.">6</a>]</span> to directly account
+actuator disk is presented in <span class="bibtex-citation" id="id4">K.S. Heck and Howland [<a class="reference internal" href="bibliography.html#id32" title="H.M. Johlas K.S. Heck and M.F. Howland. Modelling the induction, thrust and power of a yaw-misaligned actuator disk. Journal of Fluid Mechanics, mar 2023. URL: https://doi.org/10.1017/jfm.2023.129, doi:10.1017/jfm.2023.129.">6</a>]</span> to directly account
 for power and thrust loss due to yaw misalignment rather than using an empirical correction
 as in the cosine loss model. Analytical expressions for the induction, thrust, initial wake
 velocities and power are developed as a function of the yaw angle and thrust coefficient.</p>
@@ -1353,7 +1339,7 @@ This low thrust limit will be accurate for thrust coefficients approximately les
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0, 0.5, &#39;Power ratio, $P(\\gamma)/P(0)$&#39;)
 </pre></div>
 </div>
-<img alt="_images/020b08aaae2a5cbba4a7e23fe945b5454afac19ce1e30bffaded85f31f751b8e.png" src="_images/020b08aaae2a5cbba4a7e23fe945b5454afac19ce1e30bffaded85f31f751b8e.png" />
+<img alt="_images/d3f30f8e9de3666889c3b4e947bd9d0584b16cf2696d66fdf7c0d84f17aa88e2.png" src="_images/d3f30f8e9de3666889c3b4e947bd9d0584b16cf2696d66fdf7c0d84f17aa88e2.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1385,7 +1371,7 @@ This low thrust limit will be accurate for thrust coefficients approximately les
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0, 0.5, &#39;Axial induction ratio, $a_n(\\gamma) / a_n(0)$&#39;)
 </pre></div>
 </div>
-<img alt="_images/bf9bc1eed44a88d00c2013865bdd6326c4cad02a2f4463e6f0c094ee9c9f85cf.png" src="_images/bf9bc1eed44a88d00c2013865bdd6326c4cad02a2f4463e6f0c094ee9c9f85cf.png" />
+<img alt="_images/72cfb039d0c211f0ef7e2400c08137b5480d66e841d179e4c4335101480b72b2.png" src="_images/72cfb039d0c211f0ef7e2400c08137b5480d66e841d179e4c4335101480b72b2.png" />
 </div>
 </div>
 </section>
@@ -1447,14 +1433,16 @@ This low thrust limit will be accurate for thrust coefficients approximately les
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
-  <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> Contents
   </div>
-  <nav class="bd-toc-nav page-toc">
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selecting-the-operation-model">Selecting the operation model</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#operation-model-library">Operation model library</a><ul class="nav section-nav flex-column">
@@ -1516,8 +1504,8 @@ By National Laboratory of the Rockies
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
   </footer>

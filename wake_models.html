@@ -16,41 +16,44 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-
-  
-  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="_static/documentation_options.js?v=30a733bc"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=f281be69"></script>
-    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="_static/togglebutton.js?v=1ae7504c"></script>
+    <script src="_static/togglebutton.js?v=b8b12719"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/design-tabs.js?v=f930bc37"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-JV2SK7CNPR"></script>
@@ -506,7 +509,8 @@ mermaid.initialize(
     }
 );
 
-window.addEventListener("load", load);</script>
+window.addEventListener("load", load);
+window.runMermaid = runMermaid;</script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'wake_models';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -514,6 +518,7 @@ window.addEventListener("load", load);</script>
     <link rel="prev" title="Layout Optimization" href="layout_optimization.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="python"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -529,19 +534,8 @@ window.addEventListener("load", load);</script>
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="search.html"
       method="get">
@@ -549,7 +543,6 @@ window.addEventListener("load", load);</script>
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search this book..."
          aria-label="Search this book..."
          autocomplete="off"
@@ -557,8 +550,8 @@ window.addEventListener("load", load);</script>
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -574,7 +567,8 @@ window.addEventListener("load", load);</script>
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -604,21 +598,17 @@ window.addEventListener("load", load);</script>
     
     
     <img src="_static/docs_image.png" class="logo__image only-light" alt="FLORIS - Home"/>
-    <script>document.write(`<img src="_static/docs_image.png" class="logo__image only-dark" alt="FLORIS - Home"/>`);</script>
+    <img src="_static/docs_image.png" class="logo__image only-dark pst-js-only" alt="FLORIS - Home"/>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
@@ -887,9 +877,14 @@ window.addEventListener("load", load);</script>
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -1036,7 +1031,7 @@ window.addEventListener("load", load);</script>
 
 
 <button onclick="toggleFullScreen()"
-  class="btn btn-sm btn-fullscreen-button"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
   title="Fullscreen mode"
   data-bs-placement="bottom" data-bs-toggle="tooltip"
 >
@@ -1050,25 +1045,17 @@ window.addEventListener("load", load);</script>
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
-<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
 </div></div>
@@ -1185,10 +1172,10 @@ in the corresponding input files found in the source code dropdowns.</p>
 <section id="jensen-and-jimenez">
 <h2>Jensen and Jimenez<a class="headerlink" href="#jensen-and-jimenez" title="Link to this heading">#</a></h2>
 <p>The Jensen model computes the wake velocity deficit based on the classic Jensen/Park model
-<span id="id1">Jensen [<a class="reference internal" href="bibliography.html#id19" title="Niels Otto Jensen. A note on wind generator interaction. Risø National Laboratory, 1983.">9</a>]</span>. It is often refered to as a &quot;top-hat&quot; model because the spanwise
+<span class="bibtex-citation" id="id1">Jensen [<a class="reference internal" href="bibliography.html#id19" title="Niels Otto Jensen. A note on wind generator interaction. Risø National Laboratory, 1983.">9</a>]</span>. It is often refered to as a &quot;top-hat&quot; model because the spanwise
 velocity profile is constant across the wake and abruptly jumps to freestream outside of the
 wake boundary line. The slope of the wake boundary line, or wake expansion, is a user parameter.</p>
-<p>The Jiménez wake deflection model is derived from <span id="id2">Jiménez <em>et al.</em> [<a class="reference internal" href="bibliography.html#id18" title="Ángel Jiménez, Antonio Crespo, and Emilio Migoya. Application of a les technique to characterize the wake deflection of a wind turbine in yaw. Wind energy, 13(6):559–572, 2010.">10</a>]</span>.</p>
+<p>The Jiménez wake deflection model is derived from <span class="bibtex-citation" id="id2">Jiménez <em>et al.</em> [<a class="reference internal" href="bibliography.html#id18" title="Ángel Jiménez, Antonio Crespo, and Emilio Migoya. Application of a les technique to characterize the wake deflection of a wind turbine in yaw. Wind energy, 13(6):559–572, 2010.">10</a>]</span>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model_plot</span><span class="p">(</span><span class="s2">&quot;../examples/inputs/jensen.yaml&quot;</span><span class="p">)</span>
@@ -1200,19 +1187,19 @@ wake boundary line. The slope of the wake boundary line, or wake expansion, is a
   * np.power(
 </pre></div>
 </div>
-<img alt="_images/19d02738b812f73295328ccad56211dfa133c73a830681d47365a2edbd2d4879.png" src="_images/19d02738b812f73295328ccad56211dfa133c73a830681d47365a2edbd2d4879.png" />
+<img alt="_images/a7d411da12c87c99b32a7d6dfdfe3650d198236f41d75f0810523ef877c25b5f.png" src="_images/a7d411da12c87c99b32a7d6dfdfe3650d198236f41d75f0810523ef877c25b5f.png" />
 </div>
 </div>
 </section>
 <section id="gauss-and-gch">
 <h2>Gauss and GCH<a class="headerlink" href="#gauss-and-gch" title="Link to this heading">#</a></h2>
-<p>The Gaussian velocity model is implemented based on <span id="id3">Bastankhah and Porté-Agel [<a class="reference internal" href="bibliography.html#id4" title="Majid Bastankhah and Fernando Porté-Agel. Experimental and theoretical study of wind turbine wakes in yawed conditions. Journal of Fluid Mechanics, 806:506–541, 2016.">11</a>]</span> and
-<span id="id4">Niayifar and Porté-Agel [<a class="reference internal" href="bibliography.html#id5" title="Amin Niayifar and Fernando Porté-Agel. Analytical modeling of wind farms: a new approach for power prediction. Energies, 9(9):741, 2016.">12</a>]</span>. This model represents the velocity deficity as a gaussian
+<p>The Gaussian velocity model is implemented based on <span class="bibtex-citation" id="id3">Bastankhah and Porté-Agel [<a class="reference internal" href="bibliography.html#id4" title="Majid Bastankhah and Fernando Porté-Agel. Experimental and theoretical study of wind turbine wakes in yawed conditions. Journal of Fluid Mechanics, 806:506–541, 2016.">11</a>]</span> and
+<span class="bibtex-citation" id="id4">Niayifar and Porté-Agel [<a class="reference internal" href="bibliography.html#id5" title="Amin Niayifar and Fernando Porté-Agel. Analytical modeling of wind farms: a new approach for power prediction. Energies, 9(9):741, 2016.">12</a>]</span>. This model represents the velocity deficity as a gaussian
 distribution in the spanwise direction, and the gaussian profile is controlled by user parameters.
 There is a near wake zone and a far wake zone. Both maintain the gaussian profile in the spanwise
 direction, but they have different models for wake recovery.</p>
 <p>The Gauss deflection model is a blend of the models described in
-<span id="id5">Bastankhah and Porté-Agel [<a class="reference internal" href="bibliography.html#id4" title="Majid Bastankhah and Fernando Porté-Agel. Experimental and theoretical study of wind turbine wakes in yawed conditions. Journal of Fluid Mechanics, 806:506–541, 2016.">11</a>]</span> and <span id="id6">King <em>et al.</em> [<a class="reference internal" href="bibliography.html#id17" title="Jennifer King, Paul Fleming, Ryan King, and Luis A. Martinez-Tossas. Controls-oriented model to capture secondary effects of wake steering. Submitted to Wind Energy Science, 2019.">13</a>]</span> for calculating
+<span class="bibtex-citation" id="id5">Bastankhah and Porté-Agel [<a class="reference internal" href="bibliography.html#id4" title="Majid Bastankhah and Fernando Porté-Agel. Experimental and theoretical study of wind turbine wakes in yawed conditions. Journal of Fluid Mechanics, 806:506–541, 2016.">11</a>]</span> and <span class="bibtex-citation" id="id6">King <em>et al.</em> [<a class="reference internal" href="bibliography.html#id17" title="Jennifer King, Paul Fleming, Ryan King, and Luis A. Martinez-Tossas. Controls-oriented model to capture secondary effects of wake steering. Submitted to Wind Energy Science, 2019.">13</a>]</span> for calculating
 the deflection field in turbine wakes.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1221,7 +1208,7 @@ the deflection field in turbine wakes.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/2c046da7af1be5e95ed51388bce2b7a6098f8de3083ed974a08805e6c989a41d.png" src="_images/2c046da7af1be5e95ed51388bce2b7a6098f8de3083ed974a08805e6c989a41d.png" />
+<img alt="_images/9c025986b94112cf51edde301c539ff9c9a96abe1ad21ba4dd4c6426f6243f53.png" src="_images/9c025986b94112cf51edde301c539ff9c9a96abe1ad21ba4dd4c6426f6243f53.png" />
 </div>
 </div>
 </section>
@@ -1238,14 +1225,14 @@ simpler tuning and data fitting.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/2d6e16b060372db1fdc130a81251cd8d3b3a644357193c93fe9c8a025054fc81.png" src="_images/2d6e16b060372db1fdc130a81251cd8d3b3a644357193c93fe9c8a025054fc81.png" />
+<img alt="_images/e462c3644443d7b9af7c58fcf573925f7fc582403d0e21c5168e30d622e75584.png" src="_images/e462c3644443d7b9af7c58fcf573925f7fc582403d0e21c5168e30d622e75584.png" />
 </div>
 </div>
 </section>
 <section id="cumulative-curl">
 <h2>Cumulative Curl<a class="headerlink" href="#cumulative-curl" title="Link to this heading">#</a></h2>
-<p>The cumulative curl model is an implementation of the model described in <span id="id7">Bay <em>et al.</em> [<a class="reference internal" href="bibliography.html#id27" title="C. J. Bay, P. Fleming, B. Doekemeijer, J. King, M. Churchfield, and R. Mudafort. Addressing deep array effects and impacts to wake steering with the cumulative-curl wake model. Wind Energy Science Discussions, 2022:1–28, 2022. URL: https://wes.copernicus.org/preprints/wes-2022-17/, doi:10.5194/wes-2022-17.">14</a>]</span>,
-which itself is based on the cumulative model of <span id="id8">Bastankhah <em>et al.</em> [<a class="reference internal" href="bibliography.html#id26" title="Majid Bastankhah, Bridget L. Welch, Luis A. Martínez-Tossas, Jennifer King, and Paul Fleming. Analytical solution for the cumulative wake of wind turbines in wind farms. Journal of Fluid Mechanics, 911:A53, 2021. doi:10.1017/jfm.2020.1037.">15</a>]</span></p>
+<p>The cumulative curl model is an implementation of the model described in <span class="bibtex-citation" id="id7">Bay <em>et al.</em> [<a class="reference internal" href="bibliography.html#id27" title="C. J. Bay, P. Fleming, B. Doekemeijer, J. King, M. Churchfield, and R. Mudafort. Addressing deep array effects and impacts to wake steering with the cumulative-curl wake model. Wind Energy Science Discussions, 2022:1–28, 2022. URL: https://wes.copernicus.org/preprints/wes-2022-17/, doi:10.5194/wes-2022-17.">14</a>]</span>,
+which itself is based on the cumulative model of <span class="bibtex-citation" id="id8">Bastankhah <em>et al.</em> [<a class="reference internal" href="bibliography.html#id26" title="Majid Bastankhah, Bridget L. Welch, Luis A. Martínez-Tossas, Jennifer King, and Paul Fleming. Analytical solution for the cumulative wake of wind turbines in wind farms. Journal of Fluid Mechanics, 911:A53, 2021. doi:10.1017/jfm.2020.1037.">15</a>]</span></p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model_plot</span><span class="p">(</span><span class="s2">&quot;../examples/inputs/cc.yaml&quot;</span><span class="p">)</span>
@@ -1253,16 +1240,16 @@ which itself is based on the cumulative model of <span id="id8">Bastankhah <em>e
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/e1c57638899e9dc29956ff89514239f445c492041ffddbb70ebdb4dfcb61b10c.png" src="_images/e1c57638899e9dc29956ff89514239f445c492041ffddbb70ebdb4dfcb61b10c.png" />
+<img alt="_images/43d6ca571b206cde2cd372637b726f56d6d8e5cf0ce49cd1cb8e939005947c2e.png" src="_images/43d6ca571b206cde2cd372637b726f56d6d8e5cf0ce49cd1cb8e939005947c2e.png" />
 </div>
 </div>
 </section>
 <section id="turbopark">
 <h2>TurbOPark<a class="headerlink" href="#turbopark" title="Link to this heading">#</a></h2>
-<p>The TurbOPark model is designed to model long wakes from large wind farm clusters. It was originally presented as a “top-hat” model in <span id="id9">Nygaard <em>et al.</em> [<a class="reference internal" href="bibliography.html#id25" title="Nicolai Gayle Nygaard, Søren Trads Steen, Lina Poulsen, and Jesper Grønnegaard Pedersen. Modelling cluster wakes and wind farm blockage. In Journal of Physics: Conference Series, volume 1618, 062072. IOP Publishing, 2020.">16</a>]</span> and was updated in <span id="id10">Pedersen <em>et al.</em> [<a class="reference internal" href="bibliography.html#id28" title="J G Pedersen, E Svensson, L Poulsen, and N G Nygaard. Turbulence optimized park model with gaussian wake profile. Journal of Physics: Conference Series, 2265(2):022063, may 2022. URL: https://dx.doi.org/10.1088/1742-6596/2265/2/022063.">17</a>]</span> to have a Gaussian profile. For the latter, Ørsted released the <a class="reference external" href="https://github.com/OrstedRD/TurbOPark">Matlab code with documentation</a>, which allows the verification of the implementation in FLORIS.</p>
+<p>The TurbOPark model is designed to model long wakes from large wind farm clusters. It was originally presented as a “top-hat” model in <span class="bibtex-citation" id="id9">Nygaard <em>et al.</em> [<a class="reference internal" href="bibliography.html#id25" title="Nicolai Gayle Nygaard, Søren Trads Steen, Lina Poulsen, and Jesper Grønnegaard Pedersen. Modelling cluster wakes and wind farm blockage. In Journal of Physics: Conference Series, volume 1618, 062072. IOP Publishing, 2020.">16</a>]</span> and was updated in <span class="bibtex-citation" id="id10">Pedersen <em>et al.</em> [<a class="reference internal" href="bibliography.html#id28" title="J G Pedersen, E Svensson, L Poulsen, and N G Nygaard. Turbulence optimized park model with gaussian wake profile. Journal of Physics: Conference Series, 2265(2):022063, may 2022. URL: https://dx.doi.org/10.1088/1742-6596/2265/2/022063.">17</a>]</span> to have a Gaussian profile. For the latter, Ørsted released the <a class="reference external" href="https://github.com/OrstedRD/TurbOPark">Matlab code with documentation</a>, which allows the verification of the implementation in FLORIS.</p>
 <p>The first implementation, the <a class="reference external" href="https://github.com/NREL/floris/blob/main/floris/core/wake_velocity/turbopark.py"><code class="docutils literal notranslate"><span class="pre">TurboparkVelocityDeficitModel</span></code></a>, was released in <a class="reference external" href="https://github.com/NREL/floris/releases/tag/v3.1">FLORIS v3.1</a>. The second implementation, the <a class="reference external" href="https://github.com/NREL/floris/blob/main/floris/core/wake_velocity/turboparkgauss.py"><code class="docutils literal notranslate"><span class="pre">TurboparkgaussVelocityDeficitModel</span></code></a>, was released in FLORIS v4.2 and shows a near-perfect match to the predictions of Ørsted’s Matlab implementation. As such, we will emphasize the use of the <code class="docutils literal notranslate"><span class="pre">TurboparkgaussVelocityDeficitModel</span></code> going forward, and suggest that new users use this model (by setting the <code class="docutils literal notranslate"><span class="pre">velocity_model</span></code> field of the FLORIS input file to <code class="docutils literal notranslate"><span class="pre">turboparkgauss</span></code> instead of the <code class="docutils literal notranslate"><span class="pre">TurboparkVelocityDeficitModel</span></code> (<code class="docutils literal notranslate"><span class="pre">velocity_model:</span> <span class="pre">turbopark</span></code>)) if they are interested in testing the TurbOPark model.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">TurboparkgaussVelocityDeficitModel</span></code> implementation was contributed by <a class="reference external" href="https://github.com/JasperShell">Jasper Kreeft</a>.</p>
-<p>Note that the original top-hat TurbOPark model (<span id="id11">Nygaard <em>et al.</em> [<a class="reference internal" href="bibliography.html#id25" title="Nicolai Gayle Nygaard, Søren Trads Steen, Lina Poulsen, and Jesper Grønnegaard Pedersen. Modelling cluster wakes and wind farm blockage. In Journal of Physics: Conference Series, volume 1618, 062072. IOP Publishing, 2020.">16</a>]</span>) is <em>not</em> available in FLORIS.</p>
+<p>Note that the original top-hat TurbOPark model (<span class="bibtex-citation" id="id11">Nygaard <em>et al.</em> [<a class="reference internal" href="bibliography.html#id25" title="Nicolai Gayle Nygaard, Søren Trads Steen, Lina Poulsen, and Jesper Grønnegaard Pedersen. Modelling cluster wakes and wind farm blockage. In Journal of Physics: Conference Series, volume 1618, 062072. IOP Publishing, 2020.">16</a>]</span>) is <em>not</em> available in FLORIS.</p>
 <p>The wakes as predicted by the <code class="docutils literal notranslate"><span class="pre">TurboparkgaussVelocityDeficit</span></code> model are demonstrated below.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1271,7 +1258,7 @@ which itself is based on the cumulative model of <span id="id8">Bastankhah <em>e
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/1f01a4bc55cb405512f1de1fd5b91da57b98457e64c82bc3a86edba430c2c887.png" src="_images/1f01a4bc55cb405512f1de1fd5b91da57b98457e64c82bc3a86edba430c2c887.png" />
+<img alt="_images/7d0fcddf7290f61c671f9643bf5aaa75c8e2ab969b93643d2baf6ec218d4c7cf.png" src="_images/7d0fcddf7290f61c671f9643bf5aaa75c8e2ab969b93643d2baf6ec218d4c7cf.png" />
 </div>
 </div>
 </section>
@@ -1281,8 +1268,8 @@ which itself is based on the cumulative model of <span id="id8">Bastankhah <em>e
 <h3>Crespo-Hernandez<a class="headerlink" href="#crespo-hernandez" title="Link to this heading">#</a></h3>
 <p>CrespoHernandez is a wake-turbulence model that is used to compute additional variability introduced
 to the flow field by operation of a wind turbine. Implementation of the model follows the original
-formulation and limitations outlined in <span id="id12">Crespo and Hernández [<a class="reference internal" href="bibliography.html#id15" title="A. Crespo and J. Hernández. Turbulence characteristics in wind-turbine wakes. Journal of wind engineering and industrial aerodynamics, 61(1):71–85, 1996.">18</a>]</span>.</p>
-<p>The default parameter values used in FLORIS for CrespoHernandez differ from those reported in <span id="id13">Crespo and Hernández [<a class="reference internal" href="bibliography.html#id15" title="A. Crespo and J. Hernández. Turbulence characteristics in wind-turbine wakes. Journal of wind engineering and industrial aerodynamics, 61(1):71–85, 1996.">18</a>]</span> following subsequent calibration. However, <span id="id14">Zehtabiyan-Rezaie and Abkar [<a class="reference internal" href="bibliography.html#id39" title="Navid Zehtabiyan-Rezaie and Mahdi Abkar. A short note on turbulence characteristics in wind-turbine wakes. Journal of Wind Engineering and Industrial Aerodynamics, 240:105504, 2023. doi:10.1016/j.jweia.2023.105504.">19</a>]</span> argue that the sign of certain parameters are not physically consistent (and also misreported in subsequent literature). See the <code class="docutils literal notranslate"><span class="pre">CrespoHernandez</span></code> class docstring for more details.</p>
+formulation and limitations outlined in <span class="bibtex-citation" id="id12">Crespo and Hernández [<a class="reference internal" href="bibliography.html#id15" title="A. Crespo and J. Hernández. Turbulence characteristics in wind-turbine wakes. Journal of wind engineering and industrial aerodynamics, 61(1):71–85, 1996.">18</a>]</span>.</p>
+<p>The default parameter values used in FLORIS for CrespoHernandez differ from those reported in <span class="bibtex-citation" id="id13">Crespo and Hernández [<a class="reference internal" href="bibliography.html#id15" title="A. Crespo and J. Hernández. Turbulence characteristics in wind-turbine wakes. Journal of wind engineering and industrial aerodynamics, 61(1):71–85, 1996.">18</a>]</span> following subsequent calibration. However, <span class="bibtex-citation" id="id14">Zehtabiyan-Rezaie and Abkar [<a class="reference internal" href="bibliography.html#id39" title="Navid Zehtabiyan-Rezaie and Mahdi Abkar. A short note on turbulence characteristics in wind-turbine wakes. Journal of Wind Engineering and Industrial Aerodynamics, 240:105504, 2023. doi:10.1016/j.jweia.2023.105504.">19</a>]</span> argue that the sign of certain parameters are not physically consistent (and also misreported in subsequent literature). See the <code class="docutils literal notranslate"><span class="pre">CrespoHernandez</span></code> class docstring for more details.</p>
 </section>
 </section>
 <section id="wake-combination-models">
@@ -1366,15 +1353,15 @@ flow field.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/c984e82eddfda3732a5b190e7058cca082bae22b97786e7c86cbc7cad4216fd4.png" src="_images/c984e82eddfda3732a5b190e7058cca082bae22b97786e7c86cbc7cad4216fd4.png" />
-<img alt="_images/f71884cc37da899c3e084027b3351c422454ce5ff3f03831da6f758fc06463da.png" src="_images/f71884cc37da899c3e084027b3351c422454ce5ff3f03831da6f758fc06463da.png" />
+<img alt="_images/3d50bc0b20874e7d1d5c907eb44745d104e6edd69c7dd2b3218d0bed36e651b4.png" src="_images/3d50bc0b20874e7d1d5c907eb44745d104e6edd69c7dd2b3218d0bed36e651b4.png" />
+<img alt="_images/4b27d405f538e947baf0fe56abd78d1412f0d08618aaaf7464547852eb0e3ac9.png" src="_images/4b27d405f538e947baf0fe56abd78d1412f0d08618aaaf7464547852eb0e3ac9.png" />
 </div>
 </div>
 </section>
 <section id="max">
 <h3>Max<a class="headerlink" href="#max" title="Link to this heading">#</a></h3>
 <p>The MAX model incorporates the velocity deficits into the base flow field by selecting the
-maximum of the two for each point. For more information, refer to <span id="id15">Gunn <em>et al.</em> [<a class="reference internal" href="bibliography.html#id16" title="Kester Gunn, Clym Stock-Williams, M Burke, Richard Willden, C Vogel, W Hunter, T Stallard, N Robinson, and SR Schmidt. Limitations to the validity of single wake superposition in wind farm yield assessment. In Journal of Physics: Conference Series, number 1. IOP Publishing: Conference Series, 2016.">20</a>]</span>.</p>
+maximum of the two for each point. For more information, refer to <span class="bibtex-citation" id="id15">Gunn <em>et al.</em> [<a class="reference internal" href="bibliography.html#id16" title="Kester Gunn, Clym Stock-Williams, M Burke, Richard Willden, C Vogel, W Hunter, T Stallard, N Robinson, and SR Schmidt. Limitations to the validity of single wake superposition in wind farm yield assessment. In Journal of Physics: Conference Series, number 1. IOP Publishing: Conference Series, 2016.">20</a>]</span>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">combination_plot</span><span class="p">(</span><span class="s2">&quot;max&quot;</span><span class="p">)</span>
@@ -1382,8 +1369,8 @@ maximum of the two for each point. For more information, refer to <span id="id15
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/c984e82eddfda3732a5b190e7058cca082bae22b97786e7c86cbc7cad4216fd4.png" src="_images/c984e82eddfda3732a5b190e7058cca082bae22b97786e7c86cbc7cad4216fd4.png" />
-<img alt="_images/63b7cf23966f2792c2722f9bdfe8e1741abda23a6290225ceb32ae59c6b2fb7d.png" src="_images/63b7cf23966f2792c2722f9bdfe8e1741abda23a6290225ceb32ae59c6b2fb7d.png" />
+<img alt="_images/3d50bc0b20874e7d1d5c907eb44745d104e6edd69c7dd2b3218d0bed36e651b4.png" src="_images/3d50bc0b20874e7d1d5c907eb44745d104e6edd69c7dd2b3218d0bed36e651b4.png" />
+<img alt="_images/1b07f06147a3bd881b8b95c4784e4004d6371b704e8fa1577a8323ec763c437c.png" src="_images/1b07f06147a3bd881b8b95c4784e4004d6371b704e8fa1577a8323ec763c437c.png" />
 </div>
 </div>
 </section>
@@ -1397,8 +1384,8 @@ maximum of the two for each point. For more information, refer to <span id="id15
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/c984e82eddfda3732a5b190e7058cca082bae22b97786e7c86cbc7cad4216fd4.png" src="_images/c984e82eddfda3732a5b190e7058cca082bae22b97786e7c86cbc7cad4216fd4.png" />
-<img alt="_images/704df3e637b1b4cb65944539bf01226a92217b029af87c32d2ce6c47b5133491.png" src="_images/704df3e637b1b4cb65944539bf01226a92217b029af87c32d2ce6c47b5133491.png" />
+<img alt="_images/3d50bc0b20874e7d1d5c907eb44745d104e6edd69c7dd2b3218d0bed36e651b4.png" src="_images/3d50bc0b20874e7d1d5c907eb44745d104e6edd69c7dd2b3218d0bed36e651b4.png" />
+<img alt="_images/d4b515a9704110b0392ad203ffd628a0ed38c8d17d9268689178016c6b08547c.png" src="_images/d4b515a9704110b0392ad203ffd628a0ed38c8d17d9268689178016c6b08547c.png" />
 </div>
 </div>
 </section>
@@ -1462,14 +1449,16 @@ maximum of the two for each point. For more information, refer to <span id="id15
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
-  <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> Contents
   </div>
-  <nav class="bd-toc-nav page-toc">
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#jensen-and-jimenez">Jensen and Jimenez</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gauss-and-gch">Gauss and GCH</a></li>
@@ -1534,8 +1523,8 @@ By National Laboratory of the Rockies
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
   </footer>

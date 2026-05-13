@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772510865086,
+  "lastUpdate": 1778687051220,
   "repoUrl": "https://github.com/NatLabRockies/floris",
   "entries": {
     "Python Benchmark with pytest-benchmark": [
@@ -5054,6 +5054,72 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.0000778338339426742",
             "extra": "mean: 8.124826058831912 msec\nrounds: 102"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "zredb@163.com",
+            "name": "zredb",
+            "username": "zredb"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "f215ef307bd7609b4ebd3fd0560d89f8fd97e5de",
+          "message": "fix: correct tilt_interp parameter type in compute_tilt_angles_for_fl… (#1192)\n\n* fix: correct tilt_interp parameter type in compute_tilt_angles_for_floating_turbines\n\n- Change tilt_interp parameter type from dict[str, interp1d] to interp1d|None\n- This aligns with the function's actual usage where it expects a single interpolation function or None\n\n* Match type-hint formatting\n\n---------\n\nCo-authored-by: misi9170 <39596329+misi9170@users.noreply.github.com>\nCo-authored-by: zhb <zhang.hongbing@meteodyn.com>\nCo-authored-by: misi9170 <michael.sinner@nlr.gov>",
+          "timestamp": "2026-05-13T09:20:22-06:00",
+          "tree_id": "ebf31970795b58c4692d029a691fd804dfbf2600",
+          "url": "https://github.com/NatLabRockies/floris/commit/f215ef307bd7609b4ebd3fd0560d89f8fd97e5de"
+        },
+        "date": 1778687048843,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_set",
+            "value": 44.62542263339054,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00011731057728927311",
+            "extra": "mean: 22.408751357163833 msec\nrounds: 42"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_run",
+            "value": 59.76289894571817,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00010730124767750496",
+            "extra": "mean: 16.7327893666652 msec\nrounds: 30"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_set",
+            "value": 27.10080082704248,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0011762200942064373",
+            "extra": "mean: 36.89927859999443 msec\nrounds: 25"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_run",
+            "value": 0.28728331406817603,
+            "unit": "iter/sec",
+            "range": "stddev: 0.004386093874057612",
+            "extra": "mean: 3.4808843780000642 sec\nrounds: 5"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_set",
+            "value": 37.5226795012426,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00271315778966925",
+            "extra": "mean: 26.650548769228593 msec\nrounds: 39"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_run",
+            "value": 132.03980958259996,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00004804043108499979",
+            "extra": "mean: 7.57347350894528 msec\nrounds: 112"
           }
         ]
       }

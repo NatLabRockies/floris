@@ -1314,6 +1314,11 @@ window.runMermaid = runMermaid;</script>
 <span class="sd">        for more details.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s2">&quot;Velocity deficit profiles will move to a Numpy data structure in the next release. &quot;</span>
+            <span class="s2">&quot;See https://github.com/NatLabRockies/floris/pull/1194.&quot;</span>
+        <span class="p">)</span>
+
         <span class="c1"># Create a grid that contains coordinates for all the sample points in all profiles.</span>
         <span class="c1"># Effectively, this is a grid of parallel lines.</span>
         <span class="n">n_lines</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">downstream_dists</span><span class="p">)</span>

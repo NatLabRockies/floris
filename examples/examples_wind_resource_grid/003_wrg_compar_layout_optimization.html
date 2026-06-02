@@ -908,10 +908,26 @@ Optimization time: 0.0 s / 120.0 s
   exponent = -((x / a) ** k)
 /home/runner/work/floris/floris/floris/wind_data.py:3088: RuntimeWarning: invalid value encountered in power
   exponent = -((x / a) ** k)
+/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
+  * np.power(
+/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:327: RuntimeWarning: invalid value encountered in divide
+  val = 2 * (avg_v - v_core) / (v_top + v_bottom)
+/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:160: RuntimeWarning: invalid value encountered in divide
+  C0 = 1 - u0 / freestream_velocity
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
+  I_total = np.sqrt((2 / 3) * k_total) / average_u_i
+/home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:80: RuntimeWarning: invalid value encountered in divide
+  sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(uR / (u_initial + u0))
+/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
   * np.power(
+/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
+  * np.power(
+/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:327: RuntimeWarning: invalid value encountered in divide
+  val = 2 * (avg_v - v_core) / (v_top + v_bottom)
+/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:160: RuntimeWarning: invalid value encountered in divide
+  C0 = 1 - u0 / freestream_velocity
 /home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
   * np.power(
 /home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:327: RuntimeWarning: invalid value encountered in divide
@@ -926,24 +942,6 @@ Optimization time: 0.0 s / 120.0 s
   I_total = np.sqrt((2 / 3) * k_total) / average_u_i
 /home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:80: RuntimeWarning: invalid value encountered in divide
   sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(uR / (u_initial + u0))
-/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
-  I_total = np.sqrt((2 / 3) * k_total) / average_u_i
-/home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:80: RuntimeWarning: invalid value encountered in divide
-  sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(uR / (u_initial + u0))
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
-  * np.power(
-/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:327: RuntimeWarning: invalid value encountered in divide
-  val = 2 * (avg_v - v_core) / (v_top + v_bottom)
-/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:160: RuntimeWarning: invalid value encountered in divide
-  C0 = 1 - u0 / freestream_velocity
-/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
-  * np.power(
-/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:327: RuntimeWarning: invalid value encountered in divide
-  val = 2 * (avg_v - v_core) / (v_top + v_bottom)
-/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:160: RuntimeWarning: invalid value encountered in divide
-  C0 = 1 - u0 / freestream_velocity
 /home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
   I_total = np.sqrt((2 / 3) * k_total) / average_u_i
 /home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:80: RuntimeWarning: invalid value encountered in divide
@@ -957,10 +955,10 @@ Optimization time: 0.0 s / 120.0 s
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=======================================
 Optimization step +1.0
 Optimization time = +32.0 [s]
-Mean AEP = 40.8 [GWh] (+0.50%)
-Median AEP = 40.8 [GWh] (+0.49%)
-Max AEP = 40.9 [GWh] (+0.56%)
-Min AEP = 40.8 [GWh] (+0.45%)
+Mean AEP = 40.8 [GWh] (+0.42%)
+Median AEP = 40.8 [GWh] (+0.43%)
+Max AEP = 40.8 [GWh] (+0.44%)
+Min AEP = 40.8 [GWh] (+0.41%)
 =======================================
 Optimization time: 32.0 s / 120.0 s
 </pre></div>
@@ -1001,18 +999,18 @@ Optimization time: 32.0 s / 120.0 s
   val = 2 * (avg_v - v_core) / (v_top + v_bottom)
 /home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:160: RuntimeWarning: invalid value encountered in divide
   C0 = 1 - u0 / freestream_velocity
-/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
-  * np.power(
-/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:327: RuntimeWarning: invalid value encountered in divide
-  val = 2 * (avg_v - v_core) / (v_top + v_bottom)
-/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:160: RuntimeWarning: invalid value encountered in divide
-  C0 = 1 - u0 / freestream_velocity
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
   I_total = np.sqrt((2 / 3) * k_total) / average_u_i
 /home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:80: RuntimeWarning: invalid value encountered in divide
   sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(uR / (u_initial + u0))
+/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
+  * np.power(
+/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:327: RuntimeWarning: invalid value encountered in divide
+  val = 2 * (avg_v - v_core) / (v_top + v_bottom)
+/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:160: RuntimeWarning: invalid value encountered in divide
+  C0 = 1 - u0 / freestream_velocity
 /home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
   I_total = np.sqrt((2 / 3) * k_total) / average_u_i
 /home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:80: RuntimeWarning: invalid value encountered in divide
@@ -1021,13 +1019,13 @@ Optimization time: 32.0 s / 120.0 s
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=======================================
 Optimization step +2.0
-Optimization time = +63.9 [s]
-Mean AEP = 40.9 [GWh] (+0.55%)
-Median AEP = 40.9 [GWh] (+0.58%)
-Max AEP = 40.9 [GWh] (+0.58%)
-Min AEP = 40.8 [GWh] (+0.46%)
+Optimization time = +64.0 [s]
+Mean AEP = 40.8 [GWh] (+0.46%)
+Median AEP = 40.8 [GWh] (+0.45%)
+Max AEP = 40.9 [GWh] (+0.52%)
+Min AEP = 40.8 [GWh] (+0.44%)
 =======================================
-Optimization time: 63.9 s / 120.0 s
+Optimization time: 64.0 s / 120.0 s
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/floris/floris/floris/wind_data.py:3088: RuntimeWarning: invalid value encountered in power
@@ -1038,101 +1036,6 @@ Optimization time: 63.9 s / 120.0 s
   exponent = -((x / a) ** k)
 /home/runner/work/floris/floris/floris/wind_data.py:3088: RuntimeWarning: invalid value encountered in power
   exponent = -((x / a) ** k)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
-  * np.power(
-/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:327: RuntimeWarning: invalid value encountered in divide
-  val = 2 * (avg_v - v_core) / (v_top + v_bottom)
-/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:160: RuntimeWarning: invalid value encountered in divide
-  C0 = 1 - u0 / freestream_velocity
-/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
-  * np.power(
-/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:327: RuntimeWarning: invalid value encountered in divide
-  val = 2 * (avg_v - v_core) / (v_top + v_bottom)
-/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:160: RuntimeWarning: invalid value encountered in divide
-  C0 = 1 - u0 / freestream_velocity
-/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
-  I_total = np.sqrt((2 / 3) * k_total) / average_u_i
-/home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:80: RuntimeWarning: invalid value encountered in divide
-  sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(uR / (u_initial + u0))
-/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
-  I_total = np.sqrt((2 / 3) * k_total) / average_u_i
-/home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:80: RuntimeWarning: invalid value encountered in divide
-  sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(uR / (u_initial + u0))
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
-  * np.power(
-/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:327: RuntimeWarning: invalid value encountered in divide
-  val = 2 * (avg_v - v_core) / (v_top + v_bottom)
-/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:160: RuntimeWarning: invalid value encountered in divide
-  C0 = 1 - u0 / freestream_velocity
-/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
-  * np.power(
-/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
-  I_total = np.sqrt((2 / 3) * k_total) / average_u_i
-/home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:80: RuntimeWarning: invalid value encountered in divide
-  sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(uR / (u_initial + u0))
-/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:327: RuntimeWarning: invalid value encountered in divide
-  val = 2 * (avg_v - v_core) / (v_top + v_bottom)
-/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:160: RuntimeWarning: invalid value encountered in divide
-  C0 = 1 - u0 / freestream_velocity
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
-  I_total = np.sqrt((2 / 3) * k_total) / average_u_i
-/home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:80: RuntimeWarning: invalid value encountered in divide
-  sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(uR / (u_initial + u0))
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=======================================
-Optimization step +3.0
-Optimization time = +95.8 [s]
-Mean AEP = 40.9 [GWh] (+0.58%)
-Median AEP = 40.9 [GWh] (+0.58%)
-Max AEP = 40.9 [GWh] (+0.58%)
-Min AEP = 40.9 [GWh] (+0.58%)
-=======================================
-Optimization time: 95.8 s / 120.0 s
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/floris/floris/floris/wind_data.py:3088: RuntimeWarning: invalid value encountered in power
-  exponent = -((x / a) ** k)
-/home/runner/work/floris/floris/floris/wind_data.py:3088: RuntimeWarning: invalid value encountered in power
-  exponent = -((x / a) ** k)
-/home/runner/work/floris/floris/floris/wind_data.py:3088: RuntimeWarning: invalid value encountered in power
-  exponent = -((x / a) ** k)
-/home/runner/work/floris/floris/floris/wind_data.py:3088: RuntimeWarning: invalid value encountered in power
-  exponent = -((x / a) ** k)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
-  * np.power(
-/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
-  * np.power(
-/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:327: RuntimeWarning: invalid value encountered in divide
-  val = 2 * (avg_v - v_core) / (v_top + v_bottom)
-/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:160: RuntimeWarning: invalid value encountered in divide
-  C0 = 1 - u0 / freestream_velocity
-/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:327: RuntimeWarning: invalid value encountered in divide
-  val = 2 * (avg_v - v_core) / (v_top + v_bottom)
-/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:160: RuntimeWarning: invalid value encountered in divide
-  C0 = 1 - u0 / freestream_velocity
-/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
-  I_total = np.sqrt((2 / 3) * k_total) / average_u_i
-/home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:80: RuntimeWarning: invalid value encountered in divide
-  sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(uR / (u_initial + u0))
-/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
-  I_total = np.sqrt((2 / 3) * k_total) / average_u_i
-/home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:80: RuntimeWarning: invalid value encountered in divide
-  sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(uR / (u_initial + u0))
-/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
-  * np.power(
-/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:327: RuntimeWarning: invalid value encountered in divide
-  val = 2 * (avg_v - v_core) / (v_top + v_bottom)
-/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:160: RuntimeWarning: invalid value encountered in divide
-  C0 = 1 - u0 / freestream_velocity
 /home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
   * np.power(
 </pre></div>
@@ -1141,10 +1044,105 @@ Optimization time: 95.8 s / 120.0 s
   val = 2 * (avg_v - v_core) / (v_top + v_bottom)
 /home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:160: RuntimeWarning: invalid value encountered in divide
   C0 = 1 - u0 / freestream_velocity
+/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
+  * np.power(
 /home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
   I_total = np.sqrt((2 / 3) * k_total) / average_u_i
 /home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:80: RuntimeWarning: invalid value encountered in divide
   sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(uR / (u_initial + u0))
+/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:327: RuntimeWarning: invalid value encountered in divide
+  val = 2 * (avg_v - v_core) / (v_top + v_bottom)
+/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:160: RuntimeWarning: invalid value encountered in divide
+  C0 = 1 - u0 / freestream_velocity
+/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
+  I_total = np.sqrt((2 / 3) * k_total) / average_u_i
+/home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:80: RuntimeWarning: invalid value encountered in divide
+  sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(uR / (u_initial + u0))
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
+  * np.power(
+/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:327: RuntimeWarning: invalid value encountered in divide
+  val = 2 * (avg_v - v_core) / (v_top + v_bottom)
+/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:160: RuntimeWarning: invalid value encountered in divide
+  C0 = 1 - u0 / freestream_velocity
+/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
+  * np.power(
+/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:327: RuntimeWarning: invalid value encountered in divide
+  val = 2 * (avg_v - v_core) / (v_top + v_bottom)
+/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:160: RuntimeWarning: invalid value encountered in divide
+  C0 = 1 - u0 / freestream_velocity
+/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
+  I_total = np.sqrt((2 / 3) * k_total) / average_u_i
+/home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:80: RuntimeWarning: invalid value encountered in divide
+  sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(uR / (u_initial + u0))
+/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
+  I_total = np.sqrt((2 / 3) * k_total) / average_u_i
+/home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:80: RuntimeWarning: invalid value encountered in divide
+  sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(uR / (u_initial + u0))
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=======================================
+Optimization step +3.0
+Optimization time = +95.9 [s]
+Mean AEP = 40.9 [GWh] (+0.55%)
+Median AEP = 40.9 [GWh] (+0.55%)
+Max AEP = 40.9 [GWh] (+0.56%)
+Min AEP = 40.9 [GWh] (+0.53%)
+=======================================
+Optimization time: 95.9 s / 120.0 s
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/floris/floris/floris/wind_data.py:3088: RuntimeWarning: invalid value encountered in power
+  exponent = -((x / a) ** k)
+/home/runner/work/floris/floris/floris/wind_data.py:3088: RuntimeWarning: invalid value encountered in power
+  exponent = -((x / a) ** k)
+/home/runner/work/floris/floris/floris/wind_data.py:3088: RuntimeWarning: invalid value encountered in power
+  exponent = -((x / a) ** k)
+/home/runner/work/floris/floris/floris/wind_data.py:3088: RuntimeWarning: invalid value encountered in power
+  exponent = -((x / a) ** k)
+/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
+  * np.power(
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:327: RuntimeWarning: invalid value encountered in divide
+  val = 2 * (avg_v - v_core) / (v_top + v_bottom)
+/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:160: RuntimeWarning: invalid value encountered in divide
+  C0 = 1 - u0 / freestream_velocity
+/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
+  * np.power(
+/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:327: RuntimeWarning: invalid value encountered in divide
+  val = 2 * (avg_v - v_core) / (v_top + v_bottom)
+/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:160: RuntimeWarning: invalid value encountered in divide
+  C0 = 1 - u0 / freestream_velocity
+/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
+  I_total = np.sqrt((2 / 3) * k_total) / average_u_i
+/home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:80: RuntimeWarning: invalid value encountered in divide
+  sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(uR / (u_initial + u0))
+/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
+  I_total = np.sqrt((2 / 3) * k_total) / average_u_i
+/home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:80: RuntimeWarning: invalid value encountered in divide
+  sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(uR / (u_initial + u0))
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
+  * np.power(
+/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:327: RuntimeWarning: invalid value encountered in divide
+  val = 2 * (avg_v - v_core) / (v_top + v_bottom)
+/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:160: RuntimeWarning: invalid value encountered in divide
+  C0 = 1 - u0 / freestream_velocity
+/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
+  I_total = np.sqrt((2 / 3) * k_total) / average_u_i
+/home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:80: RuntimeWarning: invalid value encountered in divide
+  sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(uR / (u_initial + u0))
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
+  * np.power(
+/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:327: RuntimeWarning: invalid value encountered in divide
+  val = 2 * (avg_v - v_core) / (v_top + v_bottom)
+/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:160: RuntimeWarning: invalid value encountered in divide
+  C0 = 1 - u0 / freestream_velocity
 /home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
   I_total = np.sqrt((2 / 3) * k_total) / average_u_i
 /home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:80: RuntimeWarning: invalid value encountered in divide
@@ -1154,20 +1152,20 @@ Optimization time: 95.8 s / 120.0 s
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=======================================
 Optimization step +4.0
 Optimization time = +127.8 [s]
-Mean AEP = 40.9 [GWh] (+0.58%)
-Median AEP = 40.9 [GWh] (+0.58%)
-Max AEP = 40.9 [GWh] (+0.58%)
-Min AEP = 40.9 [GWh] (+0.58%)
+Mean AEP = 40.9 [GWh] (+0.56%)
+Median AEP = 40.9 [GWh] (+0.56%)
+Max AEP = 40.9 [GWh] (+0.56%)
+Min AEP = 40.9 [GWh] (+0.55%)
 =======================================
-Final AEP = 40.9 [GWh] (+0.58%)
+Final AEP = 40.9 [GWh] (+0.56%)
 =====================================
 Objective log array (WRG):
 (5, 4)
-[[0.99420409 0.99420409 0.99420409 0.99420409]
- [0.99872069 0.99863215 0.99942379 0.99972899]
- [0.99997253 0.9999602  0.99880932 0.99989393]
- [0.99997253 0.9999602  0.99993404 0.99998567]
- [0.99998567 0.99998575 1.         0.99998805]]
+[[0.9944289  0.9944289  0.9944289  0.9944289 ]
+ [0.99874045 0.99863602 0.99876536 0.99846248]
+ [0.9987928  0.99903231 0.99955289 0.99876934]
+ [0.99996728 0.99969735 0.9999156  0.99993422]
+ [0.99996728 0.99993422 1.         0.99996895]]
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Using supplied initial layout for 4 individuals.
@@ -1196,10 +1194,10 @@ Optimization time: 0.0 s / 120.0 s
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=======================================
 Optimization step +1.0
 Optimization time = +31.8 [s]
-Mean AEP = 44.0 [GWh] (+0.67%)
-Median AEP = 44.0 [GWh] (+0.67%)
-Max AEP = 44.0 [GWh] (+0.76%)
-Min AEP = 44.0 [GWh] (+0.59%)
+Mean AEP = 44.0 [GWh] (+0.66%)
+Median AEP = 44.0 [GWh] (+0.66%)
+Max AEP = 44.0 [GWh] (+0.74%)
+Min AEP = 44.0 [GWh] (+0.57%)
 =======================================
 Optimization time: 31.8 s / 120.0 s
 </pre></div>
@@ -1216,13 +1214,13 @@ Optimization time: 31.8 s / 120.0 s
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=======================================
 Optimization step +2.0
-Optimization time = +63.5 [s]
-Mean AEP = 44.0 [GWh] (+0.75%)
-Median AEP = 44.0 [GWh] (+0.76%)
+Optimization time = +63.6 [s]
+Mean AEP = 44.0 [GWh] (+0.74%)
+Median AEP = 44.0 [GWh] (+0.74%)
 Max AEP = 44.0 [GWh] (+0.76%)
-Min AEP = 44.0 [GWh] (+0.74%)
+Min AEP = 44.0 [GWh] (+0.72%)
 =======================================
-Optimization time: 63.5 s / 120.0 s
+Optimization time: 63.6 s / 120.0 s
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
@@ -1237,13 +1235,13 @@ Optimization time: 63.5 s / 120.0 s
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=======================================
 Optimization step +3.0
-Optimization time = +95.3 [s]
-Mean AEP = 44.0 [GWh] (+0.76%)
-Median AEP = 44.0 [GWh] (+0.76%)
+Optimization time = +95.2 [s]
+Mean AEP = 44.0 [GWh] (+0.75%)
+Median AEP = 44.0 [GWh] (+0.75%)
 Max AEP = 44.0 [GWh] (+0.76%)
-Min AEP = 44.0 [GWh] (+0.76%)
+Min AEP = 44.0 [GWh] (+0.74%)
 =======================================
-Optimization time: 95.3 s / 120.0 s
+Optimization time: 95.2 s / 120.0 s
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
@@ -1258,11 +1256,11 @@ Optimization time: 95.3 s / 120.0 s
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=======================================
 Optimization step +4.0
-Optimization time = +127.0 [s]
-Mean AEP = 44.0 [GWh] (+0.76%)
+Optimization time = +126.9 [s]
+Mean AEP = 44.0 [GWh] (+0.75%)
 Median AEP = 44.0 [GWh] (+0.76%)
 Max AEP = 44.0 [GWh] (+0.76%)
-Min AEP = 44.0 [GWh] (+0.76%)
+Min AEP = 44.0 [GWh] (+0.74%)
 =======================================
 Final AEP = 44.0 [GWh] (+0.76%)
 </pre></div>
@@ -1284,8 +1282,6 @@ Optimization time: 0.0 s / 120.0 s
   * np.power(
 /home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
   * np.power(
-/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
-  * np.power(
 /home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:327: RuntimeWarning: invalid value encountered in divide
   val = 2 * (avg_v - v_core) / (v_top + v_bottom)
 /home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:160: RuntimeWarning: invalid value encountered in divide
@@ -1300,18 +1296,20 @@ Optimization time: 0.0 s / 120.0 s
   val = 2 * (avg_v - v_core) / (v_top + v_bottom)
 /home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:160: RuntimeWarning: invalid value encountered in divide
   C0 = 1 - u0 / freestream_velocity
+/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
+  I_total = np.sqrt((2 / 3) * k_total) / average_u_i
+/home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:80: RuntimeWarning: invalid value encountered in divide
+  sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(uR / (u_initial + u0))
+/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
+  I_total = np.sqrt((2 / 3) * k_total) / average_u_i
+/home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:80: RuntimeWarning: invalid value encountered in divide
+  sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(uR / (u_initial + u0))
+/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
+  * np.power(
 /home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:327: RuntimeWarning: invalid value encountered in divide
   val = 2 * (avg_v - v_core) / (v_top + v_bottom)
 /home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:160: RuntimeWarning: invalid value encountered in divide
   C0 = 1 - u0 / freestream_velocity
-/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
-  I_total = np.sqrt((2 / 3) * k_total) / average_u_i
-/home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:80: RuntimeWarning: invalid value encountered in divide
-  sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(uR / (u_initial + u0))
-/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
-  I_total = np.sqrt((2 / 3) * k_total) / average_u_i
-/home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:80: RuntimeWarning: invalid value encountered in divide
-  sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(uR / (u_initial + u0))
 /home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
   I_total = np.sqrt((2 / 3) * k_total) / average_u_i
 /home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:80: RuntimeWarning: invalid value encountered in divide
@@ -1324,13 +1322,13 @@ Optimization time: 0.0 s / 120.0 s
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=======================================
 Optimization step +1.0
-Optimization time = +31.7 [s]
-Mean AEP = 40.3 [GWh] (+0.64%)
-Median AEP = 40.3 [GWh] (+0.64%)
+Optimization time = +31.8 [s]
+Mean AEP = 40.3 [GWh] (+0.65%)
+Median AEP = 40.3 [GWh] (+0.65%)
 Max AEP = 40.3 [GWh] (+0.65%)
 Min AEP = 40.3 [GWh] (+0.64%)
 =======================================
-Optimization time: 31.7 s / 120.0 s
+Optimization time: 31.8 s / 120.0 s
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
@@ -1359,6 +1357,10 @@ Optimization time: 31.7 s / 120.0 s
   C0 = 1 - u0 / freestream_velocity
 /home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
   I_total = np.sqrt((2 / 3) * k_total) / average_u_i
+/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
+  I_total = np.sqrt((2 / 3) * k_total) / average_u_i
+/home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:80: RuntimeWarning: invalid value encountered in divide
+  sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(uR / (u_initial + u0))
 /home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:80: RuntimeWarning: invalid value encountered in divide
   sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(uR / (u_initial + u0))
 /home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
@@ -1369,62 +1371,58 @@ Optimization time: 31.7 s / 120.0 s
   sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(uR / (u_initial + u0))
 /home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:80: RuntimeWarning: invalid value encountered in divide
   sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(uR / (u_initial + u0))
-/home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:80: RuntimeWarning: invalid value encountered in divide
-  sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(uR / (u_initial + u0))
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
-  I_total = np.sqrt((2 / 3) * k_total) / average_u_i
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=======================================
 Optimization step +2.0
-Optimization time = +63.5 [s]
+Optimization time = +63.6 [s]
 Mean AEP = 40.3 [GWh] (+0.65%)
 Median AEP = 40.3 [GWh] (+0.65%)
 Max AEP = 40.3 [GWh] (+0.65%)
 Min AEP = 40.3 [GWh] (+0.65%)
 =======================================
-Optimization time: 63.5 s / 120.0 s
+Optimization time: 63.6 s / 120.0 s
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
   * np.power(
-/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
-  * np.power(
 /home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:327: RuntimeWarning: invalid value encountered in divide
   val = 2 * (avg_v - v_core) / (v_top + v_bottom)
-/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:327: RuntimeWarning: invalid value encountered in divide
-  val = 2 * (avg_v - v_core) / (v_top + v_bottom)
-/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:160: RuntimeWarning: invalid value encountered in divide
-  C0 = 1 - u0 / freestream_velocity
 /home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:160: RuntimeWarning: invalid value encountered in divide
   C0 = 1 - u0 / freestream_velocity
 /home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
   * np.power(
 /home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
   * np.power(
-/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:327: RuntimeWarning: invalid value encountered in divide
-  val = 2 * (avg_v - v_core) / (v_top + v_bottom)
+/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
+  I_total = np.sqrt((2 / 3) * k_total) / average_u_i
+/home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:80: RuntimeWarning: invalid value encountered in divide
+  sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(uR / (u_initial + u0))
 /home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:327: RuntimeWarning: invalid value encountered in divide
   val = 2 * (avg_v - v_core) / (v_top + v_bottom)
 /home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:160: RuntimeWarning: invalid value encountered in divide
   C0 = 1 - u0 / freestream_velocity
+/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:327: RuntimeWarning: invalid value encountered in divide
+  val = 2 * (avg_v - v_core) / (v_top + v_bottom)
 /home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:160: RuntimeWarning: invalid value encountered in divide
   C0 = 1 - u0 / freestream_velocity
+/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
+  * np.power(
 /home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
   I_total = np.sqrt((2 / 3) * k_total) / average_u_i
-/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
-  I_total = np.sqrt((2 / 3) * k_total) / average_u_i
-/home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:80: RuntimeWarning: invalid value encountered in divide
-  sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(uR / (u_initial + u0))
 /home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:80: RuntimeWarning: invalid value encountered in divide
   sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(uR / (u_initial + u0))
 /home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
   I_total = np.sqrt((2 / 3) * k_total) / average_u_i
 /home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:80: RuntimeWarning: invalid value encountered in divide
   sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(uR / (u_initial + u0))
-/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
+/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:327: RuntimeWarning: invalid value encountered in divide
+  val = 2 * (avg_v - v_core) / (v_top + v_bottom)
+/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:160: RuntimeWarning: invalid value encountered in divide
+  C0 = 1 - u0 / freestream_velocity
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
   I_total = np.sqrt((2 / 3) * k_total) / average_u_i
 /home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:80: RuntimeWarning: invalid value encountered in divide
   sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(uR / (u_initial + u0))
@@ -1432,23 +1430,17 @@ Optimization time: 63.5 s / 120.0 s
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=======================================
 Optimization step +3.0
-Optimization time = +95.3 [s]
+Optimization time = +95.4 [s]
 Mean AEP = 40.3 [GWh] (+0.65%)
 Median AEP = 40.3 [GWh] (+0.65%)
 Max AEP = 40.3 [GWh] (+0.65%)
 Min AEP = 40.3 [GWh] (+0.65%)
 =======================================
-Optimization time: 95.3 s / 120.0 s
+Optimization time: 95.4 s / 120.0 s
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
   * np.power(
-/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:327: RuntimeWarning: invalid value encountered in divide
-  val = 2 * (avg_v - v_core) / (v_top + v_bottom)
-/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:160: RuntimeWarning: invalid value encountered in divide
-  C0 = 1 - u0 / freestream_velocity
-/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
-  * np.power(
 /home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
   * np.power(
 /home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
@@ -1459,10 +1451,16 @@ Optimization time: 95.3 s / 120.0 s
   C0 = 1 - u0 / freestream_velocity
 /home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:327: RuntimeWarning: invalid value encountered in divide
   val = 2 * (avg_v - v_core) / (v_top + v_bottom)
+/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:160: RuntimeWarning: invalid value encountered in divide
+  C0 = 1 - u0 / freestream_velocity
 /home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:327: RuntimeWarning: invalid value encountered in divide
   val = 2 * (avg_v - v_core) / (v_top + v_bottom)
 /home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:160: RuntimeWarning: invalid value encountered in divide
   C0 = 1 - u0 / freestream_velocity
+/home/runner/work/floris/floris/floris/core/flow_field.py:169: UserWarning: &#39;where&#39; used without &#39;out&#39;, expect unitialized memory in output. If this is intentional, use out=None.
+  * np.power(
+/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:327: RuntimeWarning: invalid value encountered in divide
+  val = 2 * (avg_v - v_core) / (v_top + v_bottom)
 /home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:160: RuntimeWarning: invalid value encountered in divide
   C0 = 1 - u0 / freestream_velocity
 /home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
@@ -1475,10 +1473,10 @@ Optimization time: 95.3 s / 120.0 s
   sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(uR / (u_initial + u0))
 /home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
   I_total = np.sqrt((2 / 3) * k_total) / average_u_i
-/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
-  I_total = np.sqrt((2 / 3) * k_total) / average_u_i
 /home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:80: RuntimeWarning: invalid value encountered in divide
   sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(uR / (u_initial + u0))
+/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:505: RuntimeWarning: invalid value encountered in divide
+  I_total = np.sqrt((2 / 3) * k_total) / average_u_i
 /home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:80: RuntimeWarning: invalid value encountered in divide
   sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(uR / (u_initial + u0))
 </pre></div>
@@ -1495,16 +1493,16 @@ Final AEP = 40.3 [GWh] (+0.65%)
 =====================================
 Objective log array (HET):
 (5, 4)
-[[0.99245182 0.99245182 0.99245182 0.99245182]
- [0.99996832 0.99843149 0.99829443 0.99974888]
- [0.99998201 0.9999698  0.99981488 0.99999754]
- [0.99999754 0.99998201 0.99999746 1.        ]
- [1.         0.99999754 0.99999974 1.        ]]
+[[0.99245617 0.99245617 0.99245617 0.99245617]
+ [0.99815692 0.99979883 0.99976304 0.99813885]
+ [0.99981213 0.99996367 0.99962993 0.99982044]
+ [0.99997499 0.99982044 0.99982202 0.99996377]
+ [0.99997667 0.99999108 0.99982367 1.        ]]
 </pre></div>
 </div>
 <img alt="../../_images/e6ebb31ccc88eae7f7c5b67cbdbf52a67d131cf89ff08ec46cbe50d6ae71e786.png" src="../../_images/e6ebb31ccc88eae7f7c5b67cbdbf52a67d131cf89ff08ec46cbe50d6ae71e786.png" />
-<img alt="../../_images/3403b5e082a4ccc64ee7d8ec58db50e48b6b42ff0dc830749779f82d3f6ad5a5.png" src="../../_images/3403b5e082a4ccc64ee7d8ec58db50e48b6b42ff0dc830749779f82d3f6ad5a5.png" />
-<img alt="../../_images/42e30230a573f174c89d20fc8b3b29134a3b747000c98b20d1946b6f7c3f636d.png" src="../../_images/42e30230a573f174c89d20fc8b3b29134a3b747000c98b20d1946b6f7c3f636d.png" />
+<img alt="../../_images/a753f20f1e54c57386d460bccb5dde60da9ae5c739b4067bc755e0fba7648f8a.png" src="../../_images/a753f20f1e54c57386d460bccb5dde60da9ae5c739b4067bc755e0fba7648f8a.png" />
+<img alt="../../_images/c9f79d99a2f648e9f1f7aeacebc82993b6f537b723be6fd0e2140e0f75d2b59f.png" src="../../_images/c9f79d99a2f648e9f1f7aeacebc82993b6f537b723be6fd0e2140e0f75d2b59f.png" />
 </div>
 </div>
 </section>

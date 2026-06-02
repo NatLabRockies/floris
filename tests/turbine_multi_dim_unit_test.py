@@ -2,7 +2,6 @@
 from pathlib import Path
 
 import numpy as np
-import pandas as pd
 import pytest
 
 from floris.core import (
@@ -22,29 +21,6 @@ from tests.conftest import SampleInputs, WIND_SPEEDS
 WIND_CONDITION_BROADCAST = np.reshape(np.array(WIND_SPEEDS), (-1, 1, 1, 1))
 
 INDEX_FILTER = [0, 2]
-
-# NOTE: MultiDimensionalPowerThrustTable not used anywhere, so I'm commenting
-# this out.
-
-# def test_multi_dimensional_power_thrust_table():
-#     turbine_data = SampleInputs().turbine_multi_dim
-#     turbine_data["power_thrust_data_file"] = CSV_INPUT
-#     df_data = pd.read_csv(turbine_data["power_thrust_data_file"])
-#     flattened_dict = MultiDimensionalPowerThrustTable.from_dataframe(df_data)
-#     flattened_dict_base = {
-#         ('Tp', '2', 'Hs', '1'): [],
-#         ('Tp', '2', 'Hs', '5'): [],
-#         ('Tp', '4', 'Hs', '1'): [],
-#         ('Tp', '4', 'Hs', '5'): [],
-#     }
-#     assert flattened_dict == flattened_dict_base
-
-#     # Test for initialization errors
-#     for el in ("ws", "Cp", "Ct"):
-#         df_data = pd.read_csv(turbine_data["power_thrust_data_file"])
-#         df = df_data.drop(el, axis=1)
-#         with pytest.raises(ValueError):
-#             MultiDimensionalPowerThrustTable.from_dataframe(df)
 
 
 def test_turbine_init():

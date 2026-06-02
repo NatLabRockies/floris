@@ -24,8 +24,6 @@ fmodel_floating: Floating turbine (tilt varies with wind speed)
 
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
-from scipy.interpolate import NearestNDInterpolator
 
 import floris.flow_visualization as flowviz
 from floris import FlorisModel, WindRose

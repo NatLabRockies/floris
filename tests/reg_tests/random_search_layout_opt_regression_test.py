@@ -1,6 +1,5 @@
 
 import numpy as np
-import pandas as pd
 
 from floris import FlorisModel, WindRose
 from floris.optimization.layout_optimization.layout_optimization_random_search import (

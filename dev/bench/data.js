@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1778687265250,
+  "lastUpdate": 1780432792346,
   "repoUrl": "https://github.com/NatLabRockies/floris",
   "entries": {
     "Python Benchmark with pytest-benchmark": [
@@ -5186,6 +5186,72 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.00022160781214297943",
             "extra": "mean: 8.26014374491265 msec\nrounds: 98"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "39596329+misi9170@users.noreply.github.com",
+            "name": "misi9170",
+            "username": "misi9170"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "70adeb9933f69a189766aeafac9778317dab1b07",
+          "message": "Check allowing pandas v3 (#1194)\n\n* Check allowing pandas v3\n\n* Remove unneeded pandas imports\n\n* Use Numpy for multidim csv loading and condition filtering\n\n* Add Pandas->Numpy change warning log\n\n---------\n\nCo-authored-by: Rafael M Mudafort <rafmudaf@gmail.com>",
+          "timestamp": "2026-06-02T14:02:40-06:00",
+          "tree_id": "66cd1756994b6a68364470cb8995f08cadbbf583",
+          "url": "https://github.com/NatLabRockies/floris/commit/70adeb9933f69a189766aeafac9778317dab1b07"
+        },
+        "date": 1780432790504,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_set",
+            "value": 42.83792088539734,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0002610680111349129",
+            "extra": "mean: 23.3438033249854 msec\nrounds: 40"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_run",
+            "value": 59.65055689710149,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00015465052745109034",
+            "extra": "mean: 16.76430283333351 msec\nrounds: 30"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_set",
+            "value": 26.29009295566565,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0012536093248974411",
+            "extra": "mean: 38.037142040020626 msec\nrounds: 25"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_run",
+            "value": 0.28664244272326983,
+            "unit": "iter/sec",
+            "range": "stddev: 0.003015465677700519",
+            "extra": "mean: 3.488666892800029 sec\nrounds: 5"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_set",
+            "value": 37.18809999235387,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00029688903444378354",
+            "extra": "mean: 26.890322447385234 msec\nrounds: 38"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_run",
+            "value": 133.04964448218456,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000054413993418104555",
+            "extra": "mean: 7.515991522501969 msec\nrounds: 111"
           }
         ]
       }

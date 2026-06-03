@@ -117,7 +117,7 @@ class TurbineGrid(Grid):
 
     def __attrs_post_init__(self) -> None:
         if not isinstance(self.grid_resolution, int):
-            raise TypeError("grid_resolution must be of type int for TurbineGrid")
+            raise TypeError("grid_resolution must be of type 'int' for TurbineGrid")
 
         self.set_grid()
 
@@ -274,7 +274,7 @@ class TurbineCubatureGrid(Grid):
 
     def __attrs_post_init__(self) -> None:
         if not isinstance(self.grid_resolution, int):
-            raise TypeError("grid_resolution must be of type int for TurbineCubatureGrid")
+            raise TypeError("grid_resolution must be of type 'int' for TurbineCubatureGrid")
 
         self.set_grid()
 
@@ -585,7 +585,7 @@ class PointsGrid(Grid):
 
     def __attrs_post_init__(self) -> None:
         if not isinstance(self.grid_resolution, int):
-            raise TypeError("grid_resolution must be of type int for PointsGrid")
+            raise TypeError("grid_resolution must be of type 'int' for PointsGrid")
 
         self.set_grid()
 

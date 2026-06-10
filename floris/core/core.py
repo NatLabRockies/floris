@@ -104,7 +104,7 @@ class Core(BaseClass):
             )
         elif self.solver["type"] == "flow_field_grid":
             raise ValueError(
-                "The flow_field_grid solver type is deprecated as of FLORIS v4.6.5 in favor of "
+                "The flow_field_grid solver type is deprecated as of FLORIS v4.6.6 in favor of "
                 "flow_field_planar_grid."
             )
         elif self.solver["type"] == "flow_field_planar_grid":

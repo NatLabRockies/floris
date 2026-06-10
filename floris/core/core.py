@@ -280,6 +280,11 @@ class Core(BaseClass):
         for more details.
         """
 
+        self.logger.warning(
+            "Velocity deficit profiles will move to a Numpy data structure in the next release. "
+            "See https://github.com/NatLabRockies/floris/pull/1194."
+        )
+
         # Create a grid that contains coordinates for all the sample points in all profiles.
         # Effectively, this is a grid of parallel lines.
         n_lines = len(downstream_dists)

@@ -152,7 +152,7 @@ def compute_tilt_angles_for_floating_turbines_map(
 
 def compute_tilt_angles_for_floating_turbines(
     tilt_angles: NDArrayFloat,
-    tilt_interp: dict[str, interp1d],
+    tilt_interp: interp1d | None,
     rotor_effective_velocities: NDArrayFloat,
 ) -> NDArrayFloat:
     # Loop over each turbine type given to get tilt angles for all turbines

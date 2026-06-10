@@ -6,7 +6,6 @@ from pathlib import Path
 
 import attrs
 import numpy as np
-import pandas as pd
 from attrs import define, field
 from scipy.interpolate import interp1d
 
@@ -656,34 +655,40 @@ class Turbine(BaseClass):
         self.power_thrust_data_file = self.turbine_library_path / self.power_thrust_data_file
 
         # Read in the multi-dimensional data supplied by the user.
-        df = pd.read_csv(self.power_thrust_data_file)
+        data = np.genfromtxt(self.power_thrust_data_file, delimiter=',', names=True)
 
-        # Down-select the DataFrame to have just the ws, Cp, and Ct values
-        index_col = df.columns.values[:-3]
-        self.condition_keys = index_col.tolist()
-        df2 = df.set_index(index_col.tolist())
+        # The CSV columns are: [condition_keys..., ws, power, thrust_coefficient]
+        # Condition keys are the leading columns (e.g. Tp, Hs)
+        # ws/power/thrust_coefficient are always the last 3 and are excluded.
+        self.condition_keys = list(data.dtype.names[:-3])
+
+        # Find unique combinations of condition key values.
+        # np.column_stack promotes 1D arrays to (N, 1), so this works for any number of keys.
+        cond_data = np.column_stack([data[c] for c in self.condition_keys])
+        unique_keys = [tuple(row) for row in np.unique(cond_data, axis=0)]
 
         # Loop over the multi-dimensional keys to get the correct ws/Cp/Ct data to make
         # the thrust_coefficient and power interpolants.
         power_thrust_table_ = {} # Reset
-        for key in df2.index.unique():
-            # Select the correct ws/Cp/Ct data
-            data = df2.loc[key]
-            if type(key) is not tuple:
-                key = (key,)
+        for key in unique_keys:
+            # Build a boolean mask selecting rows that match this condition combination
+            mask = np.ones(len(data), dtype=bool)
+            for col, val in zip(self.condition_keys, key):
+                mask &= data[col] == val
+
+            rows = data[mask]
 
             # Build the interpolants
             power_thrust_table_.update(
                 {
                     key: {
-                        "wind_speed": data['ws'].values,
-                        "power": data['power'].values,
-                        "thrust_coefficient": data['thrust_coefficient'].values,
+                        "wind_speed": rows['ws'],
+                        "power": rows['power'],
+                        "thrust_coefficient": rows['thrust_coefficient'],
                         **power_thrust_table_ref
                     },
                 }
             )
-            # Add reference information at the lower level
 
         # Save names of dimensions and set on-object version
         power_thrust_table_.update({"condition_keys": self.condition_keys})

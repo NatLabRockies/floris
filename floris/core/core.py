@@ -102,11 +102,6 @@ class Core(BaseClass):
                 wind_directions=self.flow_field.wind_directions,
                 grid_resolution=self.solver["turbine_grid_points"],
             )
-        elif self.solver["type"] == "flow_field_grid":
-            raise ValueError(
-                "The flow_field_grid solver type is deprecated as of FLORIS v4.6.6 in favor of "
-                "flow_field_planar_grid."
-            )
         elif self.solver["type"] == "flow_field_planar_grid":
             self.grid = FlowFieldPlanarGrid(
                 turbine_coordinates=self.farm.coordinates,

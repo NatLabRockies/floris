@@ -104,9 +104,3 @@ def test_flow_field_planar_grid_init():
             x1_bounds=None,
             x2_bounds=None,
         )
-
-def test_flow_field_grid_error(sample_inputs_fixture):
-    core_dict = sample_inputs_fixture.core.copy()
-    core_dict["solver"] = {"type": "flow_field_grid", "grid_resolution": 2}
-    with pytest.raises(ValueError, match="deprecated"):
-        Core.from_dict(core_dict)

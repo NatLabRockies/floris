@@ -80,22 +80,15 @@ class Grid(ABC, BaseClass):
         """Using the validator method to keep the `n_findex` attribute up to date."""
         self.n_findex = value.size
 
-    @grid_resolution.validator
-    def grid_resolution_validator(self, instance: attrs.Attribute, value: int | Iterable) -> None:
-        # TODO move this to the grid types and off of the base class
-        """Check that grid resolution is given as appropriate for the chosen Grid-type."""
-        if isinstance(value, int) and \
-            isinstance(self, (TurbineGrid, TurbineCubatureGrid, PointsGrid)):
-            return
-        elif isinstance(value, Iterable) and isinstance(self, FlowFieldPlanarGrid):
-            assert type(value[0]) is int
-            assert type(value[1]) is int
-        elif isinstance(value, Iterable) and isinstance(self, FlowFieldGrid):
-            assert type(value[0]) is int
-            assert type(value[1]) is int
-            assert type(value[2]) is int
-        else:
-            raise TypeError("`grid_resolution` must be of type int or Iterable(int,)")
+    @z_sorted.validator
+    def z_sorted_validator(self, instance: attrs.Attribute, value: NDArrayFloat) -> None:
+        """Check that the z coordinates are above the ground."""
+        if np.any(value <= 0):
+            self.logger.warning(
+                "Non-positive z coordinates detected. "
+                "This may cause issues with the flow model calculations. "
+                "To fix this, consider adjusting the z coordinates to be positive."
+            )
 
     @abstractmethod
     def set_grid(self) -> None:
@@ -123,6 +116,9 @@ class TurbineGrid(Grid):
     average_method = "cubic-mean"
 
     def __attrs_post_init__(self) -> None:
+        if not isinstance(self.grid_resolution, int):
+            raise TypeError("grid_resolution must be of type 'int' for TurbineGrid")
+
         self.set_grid()
 
     def set_grid(self) -> None:
@@ -175,8 +171,6 @@ class TurbineGrid(Grid):
         Note that the x coordinates are all the same for the rotor plane.
 
         """
-        # TODO: Where should we locate the coordinate system? Currently, its at
-        # the foot of the turbine where the tower meets the ground.
 
         # These are the rotated coordinates of the wind turbines based on the wind direction
         x, y, z, self.x_center_of_rotation, self.y_center_of_rotation = rotate_coordinates_rel_west(
@@ -279,6 +273,9 @@ class TurbineCubatureGrid(Grid):
     average_method = "simple-cubature"
 
     def __attrs_post_init__(self) -> None:
+        if not isinstance(self.grid_resolution, int):
+            raise TypeError("grid_resolution must be of type 'int' for TurbineCubatureGrid")
+
         self.set_grid()
 
     def set_grid(self) -> None:
@@ -435,75 +432,6 @@ class TurbineCubatureGrid(Grid):
         }
 
 @define
-class FlowFieldGrid(Grid):
-    """
-    Args:
-        turbine_coordinates (:py:obj:`NDArrayFloat`): The arrays of turbine coordinates as Numpy
-            arrays with shape (N coordinates, 3).
-        turbine_diameters (:py:obj:`NDArrayFloat`): The rotor diameters of each turbine.
-        wind_directions (:py:obj:`NDArrayFloat`): Wind directions supplied by the user.
-        grid_resolution (:py:obj:`Iterable(int,)`): The number of grid points to create in each
-            planar direction. Must be 3 components for resolution in the x, y, and z directions.
-    """
-    x_center_of_rotation: NDArrayFloat = field(init=False)
-    y_center_of_rotation: NDArrayFloat = field(init=False)
-
-    def __attrs_post_init__(self) -> None:
-        self.set_grid()
-
-    def set_grid(self) -> None:
-        """
-        Create a structured grid for the entire flow field domain.
-
-        Calculates the domain bounds for the current wake model. The bounds
-        are calculated based on preset extents from the
-        given layout. The bounds consist of the minimum and maximum values
-        in the x-, y-, and z-directions.
-
-        If the Curl model is used, the predefined bounds are always set.
-
-        First, sort the turbines so that we know the bounds in the correct orientation.
-        Then, create the grid based on this wind-from-left orientation
-        """
-
-        # These are the rotated coordinates of the wind turbines based on the wind direction
-        x, y, z, self.x_center_of_rotation, self.y_center_of_rotation = rotate_coordinates_rel_west(
-            self.wind_directions,
-            self.turbine_coordinates
-        )
-
-        # Construct the arrays storing the grid points
-        eps = 0.01
-        xmin = min(x[0,0]) - 2 * self.turbine_diameters
-        xmax = max(x[0,0]) + 10 * self.turbine_diameters
-        ymin = min(y[0,0]) - 2 * self.turbine_diameters
-        ymax = max(y[0,0]) + 2 * self.turbine_diameters
-        zmin = 0 + eps
-        zmax = 6 * max(z[0,0])
-
-        x_points, y_points, z_points = np.meshgrid(
-            np.linspace(xmin, xmax, int(self.grid_resolution[0])),
-            np.linspace(ymin, ymax, int(self.grid_resolution[1])),
-            np.linspace(zmin, zmax, int(self.grid_resolution[2])),
-            indexing="ij"
-        )
-
-        self.x_sorted = x_points[None, None, :, :, :]
-        self.y_sorted = y_points[None, None, :, :, :]
-        self.z_sorted = z_points[None, None, :, :, :]
-
-        # Now calculate grid coordinates in original frame (from 270 deg perspective)
-        self.x_sorted_inertial_frame, self.y_sorted_inertial_frame, self.z_sorted_inertial_frame = \
-            reverse_rotate_coordinates_rel_west(
-                wind_directions=self.wind_directions,
-                grid_x=self.x_sorted,
-                grid_y=self.y_sorted,
-                grid_z=self.z_sorted,
-                x_center_of_rotation=self.x_center_of_rotation,
-                y_center_of_rotation=self.y_center_of_rotation,
-            )
-
-@define
 class FlowFieldPlanarGrid(Grid):
     """
     Args:
@@ -526,6 +454,14 @@ class FlowFieldPlanarGrid(Grid):
     unsorted_indices: NDArrayInt = field(init=False)
 
     def __attrs_post_init__(self) -> None:
+        if (not isinstance(self.grid_resolution, Iterable)
+            or (len(self.grid_resolution) != 2)
+            or any(not isinstance(v, int) for v in self.grid_resolution)
+        ):
+            raise TypeError(
+                "grid_resolution must be an Iterable of length 2 for FlowFieldPlanarGrid"
+            )
+
         self.set_grid()
 
     def set_grid(self) -> None:
@@ -648,6 +584,9 @@ class PointsGrid(Grid):
     y_center_of_rotation: float | None = field(default=None)
 
     def __attrs_post_init__(self) -> None:
+        if not isinstance(self.grid_resolution, int):
+            raise TypeError("grid_resolution must be of type 'int' for PointsGrid")
+
         self.set_grid()
 
     def set_grid(self) -> None:

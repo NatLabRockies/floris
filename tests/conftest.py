@@ -8,7 +8,6 @@ import floris
 from floris.core import (
     Core,
     FlowField,
-    FlowFieldGrid,
     PointsGrid,
     TurbineGrid,
 )
@@ -158,17 +157,6 @@ def turbine_grid_fixture(sample_inputs_fixture) -> TurbineGrid:
         turbine_diameters=rotor_diameters,
         wind_directions=np.array(WIND_DIRECTIONS),
         grid_resolution=TURBINE_GRID_RESOLUTION,
-    )
-
-@pytest.fixture
-def flow_field_grid_fixture(sample_inputs_fixture) -> FlowFieldGrid:
-    turbine_coordinates = np.array(list(zip(X_COORDS, Y_COORDS, Z_COORDS)))
-    rotor_diameters = ROTOR_DIAMETER * np.ones( (N_FINDEX, N_TURBINES) )
-    return FlowFieldGrid(
-        turbine_coordinates=turbine_coordinates,
-        turbine_diameters=rotor_diameters,
-        wind_directions=np.array(WIND_DIRECTIONS),
-        grid_resolution=[3,2,2]
     )
 
 @pytest.fixture

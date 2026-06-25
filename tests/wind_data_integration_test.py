@@ -1,7 +1,9 @@
 import copy
+import os
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 import pytest
 
 from floris import (
@@ -63,6 +65,82 @@ def test_time_series_instantiation():
             wind_directions, wind_speeds, turbulence_intensities=np.array([0.06, 0.07, 0.08, 0.09])
         )
 
+def test_time_series_read_csv():
+
+    df_test = pd.DataFrame(
+        {
+            "Wind Direction": [270, 280, 290],
+            "Wind Speed": [5, 6, 7],
+            "Turbulence Intensity": [0.06, 0.07, 0.08],
+            "Other Column": [1, 2, 3],
+        }
+    )
+
+    csv_path = TEST_DATA / "test_time_series.csv"
+    df_test.to_csv(csv_path, index=False)
+
+    time_series = TimeSeries.read_csv(
+        csv_path,
+        ws_col="Wind Speed",
+        wd_col="Wind Direction",
+        ti_col_or_value="Turbulence Intensity",
+    )
+
+    assert isinstance(time_series, TimeSeries)
+    assert np.allclose(time_series.wind_directions, df_test["Wind Direction"].values)
+
+    # Test with fixed TI value
+    time_series = TimeSeries.read_csv(
+        csv_path,
+        ws_col="Wind Speed",
+        wd_col="Wind Direction",
+        ti_col_or_value=0.05,
+    )
+
+    assert isinstance(time_series, TimeSeries)
+    assert np.allclose(time_series.turbulence_intensities, 0.05)
+
+    # Test with invalid column raises error
+    with pytest.raises(KeyError):
+        TimeSeries.read_csv(
+            csv_path,
+            ws_col="Wind Speed",
+            wd_col="Wind Direction",
+            ti_col_or_value="Nonexistent Column",
+        )
+
+    # Test that unspecified column raises error
+    with pytest.raises(KeyError):
+        TimeSeries.read_csv(
+            csv_path,
+            ws_col="Wind Speed",
+            wd_col="Wind Direction",
+        )
+
+    # Test with default column names, default column separator
+    df_test_2 = pd.DataFrame(
+        {
+            "wind_directions": [270, 280, 290],
+            "wind_speeds": [5, 6, 7],
+            "turbulence_intensities": [0.06, 0.07, 0.08],
+            "other_column": [1, 2, 3],
+        }
+    )
+    df_test_2.to_csv(csv_path, index=True, sep=" ")
+
+    time_series = TimeSeries.read_csv(csv_path, value_col="other_column", sep=" ")
+    assert isinstance(time_series, TimeSeries)
+    assert np.allclose(time_series.wind_speeds, df_test_2["wind_speeds"].values)
+    assert np.allclose(time_series.values, df_test_2["other_column"].values)
+
+    # Test error if default column names are used but a column is missing
+    df_test_3 = df_test_2.drop(columns=["turbulence_intensities"])
+    df_test_3.to_csv(csv_path, index=True, sep=" ")
+
+    with pytest.raises(KeyError):
+        TimeSeries.read_csv(csv_path)
+
+    os.remove(csv_path)
 
 def test_wind_rose_init():
     """

@@ -37,6 +37,21 @@ def test_time_series_instantiation():
     with pytest.raises(TypeError):
         TimeSeries(wind_directions, wind_speeds)
 
+    # Test instantiation with NaN values
+    with pytest.raises(ValueError, match="contain NaNs"):
+       TimeSeries(np.array([270, 280, np.nan]), wind_speeds, turbulence_intensities=0.06)
+    with pytest.raises(ValueError, match="contain NaNs"):
+        TimeSeries(wind_directions, np.array([np.nan, 5, 5,]), turbulence_intensities=0.06)
+    with pytest.raises(ValueError, match="contain NaNs"):
+        TimeSeries(wind_directions, wind_speeds, np.array([0.06, np.nan, 0.06]))
+    with pytest.raises(ValueError, match="contain NaNs"):
+        TimeSeries(
+            wind_directions,
+            wind_speeds,
+            0.06*np.ones_like(wind_speeds),
+            np.array([1.0, np.nan, 3.0])
+        )
+
     # Test that passing a float TI returns a list of length matched to wind directions
     time_series = TimeSeries(wind_directions, wind_speeds, turbulence_intensities=0.06)
     np.testing.assert_allclose(time_series.turbulence_intensities, [0.06, 0.06, 0.06])
@@ -80,6 +95,12 @@ def test_wind_rose_init():
     # Test that passing in decreasing wind directions raises an error
     with pytest.raises(ValueError):
         WindRose(np.array([290, 280, 270]), np.array([6, 7]), 0.06)
+
+    # Test that passing in a NaN value raises an error
+    with pytest.raises(ValueError, match="contain NaNs"):
+        WindRose(np.array([270, 280, np.nan]), np.array([6, 7]), 0.06)
+    with pytest.raises(ValueError, match="contain NaNs"):
+        WindRose(np.array([270, 280, 290]), np.array([np.nan, 7]), 0.06)
 
     wind_directions = np.array([270, 280, 290])
     wind_speeds = np.array([6, 7])
@@ -824,6 +845,13 @@ def test_wind_ti_rose_init():
         turbulence_intensities=turbulence_intensities,
     )
 
+    # Test that passing in a NaN value raises an error
+    with pytest.raises(ValueError, match="contain NaNs"):
+        WindTIRose(np.array([270, 280, np.nan, 300]), wind_speeds, turbulence_intensities)
+    with pytest.raises(ValueError, match="contain NaNs"):
+        WindTIRose(wind_directions, np.array([6, np.nan, 8]), turbulence_intensities)
+    with pytest.raises(ValueError, match="contain NaNs"):
+        WindTIRose(wind_directions, wind_speeds, np.array([0.05, np.nan]))
 
 def test_wind_ti_rose_grid():
     wind_directions = np.array([270, 280, 290, 300])

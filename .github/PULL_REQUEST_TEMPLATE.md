@@ -70,5 +70,5 @@ Release checklist:
     - [ ] README.md (appears twice in README.md)
     - [ ] pyproject.toml
 - [ ] Verify docs builds correctly
-- [ ] Create a tag in the NREL/FLORIS repository
+- [ ] Create a tag in the NatLabRockies/FLORIS repository
 -->

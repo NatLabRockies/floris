@@ -1021,7 +1021,6 @@ window.runMermaid = runMermaid;</script>
     <span class="n">axial_induction</span><span class="p">,</span>
     <span class="n">Farm</span><span class="p">,</span>
     <span class="n">FlowField</span><span class="p">,</span>
-    <span class="n">FlowFieldGrid</span><span class="p">,</span>
     <span class="n">FlowFieldPlanarGrid</span><span class="p">,</span>
     <span class="n">PointsGrid</span><span class="p">,</span>
     <span class="n">thrust_coefficient</span><span class="p">,</span>
@@ -1281,7 +1280,7 @@ window.runMermaid = runMermaid;</script>
 <span class="k">def</span><span class="w"> </span><span class="nf">full_flow_sequential_solver</span><span class="p">(</span>
     <span class="n">farm</span><span class="p">:</span> <span class="n">Farm</span><span class="p">,</span>
     <span class="n">flow_field</span><span class="p">:</span> <span class="n">FlowField</span><span class="p">,</span>
-    <span class="n">flow_field_grid</span><span class="p">:</span> <span class="n">FlowFieldGrid</span> <span class="o">|</span> <span class="n">FlowFieldPlanarGrid</span> <span class="o">|</span> <span class="n">PointsGrid</span><span class="p">,</span>
+    <span class="n">flow_field_grid</span><span class="p">:</span> <span class="n">FlowFieldPlanarGrid</span> <span class="o">|</span> <span class="n">PointsGrid</span><span class="p">,</span>
     <span class="n">model_manager</span><span class="p">:</span> <span class="n">WakeModelManager</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 
@@ -1751,7 +1750,7 @@ window.runMermaid = runMermaid;</script>
 <span class="k">def</span><span class="w"> </span><span class="nf">full_flow_cc_solver</span><span class="p">(</span>
     <span class="n">farm</span><span class="p">:</span> <span class="n">Farm</span><span class="p">,</span>
     <span class="n">flow_field</span><span class="p">:</span> <span class="n">FlowField</span><span class="p">,</span>
-    <span class="n">flow_field_grid</span><span class="p">:</span> <span class="n">FlowFieldGrid</span> <span class="o">|</span> <span class="n">FlowFieldPlanarGrid</span> <span class="o">|</span> <span class="n">PointsGrid</span><span class="p">,</span>
+    <span class="n">flow_field_grid</span><span class="p">:</span> <span class="n">FlowFieldPlanarGrid</span> <span class="o">|</span> <span class="n">PointsGrid</span><span class="p">,</span>
     <span class="n">model_manager</span><span class="p">:</span> <span class="n">WakeModelManager</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="c1"># Get the flow quantities and turbine performance</span>
@@ -2215,7 +2214,7 @@ window.runMermaid = runMermaid;</script>
 <span class="k">def</span><span class="w"> </span><span class="nf">full_flow_turbopark_solver</span><span class="p">(</span>
     <span class="n">farm</span><span class="p">:</span> <span class="n">Farm</span><span class="p">,</span>
     <span class="n">flow_field</span><span class="p">:</span> <span class="n">FlowField</span><span class="p">,</span>
-    <span class="n">flow_field_grid</span><span class="p">:</span> <span class="n">FlowFieldGrid</span><span class="p">,</span>
+    <span class="n">flow_field_grid</span><span class="p">:</span> <span class="n">FlowFieldPlanarGrid</span> <span class="o">|</span> <span class="n">PointsGrid</span><span class="p">,</span>
     <span class="n">model_manager</span><span class="p">:</span> <span class="n">WakeModelManager</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Plotting for the TurbOPark model is not currently implemented.&quot;</span><span class="p">)</span></div>
@@ -2449,7 +2448,7 @@ window.runMermaid = runMermaid;</script>
 <span class="k">def</span><span class="w"> </span><span class="nf">full_flow_empirical_gauss_solver</span><span class="p">(</span>
     <span class="n">farm</span><span class="p">:</span> <span class="n">Farm</span><span class="p">,</span>
     <span class="n">flow_field</span><span class="p">:</span> <span class="n">FlowField</span><span class="p">,</span>
-    <span class="n">flow_field_grid</span><span class="p">:</span> <span class="n">FlowFieldGrid</span><span class="p">,</span>
+    <span class="n">flow_field_grid</span><span class="p">:</span> <span class="n">FlowFieldPlanarGrid</span> <span class="o">|</span> <span class="n">PointsGrid</span><span class="p">,</span>
     <span class="n">model_manager</span><span class="p">:</span> <span class="n">WakeModelManager</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 

@@ -1029,7 +1029,6 @@ window.runMermaid = runMermaid;</script>
     <span class="n">empirical_gauss_solver</span><span class="p">,</span>
     <span class="n">Farm</span><span class="p">,</span>
     <span class="n">FlowField</span><span class="p">,</span>
-    <span class="n">FlowFieldGrid</span><span class="p">,</span>
     <span class="n">FlowFieldPlanarGrid</span><span class="p">,</span>
     <span class="n">full_flow_cc_solver</span><span class="p">,</span>
     <span class="n">full_flow_empirical_gauss_solver</span><span class="p">,</span>
@@ -1119,13 +1118,6 @@ window.runMermaid = runMermaid;</script>
                 <span class="n">turbine_diameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">farm</span><span class="o">.</span><span class="n">rotor_diameters</span><span class="p">,</span>
                 <span class="n">wind_directions</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">flow_field</span><span class="o">.</span><span class="n">wind_directions</span><span class="p">,</span>
                 <span class="n">grid_resolution</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="p">[</span><span class="s2">&quot;turbine_grid_points&quot;</span><span class="p">],</span>
-            <span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;flow_field_grid&quot;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">FlowFieldGrid</span><span class="p">(</span>
-                <span class="n">turbine_coordinates</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">farm</span><span class="o">.</span><span class="n">coordinates</span><span class="p">,</span>
-                <span class="n">turbine_diameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">farm</span><span class="o">.</span><span class="n">rotor_diameters</span><span class="p">,</span>
-                <span class="n">wind_directions</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">flow_field</span><span class="o">.</span><span class="n">wind_directions</span><span class="p">,</span>
-                <span class="n">grid_resolution</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="p">[</span><span class="s2">&quot;flow_field_grid_points&quot;</span><span class="p">],</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;flow_field_planar_grid&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">FlowFieldPlanarGrid</span><span class="p">(</span>

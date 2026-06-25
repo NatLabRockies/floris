@@ -988,7 +988,7 @@ coordinate_labels: A list of labels for the normalized coordinates.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>downstream_dists_D</strong> (<em>ndarray</em><em>[</em><em>tuple</em><em>[</em><em>Any</em><em>, </em><em>...</em><em>]</em><em>, </em><em>dtype</em><em>[</em><em>float64</em><em>]</em><em>]</em>)</p></li>
+<li><p><strong>downstream_dists_D</strong> (<em>NDArray</em><em>[</em><em>float64</em><em>]</em>)</p></li>
 <li><p><strong>layout</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>)</p></li>
 <li><p><strong>ax_width</strong> (<em>float</em>)</p></li>
 <li><p><strong>ax_height</strong> (<em>float</em>)</p></li>
@@ -998,7 +998,7 @@ coordinate_labels: A list of labels for the normalized coordinates.</p>
 </dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="floris.flow_visualization.VelocityProfilesFigure.downstream_dists_D">
-<span class="sig-name descname"><span class="pre">downstream_dists_D</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]]</span></em><a class="headerlink" href="#floris.flow_visualization.VelocityProfilesFigure.downstream_dists_D" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">downstream_dists_D</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericAlias</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]</span></em><a class="headerlink" href="#floris.flow_visualization.VelocityProfilesFigure.downstream_dists_D" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1098,7 +1098,7 @@ as a pandas DataFrame. <cite>kwargs</cite> are passed to <cite>ax.plot</cite>.</
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
 </dd>
 <dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>xlim</strong> (<em>list</em><em>[</em><em>float</em><em>] </em><em>| </em><em>ndarray</em><em>[</em><em>tuple</em><em>[</em><em>Any</em><em>, </em><em>...</em><em>]</em><em>, </em><em>dtype</em><em>[</em><em>float64</em><em>]</em><em>]</em>)</p>
+<dd class="field-even"><p><strong>xlim</strong> (<em>list</em><em>[</em><em>float</em><em>] </em><em>| </em><em>NDArray</em><em>[</em><em>float64</em><em>]</em>)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1119,7 +1119,7 @@ Args:</p>
 </div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ref_lines_x2_D</strong> (<em>list</em><em>[</em><em>float</em><em>] </em><em>| </em><em>ndarray</em><em>[</em><em>tuple</em><em>[</em><em>Any</em><em>, </em><em>...</em><em>]</em><em>, </em><em>dtype</em><em>[</em><em>float64</em><em>]</em><em>]</em>)</p>
+<dd class="field-odd"><p><strong>ref_lines_x2_D</strong> (<em>list</em><em>[</em><em>float</em><em>] </em><em>| </em><em>NDArray</em><em>[</em><em>float64</em><em>]</em>)</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
@@ -1143,7 +1143,7 @@ Args:</p>
 </div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ref_lines_x3_D</strong> (<em>list</em><em>[</em><em>float</em><em>] </em><em>| </em><em>ndarray</em><em>[</em><em>tuple</em><em>[</em><em>Any</em><em>, </em><em>...</em><em>]</em><em>, </em><em>dtype</em><em>[</em><em>float64</em><em>]</em><em>]</em>)</p>
+<dd class="field-odd"><p><strong>ref_lines_x3_D</strong> (<em>list</em><em>[</em><em>float</em><em>] </em><em>| </em><em>NDArray</em><em>[</em><em>float64</em><em>]</em>)</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
@@ -1160,7 +1160,7 @@ Args:</p>
 </dd>
 <dt class="field-even">Parameters<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>ref_lines_D</strong> (<em>list</em><em>[</em><em>float</em><em>] </em><em>| </em><em>ndarray</em><em>[</em><em>tuple</em><em>[</em><em>Any</em><em>, </em><em>...</em><em>]</em><em>, </em><em>dtype</em><em>[</em><em>float64</em><em>]</em><em>]</em>)</p></li>
+<li><p><strong>ref_lines_D</strong> (<em>list</em><em>[</em><em>float</em><em>] </em><em>| </em><em>NDArray</em><em>[</em><em>float64</em><em>]</em>)</p></li>
 <li><p><strong>row</strong> (<em>int</em>)</p></li>
 </ul>
 </dd>

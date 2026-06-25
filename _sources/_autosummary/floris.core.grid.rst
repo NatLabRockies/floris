@@ -8,7 +8,6 @@ floris.core.grid
 
    .. autosummary::
    
-      FlowFieldGrid
       FlowFieldPlanarGrid
       Grid
       PointsGrid

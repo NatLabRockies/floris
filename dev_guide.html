@@ -1486,8 +1486,7 @@ Typically, these arguments are the ones returned from the <code class="docutils 
 <p>Some models require a special grid and/or solver, and that mapping happens in
 <a class="reference external" href="https://github.com/NatLabRockies/floris/blob/main/floris/core/core.py">floris.core.core.Core</a>.
 Generally, a specific kind of solver requires one or a number of specific grid-types.
-For example, <code class="docutils literal notranslate"><span class="pre">full_flow_sequential_solver</span></code> requires either <code class="docutils literal notranslate"><span class="pre">FlowFieldGrid</span></code> or
-<code class="docutils literal notranslate"><span class="pre">FlowFieldPlanarGrid</span></code>.
+For example, <code class="docutils literal notranslate"><span class="pre">full_flow_sequential_solver</span></code> requires a <code class="docutils literal notranslate"><span class="pre">FlowFieldPlanarGrid</span></code>.
 So, it is often the case that adding a new solver will require adding a new grid type, as well.</p>
 </section>
 </section>

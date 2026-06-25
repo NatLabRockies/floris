@@ -656,7 +656,7 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.core.grid.Grid.cubature_weights"><code class="docutils literal notranslate"><span class="pre">Grid.cubature_weights</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.core.grid.Grid.check_coordinates"><code class="docutils literal notranslate"><span class="pre">Grid.check_coordinates()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.core.grid.Grid.wind_directions_validator"><code class="docutils literal notranslate"><span class="pre">Grid.wind_directions_validator()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.core.grid.Grid.grid_resolution_validator"><code class="docutils literal notranslate"><span class="pre">Grid.grid_resolution_validator()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.core.grid.Grid.z_sorted_validator"><code class="docutils literal notranslate"><span class="pre">Grid.z_sorted_validator()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.core.grid.Grid.set_grid"><code class="docutils literal notranslate"><span class="pre">Grid.set_grid()</span></code></a></li>
 </ul>
 </li>
@@ -679,12 +679,6 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.core.grid.TurbineCubatureGrid.average_method"><code class="docutils literal notranslate"><span class="pre">TurbineCubatureGrid.average_method</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.core.grid.TurbineCubatureGrid.set_grid"><code class="docutils literal notranslate"><span class="pre">TurbineCubatureGrid.set_grid()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.core.grid.TurbineCubatureGrid.get_cubature_coefficients"><code class="docutils literal notranslate"><span class="pre">TurbineCubatureGrid.get_cubature_coefficients()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.core.grid.FlowFieldGrid"><code class="docutils literal notranslate"><span class="pre">FlowFieldGrid</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.core.grid.FlowFieldGrid.x_center_of_rotation"><code class="docutils literal notranslate"><span class="pre">FlowFieldGrid.x_center_of_rotation</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.core.grid.FlowFieldGrid.y_center_of_rotation"><code class="docutils literal notranslate"><span class="pre">FlowFieldGrid.y_center_of_rotation</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.core.grid.FlowFieldGrid.set_grid"><code class="docutils literal notranslate"><span class="pre">FlowFieldGrid.set_grid()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.core.grid.FlowFieldPlanarGrid"><code class="docutils literal notranslate"><span class="pre">FlowFieldPlanarGrid</span></code></a><ul class="nav section-nav flex-column">
@@ -724,22 +718,19 @@
 <p class="rubric">Classes</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#floris.core.grid.FlowFieldGrid" title="floris.core.grid.FlowFieldGrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FlowFieldGrid</span></code></a>(turbine_coordinates, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#floris.core.grid.FlowFieldPlanarGrid" title="floris.core.grid.FlowFieldPlanarGrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FlowFieldPlanarGrid</span></code></a>(turbine_coordinates, ...)</p></td>
 <td><p>Args:</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#floris.core.grid.FlowFieldPlanarGrid" title="floris.core.grid.FlowFieldPlanarGrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FlowFieldPlanarGrid</span></code></a>(turbine_coordinates, ...)</p></td>
-<td><p>Args:</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#floris.core.grid.Grid" title="floris.core.grid.Grid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Grid</span></code></a>(turbine_coordinates, turbine_diameters, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#floris.core.grid.Grid" title="floris.core.grid.Grid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Grid</span></code></a>(turbine_coordinates, turbine_diameters, ...)</p></td>
 <td><p>Grid should establish domain bounds based on given criteria, and develop three arrays to contain components of the grid locations in space.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#floris.core.grid.PointsGrid" title="floris.core.grid.PointsGrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PointsGrid</span></code></a>(turbine_coordinates, ...[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#floris.core.grid.PointsGrid" title="floris.core.grid.PointsGrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PointsGrid</span></code></a>(turbine_coordinates, ...[, ...])</p></td>
 <td><p>Args:</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#floris.core.grid.TurbineCubatureGrid" title="floris.core.grid.TurbineCubatureGrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TurbineCubatureGrid</span></code></a>(turbine_coordinates, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#floris.core.grid.TurbineCubatureGrid" title="floris.core.grid.TurbineCubatureGrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TurbineCubatureGrid</span></code></a>(turbine_coordinates, ...)</p></td>
 <td><p>This grid type arranges points throughout the swept area of the rotor based on the cubature of a unit circle.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#floris.core.grid.TurbineGrid" title="floris.core.grid.TurbineGrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TurbineGrid</span></code></a>(turbine_coordinates, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#floris.core.grid.TurbineGrid" title="floris.core.grid.TurbineGrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TurbineGrid</span></code></a>(turbine_coordinates, ...)</p></td>
 <td><p>See <cite>Grid</cite> for more details.</p></td>
 </tr>
 </tbody>
@@ -786,17 +777,17 @@ grid_resolution (<code class="xref py py-obj docutils literal notranslate"><span
 </dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="floris.core.grid.Grid.turbine_coordinates">
-<span class="sig-name descname"><span class="pre">turbine_coordinates</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]]</span></em><a class="headerlink" href="#floris.core.grid.Grid.turbine_coordinates" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">turbine_coordinates</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericAlias</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]</span></em><a class="headerlink" href="#floris.core.grid.Grid.turbine_coordinates" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="floris.core.grid.Grid.turbine_diameters">
-<span class="sig-name descname"><span class="pre">turbine_diameters</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]]</span></em><a class="headerlink" href="#floris.core.grid.Grid.turbine_diameters" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">turbine_diameters</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericAlias</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]</span></em><a class="headerlink" href="#floris.core.grid.Grid.turbine_diameters" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="floris.core.grid.Grid.wind_directions">
-<span class="sig-name descname"><span class="pre">wind_directions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]]</span></em><a class="headerlink" href="#floris.core.grid.Grid.wind_directions" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">wind_directions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericAlias</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]</span></em><a class="headerlink" href="#floris.core.grid.Grid.wind_directions" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -816,37 +807,37 @@ grid_resolution (<code class="xref py py-obj docutils literal notranslate"><span
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="floris.core.grid.Grid.x_sorted">
-<span class="sig-name descname"><span class="pre">x_sorted</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]]</span></em><a class="headerlink" href="#floris.core.grid.Grid.x_sorted" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">x_sorted</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericAlias</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]</span></em><a class="headerlink" href="#floris.core.grid.Grid.x_sorted" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="floris.core.grid.Grid.y_sorted">
-<span class="sig-name descname"><span class="pre">y_sorted</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]]</span></em><a class="headerlink" href="#floris.core.grid.Grid.y_sorted" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">y_sorted</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericAlias</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]</span></em><a class="headerlink" href="#floris.core.grid.Grid.y_sorted" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="floris.core.grid.Grid.z_sorted">
-<span class="sig-name descname"><span class="pre">z_sorted</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]]</span></em><a class="headerlink" href="#floris.core.grid.Grid.z_sorted" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">z_sorted</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericAlias</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]</span></em><a class="headerlink" href="#floris.core.grid.Grid.z_sorted" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="floris.core.grid.Grid.x_sorted_inertial_frame">
-<span class="sig-name descname"><span class="pre">x_sorted_inertial_frame</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]]</span></em><a class="headerlink" href="#floris.core.grid.Grid.x_sorted_inertial_frame" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">x_sorted_inertial_frame</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericAlias</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]</span></em><a class="headerlink" href="#floris.core.grid.Grid.x_sorted_inertial_frame" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="floris.core.grid.Grid.y_sorted_inertial_frame">
-<span class="sig-name descname"><span class="pre">y_sorted_inertial_frame</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]]</span></em><a class="headerlink" href="#floris.core.grid.Grid.y_sorted_inertial_frame" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">y_sorted_inertial_frame</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericAlias</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]</span></em><a class="headerlink" href="#floris.core.grid.Grid.y_sorted_inertial_frame" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="floris.core.grid.Grid.z_sorted_inertial_frame">
-<span class="sig-name descname"><span class="pre">z_sorted_inertial_frame</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]]</span></em><a class="headerlink" href="#floris.core.grid.Grid.z_sorted_inertial_frame" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">z_sorted_inertial_frame</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericAlias</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]</span></em><a class="headerlink" href="#floris.core.grid.Grid.z_sorted_inertial_frame" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="floris.core.grid.Grid.cubature_weights">
-<span class="sig-name descname"><span class="pre">cubature_weights</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]]</span></em><a class="headerlink" href="#floris.core.grid.Grid.cubature_weights" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">cubature_weights</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericAlias</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]</span></em><a class="headerlink" href="#floris.core.grid.Grid.cubature_weights" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -878,16 +869,16 @@ attribute up to date.</p>
 <dt class="field-even">Parameters<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>instance</strong> (<em>Attribute</em>)</p></li>
-<li><p><strong>value</strong> (<em>ndarray</em><em>[</em><em>tuple</em><em>[</em><em>Any</em><em>, </em><em>...</em><em>]</em><em>, </em><em>dtype</em><em>[</em><em>float64</em><em>]</em><em>]</em>)</p></li>
+<li><p><strong>value</strong> (<em>NDArray</em><em>[</em><em>float64</em><em>]</em>)</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="floris.core.grid.Grid.grid_resolution_validator">
-<span class="sig-name descname"><span class="pre">grid_resolution_validator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/floris/core/grid.html#Grid.grid_resolution_validator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#floris.core.grid.Grid.grid_resolution_validator" title="Link to this definition">#</a></dt>
-<dd><p>Check that grid resolution is given as appropriate for the chosen Grid-type.</p>
+<dt class="sig sig-object py" id="floris.core.grid.Grid.z_sorted_validator">
+<span class="sig-name descname"><span class="pre">z_sorted_validator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/floris/core/grid.html#Grid.z_sorted_validator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#floris.core.grid.Grid.z_sorted_validator" title="Link to this definition">#</a></dt>
+<dd><p>Check that the z coordinates are above the ground.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
@@ -895,7 +886,7 @@ attribute up to date.</p>
 <dt class="field-even">Parameters<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>instance</strong> (<em>Attribute</em>)</p></li>
-<li><p><strong>value</strong> (<em>int</em><em> | </em><em>Iterable</em>)</p></li>
+<li><p><strong>value</strong> (<em>NDArray</em><em>[</em><em>float64</em><em>]</em>)</p></li>
 </ul>
 </dd>
 </dl>
@@ -943,27 +934,27 @@ creates a 3x3 grid within the rotor swept area.</p>
 </dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="floris.core.grid.TurbineGrid.sorted_indices">
-<span class="sig-name descname"><span class="pre">sorted_indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">int64</span></code><span class="pre">]]</span></em><a class="headerlink" href="#floris.core.grid.TurbineGrid.sorted_indices" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">sorted_indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericAlias</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">int64</span></code><span class="pre">]</span></em><a class="headerlink" href="#floris.core.grid.TurbineGrid.sorted_indices" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="floris.core.grid.TurbineGrid.sorted_coord_indices">
-<span class="sig-name descname"><span class="pre">sorted_coord_indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">int64</span></code><span class="pre">]]</span></em><a class="headerlink" href="#floris.core.grid.TurbineGrid.sorted_coord_indices" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">sorted_coord_indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericAlias</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">int64</span></code><span class="pre">]</span></em><a class="headerlink" href="#floris.core.grid.TurbineGrid.sorted_coord_indices" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="floris.core.grid.TurbineGrid.unsorted_indices">
-<span class="sig-name descname"><span class="pre">unsorted_indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">int64</span></code><span class="pre">]]</span></em><a class="headerlink" href="#floris.core.grid.TurbineGrid.unsorted_indices" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">unsorted_indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericAlias</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">int64</span></code><span class="pre">]</span></em><a class="headerlink" href="#floris.core.grid.TurbineGrid.unsorted_indices" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="floris.core.grid.TurbineGrid.x_center_of_rotation">
-<span class="sig-name descname"><span class="pre">x_center_of_rotation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]]</span></em><a class="headerlink" href="#floris.core.grid.TurbineGrid.x_center_of_rotation" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">x_center_of_rotation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericAlias</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]</span></em><a class="headerlink" href="#floris.core.grid.TurbineGrid.x_center_of_rotation" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="floris.core.grid.TurbineGrid.y_center_of_rotation">
-<span class="sig-name descname"><span class="pre">y_center_of_rotation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]]</span></em><a class="headerlink" href="#floris.core.grid.TurbineGrid.y_center_of_rotation" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">y_center_of_rotation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericAlias</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]</span></em><a class="headerlink" href="#floris.core.grid.TurbineGrid.y_center_of_rotation" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1061,27 +1052,27 @@ corresponding cubature weights are set automatically.</p>
 </dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="floris.core.grid.TurbineCubatureGrid.sorted_indices">
-<span class="sig-name descname"><span class="pre">sorted_indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">int64</span></code><span class="pre">]]</span></em><a class="headerlink" href="#floris.core.grid.TurbineCubatureGrid.sorted_indices" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">sorted_indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericAlias</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">int64</span></code><span class="pre">]</span></em><a class="headerlink" href="#floris.core.grid.TurbineCubatureGrid.sorted_indices" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="floris.core.grid.TurbineCubatureGrid.sorted_coord_indices">
-<span class="sig-name descname"><span class="pre">sorted_coord_indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">int64</span></code><span class="pre">]]</span></em><a class="headerlink" href="#floris.core.grid.TurbineCubatureGrid.sorted_coord_indices" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">sorted_coord_indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericAlias</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">int64</span></code><span class="pre">]</span></em><a class="headerlink" href="#floris.core.grid.TurbineCubatureGrid.sorted_coord_indices" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="floris.core.grid.TurbineCubatureGrid.unsorted_indices">
-<span class="sig-name descname"><span class="pre">unsorted_indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">int64</span></code><span class="pre">]]</span></em><a class="headerlink" href="#floris.core.grid.TurbineCubatureGrid.unsorted_indices" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">unsorted_indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericAlias</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">int64</span></code><span class="pre">]</span></em><a class="headerlink" href="#floris.core.grid.TurbineCubatureGrid.unsorted_indices" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="floris.core.grid.TurbineCubatureGrid.x_center_of_rotation">
-<span class="sig-name descname"><span class="pre">x_center_of_rotation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]]</span></em><a class="headerlink" href="#floris.core.grid.TurbineCubatureGrid.x_center_of_rotation" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">x_center_of_rotation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericAlias</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]</span></em><a class="headerlink" href="#floris.core.grid.TurbineCubatureGrid.x_center_of_rotation" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="floris.core.grid.TurbineCubatureGrid.y_center_of_rotation">
-<span class="sig-name descname"><span class="pre">y_center_of_rotation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]]</span></em><a class="headerlink" href="#floris.core.grid.TurbineCubatureGrid.y_center_of_rotation" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">y_center_of_rotation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericAlias</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]</span></em><a class="headerlink" href="#floris.core.grid.TurbineCubatureGrid.y_center_of_rotation" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1115,62 +1106,6 @@ integration coefficients, &quot;r&quot;, &quot;t&quot;, &quot;q&quot;, &quot;A&q
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>N</strong> (<em>int</em>)</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="floris.core.grid.FlowFieldGrid">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">floris.core.grid.</span></span><span class="sig-name descname"><span class="pre">FlowFieldGrid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">turbine_coordinates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">turbine_diameters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind_directions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_resolution</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/floris/core/grid.html#FlowFieldGrid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#floris.core.grid.FlowFieldGrid" title="Link to this definition">#</a></dt>
-<dd><dl>
-<dt>Args:</dt><dd><dl class="simple">
-<dt>turbine_coordinates (<code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArrayFloat</span></code>): The arrays of turbine coordinates as Numpy</dt><dd><p>arrays with shape (N coordinates, 3).</p>
-</dd>
-</dl>
-<p>turbine_diameters (<code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArrayFloat</span></code>): The rotor diameters of each turbine.
-wind_directions (<code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArrayFloat</span></code>): Wind directions supplied by the user.
-grid_resolution (<code class="xref py py-obj docutils literal notranslate"><span class="pre">Iterable(int,)</span></code>): The number of grid points to create in each</p>
-<blockquote>
-<div><p>planar direction. Must be 3 components for resolution in the x, y, and z directions.</p>
-</div></blockquote>
-</dd>
-</dl>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>turbine_coordinates</strong> (<em>Iterable</em>)</p></li>
-<li><p><strong>turbine_diameters</strong> (<em>Iterable</em>)</p></li>
-<li><p><strong>wind_directions</strong> (<em>Iterable</em>)</p></li>
-<li><p><strong>grid_resolution</strong> (<em>int</em><em> | </em><em>Iterable</em>)</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="floris.core.grid.FlowFieldGrid.x_center_of_rotation">
-<span class="sig-name descname"><span class="pre">x_center_of_rotation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]]</span></em><a class="headerlink" href="#floris.core.grid.FlowFieldGrid.x_center_of_rotation" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="floris.core.grid.FlowFieldGrid.y_center_of_rotation">
-<span class="sig-name descname"><span class="pre">y_center_of_rotation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]]</span></em><a class="headerlink" href="#floris.core.grid.FlowFieldGrid.y_center_of_rotation" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="floris.core.grid.FlowFieldGrid.set_grid">
-<span class="sig-name descname"><span class="pre">set_grid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/floris/core/grid.html#FlowFieldGrid.set_grid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#floris.core.grid.FlowFieldGrid.set_grid" title="Link to this definition">#</a></dt>
-<dd><p>Create a structured grid for the entire flow field domain.</p>
-<p>Calculates the domain bounds for the current wake model. The bounds
-are calculated based on preset extents from the
-given layout. The bounds consist of the minimum and maximum values
-in the x-, y-, and z-directions.</p>
-<p>If the Curl model is used, the predefined bounds are always set.</p>
-<p>First, sort the turbines so that we know the bounds in the correct orientation.
-Then, create the grid based on this wind-from-left orientation</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1231,22 +1166,22 @@ The z direction is set to 3 planes at -10.0, 0.0, and +10.0 relative to the
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="floris.core.grid.FlowFieldPlanarGrid.x_center_of_rotation">
-<span class="sig-name descname"><span class="pre">x_center_of_rotation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]]</span></em><a class="headerlink" href="#floris.core.grid.FlowFieldPlanarGrid.x_center_of_rotation" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">x_center_of_rotation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericAlias</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]</span></em><a class="headerlink" href="#floris.core.grid.FlowFieldPlanarGrid.x_center_of_rotation" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="floris.core.grid.FlowFieldPlanarGrid.y_center_of_rotation">
-<span class="sig-name descname"><span class="pre">y_center_of_rotation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]]</span></em><a class="headerlink" href="#floris.core.grid.FlowFieldPlanarGrid.y_center_of_rotation" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">y_center_of_rotation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericAlias</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]</span></em><a class="headerlink" href="#floris.core.grid.FlowFieldPlanarGrid.y_center_of_rotation" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="floris.core.grid.FlowFieldPlanarGrid.sorted_indices">
-<span class="sig-name descname"><span class="pre">sorted_indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">int64</span></code><span class="pre">]]</span></em><a class="headerlink" href="#floris.core.grid.FlowFieldPlanarGrid.sorted_indices" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">sorted_indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericAlias</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">int64</span></code><span class="pre">]</span></em><a class="headerlink" href="#floris.core.grid.FlowFieldPlanarGrid.sorted_indices" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="floris.core.grid.FlowFieldPlanarGrid.unsorted_indices">
-<span class="sig-name descname"><span class="pre">unsorted_indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">int64</span></code><span class="pre">]]</span></em><a class="headerlink" href="#floris.core.grid.FlowFieldPlanarGrid.unsorted_indices" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">unsorted_indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericAlias</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">int64</span></code><span class="pre">]</span></em><a class="headerlink" href="#floris.core.grid.FlowFieldPlanarGrid.unsorted_indices" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1317,17 +1252,17 @@ of rotation will be the centroid of the points in the PointsGrid.</p>
 </dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="floris.core.grid.PointsGrid.points_x">
-<span class="sig-name descname"><span class="pre">points_x</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]]</span></em><a class="headerlink" href="#floris.core.grid.PointsGrid.points_x" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">points_x</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericAlias</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]</span></em><a class="headerlink" href="#floris.core.grid.PointsGrid.points_x" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="floris.core.grid.PointsGrid.points_y">
-<span class="sig-name descname"><span class="pre">points_y</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]]</span></em><a class="headerlink" href="#floris.core.grid.PointsGrid.points_y" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">points_y</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericAlias</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]</span></em><a class="headerlink" href="#floris.core.grid.PointsGrid.points_y" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="floris.core.grid.PointsGrid.points_z">
-<span class="sig-name descname"><span class="pre">points_z</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]]</span></em><a class="headerlink" href="#floris.core.grid.PointsGrid.points_z" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">points_z</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericAlias</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]</span></em><a class="headerlink" href="#floris.core.grid.PointsGrid.points_z" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1437,7 +1372,7 @@ of rotation will be the centroid of the points in the PointsGrid.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.core.grid.Grid.cubature_weights"><code class="docutils literal notranslate"><span class="pre">Grid.cubature_weights</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.core.grid.Grid.check_coordinates"><code class="docutils literal notranslate"><span class="pre">Grid.check_coordinates()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.core.grid.Grid.wind_directions_validator"><code class="docutils literal notranslate"><span class="pre">Grid.wind_directions_validator()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.core.grid.Grid.grid_resolution_validator"><code class="docutils literal notranslate"><span class="pre">Grid.grid_resolution_validator()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.core.grid.Grid.z_sorted_validator"><code class="docutils literal notranslate"><span class="pre">Grid.z_sorted_validator()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.core.grid.Grid.set_grid"><code class="docutils literal notranslate"><span class="pre">Grid.set_grid()</span></code></a></li>
 </ul>
 </li>
@@ -1460,12 +1395,6 @@ of rotation will be the centroid of the points in the PointsGrid.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.core.grid.TurbineCubatureGrid.average_method"><code class="docutils literal notranslate"><span class="pre">TurbineCubatureGrid.average_method</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.core.grid.TurbineCubatureGrid.set_grid"><code class="docutils literal notranslate"><span class="pre">TurbineCubatureGrid.set_grid()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.core.grid.TurbineCubatureGrid.get_cubature_coefficients"><code class="docutils literal notranslate"><span class="pre">TurbineCubatureGrid.get_cubature_coefficients()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.core.grid.FlowFieldGrid"><code class="docutils literal notranslate"><span class="pre">FlowFieldGrid</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.core.grid.FlowFieldGrid.x_center_of_rotation"><code class="docutils literal notranslate"><span class="pre">FlowFieldGrid.x_center_of_rotation</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.core.grid.FlowFieldGrid.y_center_of_rotation"><code class="docutils literal notranslate"><span class="pre">FlowFieldGrid.y_center_of_rotation</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.core.grid.FlowFieldGrid.set_grid"><code class="docutils literal notranslate"><span class="pre">FlowFieldGrid.set_grid()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.core.grid.FlowFieldPlanarGrid"><code class="docutils literal notranslate"><span class="pre">FlowFieldPlanarGrid</span></code></a><ul class="nav section-nav flex-column">

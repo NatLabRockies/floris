@@ -14,7 +14,6 @@ from floris.core import (
     empirical_gauss_solver,
     Farm,
     FlowField,
-    FlowFieldGrid,
     FlowFieldPlanarGrid,
     full_flow_cc_solver,
     full_flow_empirical_gauss_solver,
@@ -102,13 +101,6 @@ class Core(BaseClass):
                 turbine_diameters=self.farm.rotor_diameters,
                 wind_directions=self.flow_field.wind_directions,
                 grid_resolution=self.solver["turbine_grid_points"],
-            )
-        elif self.solver["type"] == "flow_field_grid":
-            self.grid = FlowFieldGrid(
-                turbine_coordinates=self.farm.coordinates,
-                turbine_diameters=self.farm.rotor_diameters,
-                wind_directions=self.flow_field.wind_directions,
-                grid_resolution=self.solver["flow_field_grid_points"],
             )
         elif self.solver["type"] == "flow_field_planar_grid":
             self.grid = FlowFieldPlanarGrid(

@@ -255,8 +255,6 @@ class Core(BaseClass):
         else:
             full_flow_sequential_solver(self.farm, self.flow_field, field_grid, self.wake)
 
-        return self.flow_field.u_sorted[:,:,0,0] # Remove turbine grid dimensions
-
     def solve_for_velocity_deficit_profiles(
         self,
         direction: str,
@@ -315,7 +313,8 @@ class Core(BaseClass):
         y = np.squeeze(y, axis=0) + y_start
         z = np.squeeze(z, axis=0) + reference_height
 
-        u = self.solve_for_points(x.flatten(), y.flatten(), z.flatten())
+        self.solve_for_points(x.flatten(), y.flatten(), z.flatten())
+        u = self.flow_field.u_sorted[:, :, 0, 0]
         u = np.reshape(u[0, :], (n_lines, resolution))
         velocity_deficit = (homogeneous_wind_speed - u) / homogeneous_wind_speed
 

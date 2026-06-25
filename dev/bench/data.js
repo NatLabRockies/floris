@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1781048938083,
+  "lastUpdate": 1782398484828,
   "repoUrl": "https://github.com/NatLabRockies/floris",
   "entries": {
     "Python Benchmark with pytest-benchmark": [
@@ -5384,6 +5384,72 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.00024268180050259402",
             "extra": "mean: 8.142691113395824 msec\nrounds: 97"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "39596329+misi9170@users.noreply.github.com",
+            "name": "misi9170",
+            "username": "misi9170"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "5538ac077be5d8533ad259a462ee9bf328d21efe",
+          "message": "Clean up grid classes (#1183)\n\n* Add warning for non-positive z values\n\n* Move grid_resolution validation to subclasses\n\n* Add tests for TurbineGrid coordinates and grid_resolution\n\n* Add tests for FlowFieldPlanarGrid\n\n* Deprecation warning\n\n* Remove FlowFieldGrid as not actually supported\n\n* Fix copy-paste errors\n\nCo-authored-by: Copilot <175728472+Copilot@users.noreply.github.com>\n\n* Add test to check that error raised for flow_field_grid\n\n* Formatting\n\n* Minor messaging cleanup\n\n* Update to patch release\n\n* Patch version numnber increment\n\n* Remove case for \"flow_field_grid\" anderror check test\n\n---------\n\nCo-authored-by: Copilot <175728472+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-06-25T08:12:54-06:00",
+          "tree_id": "9bb1eb11a692ac2159effa4ee86dff79d7bfa028",
+          "url": "https://github.com/NatLabRockies/floris/commit/5538ac077be5d8533ad259a462ee9bf328d21efe"
+        },
+        "date": 1782398482072,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_set",
+            "value": 42.09235095026074,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0002242569597744036",
+            "extra": "mean: 23.757285526333984 msec\nrounds: 38"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_run",
+            "value": 51.380978675099975,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0005577048984180629",
+            "extra": "mean: 19.462455285707033 msec\nrounds: 28"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_set",
+            "value": 26.005317787901486,
+            "unit": "iter/sec",
+            "range": "stddev: 0.001194908917903482",
+            "extra": "mean: 38.453673520007214 msec\nrounds: 25"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_run",
+            "value": 0.28905872746654654,
+            "unit": "iter/sec",
+            "range": "stddev: 0.009803759518434726",
+            "extra": "mean: 3.4595046091999846 sec\nrounds: 5"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_set",
+            "value": 36.62429110147847,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00013962361268032177",
+            "extra": "mean: 27.30428275674205 msec\nrounds: 37"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_run",
+            "value": 119.91737812546634,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000056281984972244336",
+            "extra": "mean: 8.339074916679104 msec\nrounds: 96"
           }
         ]
       }

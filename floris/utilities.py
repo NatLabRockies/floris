@@ -457,3 +457,23 @@ def is_all_scalar_dict(dictionary: Dict[str, Any]) -> bool:
             return False
 
     return True
+
+def update_nested_dict(
+    base_dict: Dict[str, Any],
+    update_dict: Dict[str, Any]
+) -> Dict[str, Any]:
+    """Recursively update a nested dictionary.
+
+    Args:
+        base_dict (Dict[str, Any]): The dictionary to update.
+        update_dict (Dict[str, Any]): The dictionary to update from.
+
+    Returns:
+        Dict[str, Any]: The updated dictionary.
+    """
+    for key, value in update_dict.items():
+        if isinstance(value, dict) and key in base_dict and isinstance(base_dict[key], dict):
+            base_dict[key] = update_nested_dict(base_dict[key], value)
+        else:
+            base_dict[key] = value
+    return base_dict

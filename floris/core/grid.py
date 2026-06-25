@@ -443,11 +443,14 @@ class FlowFieldPlanarGrid(Grid):
             planar direction. Must be 2 components for resolution in the x and y directions.
             The z direction is set to 3 planes at -10.0, 0.0, and +10.0 relative to the
             `planar_coordinate`.
+        keep_inertial_frame (:py:obj:`bool`, optional): If True, coordinates are kept in the
+            inertial frame (not rotated relative to wind direction). Defaults to False.
     """
     normal_vector: str = field()
     planar_coordinate: float = field()
     x1_bounds: tuple = field(default=None)
     x2_bounds: tuple = field(default=None)
+    keep_inertial_frame: bool = field(default=False)
     x_center_of_rotation: NDArrayFloat = field(init=False)
     y_center_of_rotation: NDArrayFloat = field(init=False)
     sorted_indices: NDArrayInt = field(init=False)
@@ -477,10 +480,21 @@ class FlowFieldPlanarGrid(Grid):
         Then, create the grid based on this wind-from-left orientation
         """
         # These are the rotated coordinates of the wind turbines based on the wind direction
-        x, y, z, self.x_center_of_rotation, self.y_center_of_rotation = rotate_coordinates_rel_west(
-            self.wind_directions,
-            self.turbine_coordinates
-        )
+        # Unless keep_inertial_frame is True, in which case we keep original coordinates
+        if not self.keep_inertial_frame:
+            x, y, z, self.x_center_of_rotation, self.y_center_of_rotation = rotate_coordinates_rel_west(
+                self.wind_directions,
+                self.turbine_coordinates
+            )
+        else:
+            # Use coordinates directly without rotation
+            x_coordinates, y_coordinates, z_coordinates = self.turbine_coordinates.T
+            x = np.ones((len(self.wind_directions), 1)) * x_coordinates
+            y = np.ones((len(self.wind_directions), 1)) * y_coordinates
+            z = np.ones((len(self.wind_directions), 1)) * z_coordinates
+            self.x_center_of_rotation = (np.min(x_coordinates) + np.max(x_coordinates)) / 2
+            self.y_center_of_rotation = (np.min(y_coordinates) + np.max(y_coordinates)) / 2
+            
         max_diameter = np.max(self.turbine_diameters)
 
         if self.normal_vector == "z":  # Rules of thumb for horizontal plane
@@ -543,15 +557,22 @@ class FlowFieldPlanarGrid(Grid):
             self.z_sorted = z_points[None, :, :, :]
 
         # Now calculate grid coordinates in original frame (from 270 deg perspective)
-        self.x_sorted_inertial_frame, self.y_sorted_inertial_frame, self.z_sorted_inertial_frame = \
-            reverse_rotate_coordinates_rel_west(
-                wind_directions=self.wind_directions,
-                grid_x=self.x_sorted,
-                grid_y=self.y_sorted,
-                grid_z=self.z_sorted,
-                x_center_of_rotation=self.x_center_of_rotation,
-                y_center_of_rotation=self.y_center_of_rotation,
-            )
+        # Skip this if keep_inertial_frame is True since we're already in the inertial frame
+        if not self.keep_inertial_frame:
+            self.x_sorted_inertial_frame, self.y_sorted_inertial_frame, self.z_sorted_inertial_frame = \
+                reverse_rotate_coordinates_rel_west(
+                    wind_directions=self.wind_directions,
+                    grid_x=self.x_sorted,
+                    grid_y=self.y_sorted,
+                    grid_z=self.z_sorted,
+                    x_center_of_rotation=self.x_center_of_rotation,
+                    y_center_of_rotation=self.y_center_of_rotation,
+                )
+        else:
+            # If we're keeping inertial frame, sorted and inertial are the same
+            self.x_sorted_inertial_frame = self.x_sorted.copy()
+            self.y_sorted_inertial_frame = self.y_sorted.copy()
+            self.z_sorted_inertial_frame = self.z_sorted.copy()
 
 @define
 class PointsGrid(Grid):

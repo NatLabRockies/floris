@@ -5,6 +5,9 @@ from typing import (
     Any,
     List,
     Optional,
+    Tuple,
+    Union,
+    Dict,
 )
 
 import numpy as np
@@ -34,6 +37,7 @@ from floris.utilities import (
     nested_get,
     nested_set,
     print_nested_dict,
+    update_nested_dict,
 )
 from floris.wind_data import (
     TimeSeries,
@@ -1107,6 +1111,7 @@ class FlorisModel(LoggingManager):
         y_bounds=None,
         z_bounds=None,
         findex_for_viz=None,
+        keep_inertial_frame=False,
     ):
         """
         Shortcut method to instantiate a :py:class:`~.tools.cut_plane.CutPlane`
@@ -1124,6 +1129,8 @@ class FlorisModel(LoggingManager):
             z_bounds (tuple, optional): Limits of output array (in m).
                 Defaults to None.
             finder_for_viz (int, optional): Index of the condition to visualize.
+            keep_inertial_frame (bool, optional): If True, coordinates are kept in the
+                inertial frame (not rotated relative to wind direction). Defaults to False.
         Returns:
             :py:class:`~.tools.cut_plane.CutPlane`: containing values
             of y, z, u, v, w
@@ -1145,6 +1152,7 @@ class FlorisModel(LoggingManager):
             "planar_coordinate": downstream_dist,
             "flow_field_grid_points": [y_resolution, z_resolution],
             "flow_field_bounds": [y_bounds, z_bounds],
+            "keep_inertial_frame": keep_inertial_frame,
         }
         fmodel_viz.set_for_viz(findex_for_viz, solver_settings)
 
@@ -1172,6 +1180,7 @@ class FlorisModel(LoggingManager):
         x_bounds=None,
         y_bounds=None,
         findex_for_viz=None,
+        keep_inertial_frame=False,
     ):
         """
         Shortcut method to instantiate a :py:class:`~.tools.cut_plane.CutPlane`
@@ -1189,6 +1198,8 @@ class FlorisModel(LoggingManager):
             y_bounds (tuple, optional): Limits of output array (in m).
                 Defaults to None.
             findex_for_viz (int, optional): Index of the condition to visualize.
+            keep_inertial_frame (bool, optional): If True, coordinates are kept in the
+                inertial frame (not rotated relative to wind direction). Defaults to False.
 
         Returns:
             :py:class:`~.tools.cut_plane.CutPlane`: containing values
@@ -1211,6 +1222,7 @@ class FlorisModel(LoggingManager):
             "planar_coordinate": height,
             "flow_field_grid_points": [x_resolution, y_resolution],
             "flow_field_bounds": [x_bounds, y_bounds],
+            "keep_inertial_frame": keep_inertial_frame,
         }
         fmodel_viz.set_for_viz(findex_for_viz, solver_settings)
 
@@ -1243,6 +1255,7 @@ class FlorisModel(LoggingManager):
         x_bounds=None,
         z_bounds=None,
         findex_for_viz=None,
+        keep_inertial_frame=False,
     ):
         """
         Shortcut method to instantiate a :py:class:`~.tools.cut_plane.CutPlane`
@@ -1261,6 +1274,8 @@ class FlorisModel(LoggingManager):
                 Defaults to None.
             findex_for_viz (int, optional): Index of the condition to visualize.
                 Defaults to 0.
+            keep_inertial_frame (bool, optional): If True, coordinates are kept in the
+                inertial frame (not rotated relative to wind direction). Defaults to False.
 
         Returns:
             :py:class:`~.tools.cut_plane.CutPlane`: containing values
@@ -1283,6 +1298,7 @@ class FlorisModel(LoggingManager):
             "planar_coordinate": crossstream_dist,
             "flow_field_grid_points": [x_resolution, z_resolution],
             "flow_field_bounds": [x_bounds, z_bounds],
+            "keep_inertial_frame": keep_inertial_frame,
         }
         fmodel_viz.set_for_viz(findex_for_viz, solver_settings)
 
@@ -1897,3 +1913,119 @@ class FlorisModel(LoggingManager):
         )
 
         return fmodel_merged
+
+
+#############################################################################
+
+    def _reset_windio_metadata(self, category: List[str] = None) -> None:
+        METADATA_FILEDS = ['wind_farm', 'wind_resource']
+        
+        if not hasattr(self, "_windio_metadata"):
+            category = None
+
+        if category is None:
+            self._windio_metadata = {k: {} for k in METADATA_FILEDS}
+        else:
+            self._windio_metadata[category] = {}
+
+    @staticmethod
+    def from_windio( wind_energy_system: Path | Dict = None,
+                     wind_resource: Path | Dict = None,
+                     wind_farm: Path | Dict = None,
+                     model_attrs: Path | Dict = None,
+                     ) -> 'FlorisModel':
+        
+        from .read_windio import load_windio_input
+
+        if (wind_energy_system is not None):
+            wind_energy_system = load_windio_input(wind_energy_system)
+        
+        def _wes_or_input(input: Path | Dict, input_name: str, wes_nested_key_paths: Tuple[str]) -> Dict:
+            if (input is not None):
+                print(f"{input_name} from wind_energy_system will be ignored.")
+                data_dict = load_windio_input(input)
+                data_dict['_context'] = f".{input_name}"
+                return data_dict
+            
+            if (wind_energy_system is not None):
+                data_dict = nested_get(wind_energy_system, wes_nested_key_paths)
+                data_dict['_context'] = f".wind_energy_system.{'.'.join(wes_nested_key_paths)}"
+                return data_dict
+            
+            raise ValueError(f"Either {input_name} or wind_energy_system must be provided.")
+
+        wind_farm_windio = _wes_or_input(wind_farm, 
+                                  "wind_farm", 
+                                  ("wind_farm",))
+        wind_data_windio = _wes_or_input(wind_resource, 
+                                  "wind_resource", 
+                                  ("site", "energy_resource", "wind_resource"))
+        model_attrs_windio = _wes_or_input(model_attrs, 
+                                    "attributes", 
+                                    ("attributes",))
+
+        # Start with defaults
+        default_param = load_windio_input(Path(__file__).parent / "default_inputs.yaml")
+
+        # Wake model parameters are set once and for all 
+        from .read_windio import read_wake_model
+        wake_model_floris = read_wake_model(model_attrs_windio)
+        update_nested_dict(default_param, wake_model_floris)
+
+        # Instantiate FlorisModel
+        fmodel = FlorisModel(default_param)
+        fmodel._reset_windio_metadata()
+
+        # Reconstruct description 
+        fmodel_name = "FlorisModel from windio"
+
+        if (wind_energy_system is not None):
+            fmodel_name = wind_energy_system['name'] 
+        
+        fmodel_name += f" ({wind_farm_windio['name']})"
+
+        fmodel.core.name = fmodel_name
+        fmodel.core.description = fmodel_name
+
+        # Set the various components from windio data
+        fmodel.set_farm_from_windio(wind_farm_windio)
+        fmodel.set_wind_data_from_windio(wind_data_windio)
+        
+        return fmodel
+
+    def set_wind_data_from_windio(self, wind_resource_windio: Dict) -> None:
+        from .read_windio import read_wind_resource, load_windio_input
+        self._reset_windio_metadata(category="wind_resource")
+
+        wind_resource_windio = load_windio_input(wind_resource_windio)
+        wind_data_floris = read_wind_resource(wind_resource_windio)
+
+        self._reset_windio_metadata(category="wind_resource")
+        self._windio_metadata["wind_resource"] = wind_data_floris.pop('_metadata', {})
+
+        # Handle special cases
+        disable = wind_data_floris.pop('_disable', None)
+        dict_disable = {'disable_turbines': disable} if disable is not None else {}
+        if (disable is not None):
+            self.set_operation_model("mixed")
+        else:
+            self.set_operation_model("simple")
+
+        self.set(
+            **wind_data_floris,
+            **dict_disable
+        )
+
+    def set_farm_from_windio(self, wind_farm_windio: Dict) -> None:
+        from .read_windio import read_wind_farm, load_windio_input
+        self._reset_windio_metadata(category="wind_farm")
+
+        wind_farm_windio = load_windio_input(wind_farm_windio)
+        wind_farm_floris = read_wind_farm(wind_farm_windio, logger=self.logger)
+
+        self._reset_windio_metadata(category="wind_farm")
+        self._windio_metadata["wind_farm"] = wind_farm_floris.pop('_metadata', {})
+        
+        # Set reference height to mean hub height 
+        hub_heights = [t["hub_height"] for t in wind_farm_floris["turbine_type"]]
+        self.set(**wind_farm_floris, reference_wind_height=np.mean(hub_heights))

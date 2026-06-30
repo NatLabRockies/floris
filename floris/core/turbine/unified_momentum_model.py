@@ -17,7 +17,7 @@ from floris.core.rotor_velocity import (
     average_velocity,
     rotor_velocity_air_density_correction,
 )
-from floris.core.turbine.operation_models import BaseOperationModel
+from floris.core.turbine import BaseOperationModel
 from floris.type_dec import NDArrayFloat
 
 

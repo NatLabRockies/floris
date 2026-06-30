@@ -9,9 +9,10 @@ import numpy as np
 from attrs import define, field
 from scipy.interpolate import interp1d
 
-from floris.core import BaseClass
+from floris.core import BaseClass, BaseLibrary
 from floris.core.turbine import (
     AWCTurbine,
+    BaseOperationModel,
     ControllerDependentTurbine,
     CosineLossTurbine,
     MixedOperationTurbine,
@@ -533,6 +534,9 @@ class Turbine(BaseClass):
                     defined.
                 ref_tilt (float): The implicit tilt of the turbine for which the Cp and Ct
                     curves are defined. This is typically the nacelle tilt.
+        operation_model (str | BaseOperationModel): The turbine operation model to use for this
+            turbine. This can be given as a string corresponding to one of the provided operation
+            models, or a custom operation model defined as a subclass of BaseOperationModel.
         correct_cp_ct_for_tilt (bool): A flag to indicate whether to correct Cp and Ct for tilt
             usually for a floating turbine.
             Optional, defaults to False.
@@ -551,7 +555,7 @@ class Turbine(BaseClass):
     hub_height: float = field()
     TSR: float = field()
     power_thrust_table: dict = field(default={}) # conversion to numpy in __post_init__
-    operation_model: str = field(default="cosine-loss")
+    operation_model: str | BaseOperationModel = field(default="cosine-loss")
 
     correct_cp_ct_for_tilt: bool = field(default=False)
     floating_tilt_table: dict[str, NDArrayFloat] | None = field(default=None)
@@ -619,7 +623,13 @@ class Turbine(BaseClass):
             self.power_thrust_table = floris_numeric_dict_converter(self.power_thrust_table)
 
     def _initialize_power_thrust_functions(self) -> None:
-        turbine_function_model = TURBINE_MODEL_MAP["operation_model"][self.operation_model]
+        if isinstance(self.operation_model, str):
+            turbine_function_model = TURBINE_MODEL_MAP["operation_model"][self.operation_model]
+        elif isinstance(self.operation_model, dict):
+            self.operation_model = BaseLibrary.from_dict(self.operation_model)
+            turbine_function_model = self.operation_model
+        else:
+            turbine_function_model = self.operation_model
         self.thrust_coefficient_function = turbine_function_model.thrust_coefficient
         self.axial_induction_function = turbine_function_model.axial_induction
         self.power_function = turbine_function_model.power

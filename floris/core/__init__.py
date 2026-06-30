@@ -22,7 +22,7 @@ isort:skip_file
 
 import floris.logging_manager
 
-from .base import BaseClass, BaseModel, State
+from .base import BaseClass, BaseLibrary, BaseModel, State
 from .turbine.turbine import (
     axial_induction,
     power,

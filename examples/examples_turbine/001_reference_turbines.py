@@ -1,7 +1,8 @@
-"""Example: Check turbine power curves
+"""Example: Reference turbines
 
-For each turbine in the turbine library, make a small figure showing that its power
-curve and power loss to yaw are reasonable and reasonably smooth
+For each reference wind turbine in the turbine library, make a small figure
+showing its power and thrust coefficient curves and demonstrate its power loss
+to yaw.
 """
 
 

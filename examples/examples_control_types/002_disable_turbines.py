@@ -1,6 +1,6 @@
 """Example: Disabling turbines
 
-This example is adapted from https://github.com/NREL/floris/pull/693
+This example is adapted from https://github.com/NatLabRockies/floris/pull/693
 contributed by Elie Kadoche.
 
 This example demonstrates the ability of FLORIS to shut down some turbines

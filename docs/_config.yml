@@ -24,7 +24,7 @@ bibtex_bibfiles:
 
 # Information about where the book exists on the web
 repository:
-  url: https://github.com/NREL/floris
+  url: https://github.com/NatLabRockies/floris
   path_to_book: docs
   branch: main
 

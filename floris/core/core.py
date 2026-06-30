@@ -14,7 +14,6 @@ from floris.core import (
     empirical_gauss_solver,
     Farm,
     FlowField,
-    FlowFieldGrid,
     FlowFieldPlanarGrid,
     full_flow_cc_solver,
     full_flow_empirical_gauss_solver,
@@ -102,13 +101,6 @@ class Core(BaseClass):
                 turbine_diameters=self.farm.rotor_diameters,
                 wind_directions=self.flow_field.wind_directions,
                 grid_resolution=self.solver["turbine_grid_points"],
-            )
-        elif self.solver["type"] == "flow_field_grid":
-            self.grid = FlowFieldGrid(
-                turbine_coordinates=self.farm.coordinates,
-                turbine_diameters=self.farm.rotor_diameters,
-                wind_directions=self.flow_field.wind_directions,
-                grid_resolution=self.solver["flow_field_grid_points"],
             )
         elif self.solver["type"] == "flow_field_planar_grid":
             self.grid = FlowFieldPlanarGrid(
@@ -283,6 +275,11 @@ class Core(BaseClass):
         for more details.
         """
 
+        self.logger.warning(
+            "Velocity deficit profiles will move to a Numpy data structure in the next release. "
+            "See https://github.com/NatLabRockies/floris/pull/1194."
+        )
+
         # Create a grid that contains coordinates for all the sample points in all profiles.
         # Effectively, this is a grid of parallel lines.
         n_lines = len(downstream_dists)
@@ -389,8 +386,9 @@ def check_input_file_for_v3_keys(input_dict) -> None:
     """
     v3_deprecation_msg = (
         "Consider using the convert_floris_input_v3_to_v4.py utility in floris/tools "
-        + "to convert from a FLORIS v3 input file to FLORIS v4. "
-        "See https://nrel.github.io/floris/upgrade_guides/v3_to_v4.html for more information."
+        "to convert from a FLORIS v3 input file to FLORIS v4. "
+        "See https://natlabrockies.github.io/floris/upgrade_guides/v3_to_v4.html "
+        "for more information."
     )
     if "turbulence_intensity" in input_dict["flow_field"]:
         raise AttributeError(

@@ -1,6 +1,5 @@
 
 import numpy as np
-import pandas as pd
 
 from floris import FlorisModel
 from floris.optimization.yaw_optimization.yaw_optimizer_geometric import (

@@ -169,7 +169,6 @@ class FlowField(BaseClass):
             * np.power(
                 z,
                 (self.wind_shear - 1),
-                where=z != 0.0
             )
         )
         # If no heterogeneous inflow defined, then set all speeds ups to 1.0

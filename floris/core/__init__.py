@@ -36,7 +36,6 @@ from .rotor_velocity import (
 )
 from .farm import Farm
 from .grid import (
-    FlowFieldGrid,
     FlowFieldPlanarGrid,
     Grid,
     PointsGrid,

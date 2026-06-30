@@ -495,7 +495,7 @@ def check_turbine_definition_for_v3_keys(turbine_definition: dict):
     v3_deprecation_msg = (
         "Consider using the convert_turbine_v3_to_v4.py utility in floris/tools "
         + "to convert from a FLORIS v3 turbine definition to FLORIS v4. "
-        + "See https://nrel.github.io/floris/v3_to_v4.html for more information."
+        + "See https://natlabrockies.github.io/floris/v3_to_v4.html for more information."
     )
     if "generator_efficiency" in turbine_definition:
         raise ValueError(

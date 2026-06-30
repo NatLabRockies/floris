@@ -31,13 +31,9 @@ class ParFlorisModel(FlorisModel):
         Initialize the ParFlorisModel object.
 
         Args:
-            configuration: The Floris configuration dictionary or YAML file, or an instantiated
-                FlorisModel object. The configuration should have the following inputs specified.
-                - **flow_field**: See `floris.simulation.flow_field.FlowField` for more details.
-                - **farm**: See `floris.simulation.farm.Farm` for more details.
-                - **turbine**: See `floris.simulation.turbine.Turbine` for more details.
-                - **wake**: See `floris.simulation.wake.WakeManager` for more details.
-                - **logging**: See `floris.simulation.core.Core` for more details.
+            configuration (:py:obj:`dict`): The Floris configuration dictionary or YAML file.
+                See floris.default_inputs.yaml for an example of the configuration dictionary
+                or visit https://nrel.github.io/floris/input_reference_main.html.
             interface: The parallelization interface to use. Options are "multiprocessing",
                "pathos", and "concurrent", with possible future support for "mpi4py"
             max_workers: The maximum number of workers to use. Defaults to -1, which then

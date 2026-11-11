@@ -1053,9 +1053,9 @@ def test_regression_zero_inflow(sample_inputs_fixture):
     sample_inputs_fixture.core["wake"]["enable_yaw_added_recovery"] = False
     sample_inputs_fixture.core["wake"]["enable_transverse_velocities"] = False
 
-    sample_inputs_fixture.core["flow_field"]["wind_directions"] = [270.0]
-    sample_inputs_fixture.core["flow_field"]["wind_speeds"] = [0.0]
-    sample_inputs_fixture.core["flow_field"]["turbulence_intensities"] = [0.06]
+    sample_inputs_fixture.core["flow_field"]["wind_directions"] = [270.0, 270.0]
+    sample_inputs_fixture.core["flow_field"]["wind_speeds"] = [0.0, 10.0]
+    sample_inputs_fixture.core["flow_field"]["turbulence_intensities"] = [0.1, 0.1]
 
     floris = Core.from_dict(sample_inputs_fixture.core)
     floris.initialize_domain()
@@ -1086,4 +1086,4 @@ def test_regression_zero_inflow(sample_inputs_fixture):
     )
 
     assert not np.isnan(turbine_powers).any()
-    assert np.allclose(turbine_powers, 0.0)
+    assert np.allclose(turbine_powers[0], 0.0)

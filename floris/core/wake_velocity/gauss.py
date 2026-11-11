@@ -72,18 +72,8 @@ class GaussVelocityDeficit(BaseModel):
         # Opposite sign convention in this model
         yaw_angle = -1 * yaw_angle_i
 
-        # Initialize the velocity deficit
-        uR = u_initial * ct_i / (2.0 * (1 - np.sqrt(1 - ct_i)))
-        u0 = u_initial * np.sqrt(1 - ct_i)
-
-        # Initial lateral bounds
-        # Guard against the zero-inflow case (u_initial == 0), where uR and u0 are
-        # both zero and the ratio would be 0/0 = NaN. A zero inflow produces zero
-        # wake, so the initial wake width is zero there.
-        u_sum = u_initial + u0
-        sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(
-            np.divide(uR, u_sum, out=np.zeros_like(u_sum), where=u_sum > 0.0)
-        )
+        # Initial lateral bounds; uR / (u_initial + u0) is identically 1/2, independent of u_initial
+        sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(0.5)
         sigma_y0 = sigma_z0 * cosd(yaw_angle) * cosd(wind_veer)
 
         # Compute the bounds of the near and far wake regions and a mask

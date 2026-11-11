@@ -134,15 +134,10 @@ class GaussVelocityDeflection(BaseModel):
         # TODO: connect support for tilt
         tilt = 0.0  # turbine.tilt_angle
 
-        # initial velocity deficits
-        uR = (
-            freestream_velocity
-            * ct_i
-            * cosd(tilt)
-            * cosd(yaw_i)
-            / (2.0 * (1 - np.sqrt(1 - (ct_i * cosd(tilt) * cosd(yaw_i)))))
-        )
-        u0 = freestream_velocity * np.sqrt(1 - ct_i)
+        # Initial velocity ratios normalized by the freestream so they remain well defined
+        # at zero inflow: u0 / u_init = sqrt(1 - ct) and uR / u_init = (1 + sqrt(1 - ct_eff)) / 2
+        sqrt_1_m_ct = np.sqrt(1 - ct_i)
+        sqrt_1_m_ct_eff = np.sqrt(1 - ct_i * cosd(tilt) * cosd(yaw_i))
 
         # length of near wake
         x0 = (
@@ -157,25 +152,12 @@ class GaussVelocityDeflection(BaseModel):
         ky = self.ka * turbulence_intensity_i + self.kb
         kz = self.ka * turbulence_intensity_i + self.kb
 
-        # Guard against the zero-inflow case (freestream_velocity == 0), where u0 is
-        # also zero and u0 / freestream_velocity would be 0/0 = NaN. Analytically
-        # u0 / freestream_velocity == sqrt(1 - ct_i), so C0 -> 1 - sqrt(1 - ct_i) in
-        # that limit. Fill the zero-inflow entries with that value.
-        C0_fill = (1 - np.sqrt(1 - ct_i)) * np.ones_like(freestream_velocity)
-        C0 = 1 - np.divide(
-            u0, freestream_velocity, out=1 - C0_fill, where=freestream_velocity > 0.0
-        )
+        C0 = 1 - sqrt_1_m_ct
         M0 = C0 * (2 - C0)
         E0 = ne.evaluate("C0 ** 2 - 3 * exp(1.0 / 12.0) * C0 + 3 * exp(1.0 / 3.0)")
 
         # initial Gaussian wake expansion
-        # Same zero-inflow guard: uR and u0 are both zero at freestream_velocity == 0,
-        # so the ratio is 0/0 = NaN. A zero inflow produces zero wake, so the initial
-        # wake width is zero there.
-        u_sum = freestream_velocity + u0
-        sigma_z0 = rotor_diameter_i * 0.5 * np.sqrt(
-            np.divide(uR, u_sum, out=np.zeros_like(u_sum), where=u_sum > 0.0)
-        )
+        sigma_z0 = ne.evaluate("rotor_diameter_i * 0.5 * sqrt((1 + sqrt_1_m_ct_eff) / (2 * (1 + sqrt_1_m_ct)))")
         sigma_y0 = sigma_z0 * cosd(yaw_i) * cosd(wind_veer)
 
         # yR = y - y_i
@@ -199,20 +181,7 @@ class GaussVelocityDeflection(BaseModel):
         sigma_z = sigma_z * (x >= x0) + sigma_z0 * (x < x0)
 
         M0_sqrt = np.sqrt(M0)
-        # sigma_y0 * sigma_z0 is zero at zero inflow (see the guards above), so this
-        # ratio is a 0/0 = NaN there. The resulting far-wake deflection is discarded by
-        # the zero-inflow guard on the returned deflection field below, but compute the
-        # ratio safely to avoid a spurious divide warning.
-        sigma0_prod = sigma_y0 * sigma_z0
-        sigma_prod = sigma_y * sigma_z
-        middle_term = np.sqrt(
-            np.divide(
-                sigma_prod,
-                sigma0_prod,
-                out=np.zeros_like(sigma_prod),
-                where=sigma0_prod > 0.0,
-            )
-        )
+        middle_term = np.sqrt(sigma_y * sigma_z / (sigma_y0 * sigma_z0))
         ln_deltaNum = (1.6 + M0_sqrt) * (1.6 * middle_term - M0_sqrt)
         ln_deltaDen = (1.6 - M0_sqrt) * (1.6 * middle_term + M0_sqrt)
 
@@ -227,13 +196,6 @@ class GaussVelocityDeflection(BaseModel):
 
         delta_far_wake = delta_far_wake * (x > x0)
         deflection = delta_near_wake + delta_far_wake
-
-        # At zero inflow (freestream_velocity == 0) the initial wake widths
-        # sigma_y0 and sigma_z0 are zero, which makes the far-wake ratio
-        # sigma_y * sigma_z / (sigma_y0 * sigma_z0) a 0/0 = NaN. There is no wake and
-        # therefore no deflection at zero inflow, so force the deflection to zero there
-        # to keep NaNs from propagating into the velocity-deficit solve.
-        deflection = np.where(freestream_velocity > 0.0, deflection, 0.0)
 
         return deflection
 
@@ -357,7 +319,12 @@ def wake_added_yaw(
     # w_core = (-1 * Gamma_wake_rotation * yLocs) / (2 * pi * rC_squared) * core_shape * decay
 
     # Cap the effective yaw values between -45 and 45 degrees
-    val = 2 * (avg_v - v_core) / (v_top + v_bottom)
+    # The vortex strengths scale with the inflow, so numerator and denominator vanish together at
+    # zero inflow; no wake-added yaw there.
+    denom = v_top + v_bottom
+    val = np.divide(
+        2 * (avg_v - v_core), denom, out=np.zeros_like(denom), where=denom != 0.0
+    )
     val = np.where(val < -1.0, -1.0, val)
     val = np.where(val > 1.0, 1.0, val)
     y = np.degrees(0.5 * np.arcsin(val))
@@ -427,8 +394,9 @@ def calculate_transverse_velocity(
     lm = kappa * z / (1 + kappa * z / lmda)
     nu = lm ** 2 * np.abs(dudz_initial)
 
-    # This is the decay downstream
-    decay = ne.evaluate("eps ** 2 / (4 * nu * delta_x / Uinf + eps ** 2)")
+    # This is the decay downstream; nu is zero whenever Uinf is zero, so substituting 1 avoids 0/0
+    Uinf_safe = np.where(Uinf > 0.0, Uinf, 1.0)
+    decay = ne.evaluate("eps ** 2 / (4 * nu * delta_x / Uinf_safe + eps ** 2)")
     yLocs = delta_y + NUM_EPS
 
     # top vortex
@@ -534,8 +502,13 @@ def yaw_added_turbulence_mixing(
     # Compute the new TKE (eq 23)
     k_total = 0.5 * (u_term ** 2 + v_term ** 2 + w_term ** 2)
 
-    # Convert TKE back to TI
-    I_total = np.sqrt((2 / 3) * k_total) / average_u_i
+    # Convert TKE back to TI; at zero inflow there is no mixing, so fall back to the ambient TI
+    I_total = np.divide(
+        np.sqrt((2 / 3) * k_total),
+        average_u_i,
+        out=np.array(I_i, dtype=float),
+        where=average_u_i > 0.0,
+    )
 
     # Remove ambient from total TI leaving only the TI due to mixing
     I_mixing = I_total - I_i

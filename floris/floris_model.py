@@ -1407,7 +1407,11 @@ class FlorisModel(LoggingManager):
 
         return df
 
-    def sample_flow_at_points(self, x: NDArrayFloat, y: NDArrayFloat, z: NDArrayFloat):
+    def sample_flow_at_points(self,
+                              x: NDArrayFloat,
+                              y: NDArrayFloat,
+                              z: NDArrayFloat,
+                              run_solver: bool = True):
         """
         Extract the wind speed at points in the flow.
 
@@ -1415,6 +1419,7 @@ class FlorisModel(LoggingManager):
             x (1DArrayFloat | list): x-locations of points where flow is desired.
             y (1DArrayFloat | list): y-locations of points where flow is desired.
             z (1DArrayFloat | list): z-locations of points where flow is desired.
+            run_solver (bool): If `True` (default), run the solver.
 
         Returns:
             3DArrayFloat containing wind speed with dimensions
@@ -1425,9 +1430,17 @@ class FlorisModel(LoggingManager):
         if not len(x) == len(y) == len(z):
             raise ValueError("x, y, and z must be the same size")
 
-        return self.core.solve_for_points(x, y, z)
+        if run_solver:
+            self.core.solve_for_points(x, y, z)
 
-    def sample_ti_at_points(self, x: NDArrayFloat, y: NDArrayFloat, z: NDArrayFloat):
+        # Remove grid dimensions and return sorted wind speed field.
+        return self.core.flow_field.u_sorted[:, :, 0, 0]
+
+    def sample_ti_at_points(self,
+                            x: NDArrayFloat,
+                            y: NDArrayFloat,
+                            z: NDArrayFloat,
+                            run_solver: bool = True):
         """
         Extract the turbulence intensity at points in the flow.
 
@@ -1435,13 +1448,14 @@ class FlorisModel(LoggingManager):
             x (1DArrayFloat | list): x-locations of points where TI is desired.
             y (1DArrayFloat | list): y-locations of points where TI is desired.
             z (1DArrayFloat | list): z-locations of points where TI is desired.
+            run_solver (bool): If `True` (default), run the solver.
 
         Returns:
             3DArrayFloat containing turbulence intensity with dimensions
             (# of findex, # of sample points)
         """
-
-        self.sample_flow_at_points(x, y, z) # Solve, but ignore returned velocities
+        if run_solver:
+            self.core.solve_for_points(x, y, z)
 
         # Remove grid dimensions and return sorted TI field
         return self.core.flow_field.turbulence_intensity_field_sorted[:, :, 0, 0]

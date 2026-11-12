@@ -134,15 +134,10 @@ class GaussVelocityDeflection(BaseModel):
         # TODO: connect support for tilt
         tilt = 0.0  # turbine.tilt_angle
 
-        # initial velocity deficits
-        uR = (
-            freestream_velocity
-            * ct_i
-            * cosd(tilt)
-            * cosd(yaw_i)
-            / (2.0 * (1 - np.sqrt(1 - (ct_i * cosd(tilt) * cosd(yaw_i)))))
-        )
-        u0 = freestream_velocity * np.sqrt(1 - ct_i)
+        # Initial velocity ratios normalized by the freestream so they remain well defined
+        # at zero inflow: u0 / u_init = sqrt(1 - ct) and uR / u_init = (1 + sqrt(1 - ct_eff)) / 2
+        sqrt_1_m_ct = np.sqrt(1 - ct_i)
+        sqrt_1_m_ct_eff = np.sqrt(1 - ct_i * cosd(tilt) * cosd(yaw_i))
 
         # length of near wake
         x0 = (
@@ -157,12 +152,12 @@ class GaussVelocityDeflection(BaseModel):
         ky = self.ka * turbulence_intensity_i + self.kb
         kz = self.ka * turbulence_intensity_i + self.kb
 
-        C0 = 1 - u0 / freestream_velocity
+        C0 = 1 - sqrt_1_m_ct
         M0 = C0 * (2 - C0)
         E0 = ne.evaluate("C0 ** 2 - 3 * exp(1.0 / 12.0) * C0 + 3 * exp(1.0 / 3.0)")
 
         # initial Gaussian wake expansion
-        sigma_z0 = ne.evaluate("rotor_diameter_i * 0.5 * sqrt(uR / (freestream_velocity + u0))")
+        sigma_z0 = ne.evaluate("rotor_diameter_i * 0.5 * sqrt((1 + sqrt_1_m_ct_eff) / (2 * (1 + sqrt_1_m_ct)))")
         sigma_y0 = sigma_z0 * cosd(yaw_i) * cosd(wind_veer)
 
         # yR = y - y_i
@@ -324,7 +319,12 @@ def wake_added_yaw(
     # w_core = (-1 * Gamma_wake_rotation * yLocs) / (2 * pi * rC_squared) * core_shape * decay
 
     # Cap the effective yaw values between -45 and 45 degrees
-    val = 2 * (avg_v - v_core) / (v_top + v_bottom)
+    # The vortex strengths scale with the inflow, so numerator and denominator vanish together at
+    # zero inflow; no wake-added yaw there.
+    denom = v_top + v_bottom
+    val = np.divide(
+        2 * (avg_v - v_core), denom, out=np.zeros_like(denom), where=denom != 0.0
+    )
     val = np.where(val < -1.0, -1.0, val)
     val = np.where(val > 1.0, 1.0, val)
     y = np.degrees(0.5 * np.arcsin(val))
@@ -394,8 +394,9 @@ def calculate_transverse_velocity(
     lm = kappa * z / (1 + kappa * z / lmda)
     nu = lm ** 2 * np.abs(dudz_initial)
 
-    # This is the decay downstream
-    decay = ne.evaluate("eps ** 2 / (4 * nu * delta_x / Uinf + eps ** 2)")
+    # This is the decay downstream; nu is zero whenever Uinf is zero, so substituting 1 avoids 0/0
+    Uinf_safe = np.where(Uinf > 0.0, Uinf, 1.0)
+    decay = ne.evaluate("eps ** 2 / (4 * nu * delta_x / Uinf_safe + eps ** 2)")
     yLocs = delta_y + NUM_EPS
 
     # top vortex
@@ -508,8 +509,13 @@ def yaw_added_turbulence_mixing(
     # Compute the new TKE (eq 23)
     k_total = 0.5 * (u_term ** 2 + v_term ** 2 + w_term ** 2)
 
-    # Convert TKE back to TI
-    I_total = np.sqrt((2 / 3) * k_total) / average_u_i
+    # Convert TKE back to TI; at zero inflow there is no mixing, so fall back to the ambient TI
+    I_total = np.divide(
+        np.sqrt((2 / 3) * k_total),
+        average_u_i,
+        out=np.array(I_i, dtype=float),
+        where=average_u_i > 0.0,
+    )
 
     # Remove ambient from total TI leaving only the TI due to mixing
     I_mixing = I_total - I_i

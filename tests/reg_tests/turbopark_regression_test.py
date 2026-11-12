@@ -418,33 +418,44 @@ def test_regression_small_grid_rotation(sample_inputs_fixture):
     assert np.allclose(farm_powers[8,20], farm_powers[8,0])
     assert np.allclose(farm_powers[8,21], farm_powers[8,21:25])
 
-'''
-## Not implemented in TurbOPark
-def test_full_flow_solver(sample_inputs_fixture):
-    """
-    Full flow solver test with the flow field planar grid.
-    This requires one wind condition, and the grid is deliberately coarse to allow for
-    visually comparing results, as needed.
-    The u-component of velocity is compared, and the array has the shape
-    (n_findex, n_turbines, n grid points in x, n grid points in y, 3 grid points in z).
-    """
+
+def test_regression_zero_inflow(sample_inputs_fixture):
+    """Regression test for zero-inflow (0 m/s). This case should produce zero power and no Nans."""
 
     sample_inputs_fixture.core["wake"]["model_strings"]["velocity_model"] = VELOCITY_MODEL
     sample_inputs_fixture.core["wake"]["model_strings"]["deflection_model"] = DEFLECTION_MODEL
-    sample_inputs_fixture.core["solver"] = {
-        "type": "flow_field_planar_grid",
-        "normal_vector": "z",
-        "planar_coordinate": sample_inputs_fixture.core["farm"]["turbine_type"][0]["hub_height"],
-        "flow_field_grid_points": [5, 5],
-        "flow_field_bounds": [None, None],
-    }
-    sample_inputs_fixture.core["flow_field"]["wind_directions"] = [270.0]
-    sample_inputs_fixture.core["flow_field"]["wind_speeds"] = [8.0]
+
+    sample_inputs_fixture.core["flow_field"]["wind_directions"] = [270.0, 270.0]
+    sample_inputs_fixture.core["flow_field"]["wind_speeds"] = [0.0, 10.0]
+    sample_inputs_fixture.core["flow_field"]["turbulence_intensities"] = [0.1, 0.1]
 
     floris = Core.from_dict(sample_inputs_fixture.core)
-    floris.solve_for_viz()
+    floris.initialize_domain()
+    floris.steady_state_atmospheric_condition()
 
-    velocities = floris.flow_field.u_sorted
-    print(velocities)
-    assert_results_arrays(velocities, full_flow_baseline)
-'''
+    velocities = floris.flow_field.u
+    turbulence_intensities = floris.flow_field.turbulence_intensity_field
+    air_density = floris.flow_field.air_density
+    yaw_angles = floris.farm.yaw_angles
+    tilt_angles = floris.farm.tilt_angles
+    power_setpoints = floris.farm.power_setpoints
+    awc_modes = floris.farm.awc_modes
+    awc_amplitudes = floris.farm.awc_amplitudes
+
+    turbine_powers = power(
+        velocities,
+        turbulence_intensities,
+        air_density,
+        floris.farm.turbine_power_functions,
+        yaw_angles,
+        tilt_angles,
+        power_setpoints,
+        awc_modes,
+        awc_amplitudes,
+        floris.farm.turbine_tilt_interps,
+        floris.farm.turbine_type_map,
+        floris.farm.turbine_power_thrust_tables,
+    )
+
+    assert not np.isnan(turbine_powers).any()
+    assert np.allclose(turbine_powers[0], 0.0)

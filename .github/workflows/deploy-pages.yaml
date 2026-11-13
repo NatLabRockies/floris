@@ -13,13 +13,13 @@ jobs:
   deploy-book:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v6
 
     # Install dependencies
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v6
       with:
-        python-version: "3"
+        python-version: "3.14" # Temporary, while FLORIS does not support v3.15
 
     - name: Install dependencies
       run: |

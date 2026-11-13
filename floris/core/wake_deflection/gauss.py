@@ -157,7 +157,9 @@ class GaussVelocityDeflection(BaseModel):
         E0 = ne.evaluate("C0 ** 2 - 3 * exp(1.0 / 12.0) * C0 + 3 * exp(1.0 / 3.0)")
 
         # initial Gaussian wake expansion
-        sigma_z0 = ne.evaluate("rotor_diameter_i * 0.5 * sqrt((1 + sqrt_1_m_ct_eff) / (2 * (1 + sqrt_1_m_ct)))")
+        sigma_z0 = ne.evaluate(
+            "rotor_diameter_i * 0.5 * sqrt((1 + sqrt_1_m_ct_eff) / (2 * (1 + sqrt_1_m_ct)))"
+        )
         sigma_y0 = sigma_z0 * cosd(yaw_i) * cosd(wind_veer)
 
         # yR = y - y_i

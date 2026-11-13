@@ -19,7 +19,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v6
       with:
-        python-version: "3"
+        python-version: "3.14" # Temporary, while FLORIS does not support v3.15
 
     - name: Install dependencies
       run: |

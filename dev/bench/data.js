@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1791922510662,
+  "lastUpdate": 1795021787410,
   "repoUrl": "https://github.com/NatLabRockies/floris",
   "entries": {
     "Python Benchmark with pytest-benchmark": [
@@ -5978,6 +5978,72 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.0003786820822033079",
             "extra": "mean: 5.81141157425522 msec\nrounds: 101"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "39596329+misi9170@users.noreply.github.com",
+            "name": "misi9170",
+            "username": "misi9170"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "073130b359edbbb713f67ce0ee27995f01d712f7",
+          "message": "[BUGFIX] Pin docs pages build to python 3.14 (#1210)\n\n* Fix line length issue\n\n* Update deploy-pages action versions\n\n* Pin python version for docs deployment\n\n* Limit to valid range",
+          "timestamp": "2026-11-18T09:44:55-07:00",
+          "tree_id": "8182b986178ecb8f8e088c5751a92b6d592c8d0a",
+          "url": "https://github.com/NatLabRockies/floris/commit/073130b359edbbb713f67ce0ee27995f01d712f7"
+        },
+        "date": 1795021785636,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_set",
+            "value": 39.57932756498606,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0005992502067717286",
+            "extra": "mean: 25.265714743588827 msec\nrounds: 39"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_run",
+            "value": 54.89561388264112,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00025973565027543363",
+            "extra": "mean: 18.21639160713013 msec\nrounds: 28"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_set",
+            "value": 24.162318497253754,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0018604641321228537",
+            "extra": "mean: 41.38675682607438 msec\nrounds: 23"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_run",
+            "value": 0.29500550412714555,
+            "unit": "iter/sec",
+            "range": "stddev: 0.10801184757715684",
+            "extra": "mean: 3.3897672619999866 sec\nrounds: 5"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_set",
+            "value": 33.54585575432681,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0014089308000857154",
+            "extra": "mean: 29.809941571426993 msec\nrounds: 35"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_run",
+            "value": 115.86582692863466,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00014327135410727176",
+            "extra": "mean: 8.630672446811525 msec\nrounds: 94"
           }
         ]
       }

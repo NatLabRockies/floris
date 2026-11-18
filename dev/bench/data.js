@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1795021787410,
+  "lastUpdate": 1795034598837,
   "repoUrl": "https://github.com/NatLabRockies/floris",
   "entries": {
     "Python Benchmark with pytest-benchmark": [
@@ -6044,6 +6044,72 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.00014327135410727176",
             "extra": "mean: 8.630672446811525 msec\nrounds: 94"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "gurrambhaskar.ai@gmail.com",
+            "name": "Bhaskar Gurram",
+            "username": "bhaskargurram-ai"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "3001d2ceaa4a01b233b405116609fe50d7853483",
+          "message": "Keep heterogeneous_map when converting TimeSeries to a wind rose (#1212)\n\nTimeSeries.to_WindRose and to_WindTIRose passed self.heterogeneous_map\npositionally into the compute_zero_freq_occurrence slot of the WindRose\nand WindTIRose constructors. The map was dropped, and the truthy map\nobject turned on compute_zero_freq_occurrence, which raises a ValueError\nwhenever a bin is empty. Pass it by keyword instead.\n\nCo-authored-by: misi9170 <michael.sinner@nlr.gov>",
+          "timestamp": "2026-11-18T13:17:11-07:00",
+          "tree_id": "670402adfcb600a645492f927cf27da5bbc25ba3",
+          "url": "https://github.com/NatLabRockies/floris/commit/3001d2ceaa4a01b233b405116609fe50d7853483"
+        },
+        "date": 1795034596903,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_set",
+            "value": 43.10410149133847,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0006745831565412797",
+            "extra": "mean: 23.19964841863006 msec\nrounds: 43"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_run",
+            "value": 62.73001706062833,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00035600386789363107",
+            "extra": "mean: 15.941331548395784 msec\nrounds: 31"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_set",
+            "value": 26.548352595289668,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0010034283249352601",
+            "extra": "mean: 37.66712063999876 msec\nrounds: 25"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_run",
+            "value": 0.29975272764418953,
+            "unit": "iter/sec",
+            "range": "stddev: 0.016056713544433877",
+            "extra": "mean: 3.336083070399991 sec\nrounds: 5"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_set",
+            "value": 38.97170081635755,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00012070101800279951",
+            "extra": "mean: 25.65964479487822 msec\nrounds: 39"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_run",
+            "value": 133.2700904723149,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00012879329063069845",
+            "extra": "mean: 7.5035590990893555 msec\nrounds: 111"
           }
         ]
       }

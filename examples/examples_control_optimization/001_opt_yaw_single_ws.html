@@ -36,7 +36,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../_static/scripts/fontawesome.js?digest=55c26ed414f5f8a31ebb"></script>
@@ -55,7 +55,7 @@
     <script>let toggleOpenOnPrint = 'true';</script>
     <script src="../../_static/togglebutton.js?v=b8b12719"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-JV2SK7CNPR"></script>
     <script>
                 window.dataLayer = window.dataLayer || [];
@@ -809,7 +809,12 @@
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[Serial Refine] Processing pass=1, turbine_depth=0 (50.0%)
 [Serial Refine] Processing pass=1, turbine_depth=1 (66.7%)
 [Serial Refine] Processing pass=1, turbine_depth=2 (83.3%)
-Optimization results:
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Blue">floris.floris_model.FlorisModel</span> <span class=" -Color -Color-Bold -Color-Bold-Black">WARNING</span> <span class=" -Color -Color-Yellow">Deleting stored wind_data information.</span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Optimization results:
      wind_direction  wind_speed  turbulence_intensity   yaw_angles_opt  \
 0               0.0         8.0                  0.06  [0.0, 0.0, 0.0]   
 1               3.0         8.0                  0.06  [0.0, 0.0, 0.0]   
@@ -837,9 +842,6 @@ Optimization results:
 119    5.261863e+06         5.261863e+06  
 
 [120 rows x 6 columns]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Blue">floris.floris_model.FlorisModel</span> <span class=" -Color -Color-Bold -Color-Bold-Black">WARNING</span> <span class=" -Color -Color-Yellow">Deleting stored wind_data information.</span>
 </pre></div>
 </div>
 <img alt="../../_images/76ac8c4953b35a6cec2d82cbfc00a8578a907bec05b51afa9ecc69a482c37b11.png" src="../../_images/76ac8c4953b35a6cec2d82cbfc00a8578a907bec05b51afa9ecc69a482c37b11.png" />

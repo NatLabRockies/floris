@@ -35,7 +35,7 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=6a604523" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../_static/scripts/fontawesome.js?digest=55c26ed414f5f8a31ebb"></script>
@@ -54,7 +54,7 @@
     <script>let toggleOpenOnPrint = 'true';</script>
     <script src="../../../../_static/togglebutton.js?v=b8b12719"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../../../_static/design-tabs.js?v=fcb327ea"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-JV2SK7CNPR"></script>
     <script>
                 window.dataLayer = window.dataLayer || [];
@@ -1075,12 +1075,8 @@ window.runMermaid = runMermaid;</script>
         <span class="c1"># Opposite sign convention in this model</span>
         <span class="n">yaw_angle</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">yaw_angle_i</span>
 
-        <span class="c1"># Initialize the velocity deficit</span>
-        <span class="n">uR</span> <span class="o">=</span> <span class="n">u_initial</span> <span class="o">*</span> <span class="n">ct_i</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">ct_i</span><span class="p">)))</span>
-        <span class="n">u0</span> <span class="o">=</span> <span class="n">u_initial</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">ct_i</span><span class="p">)</span>
-
-        <span class="c1"># Initial lateral bounds</span>
-        <span class="n">sigma_z0</span> <span class="o">=</span> <span class="n">rotor_diameter_i</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">uR</span> <span class="o">/</span> <span class="p">(</span><span class="n">u_initial</span> <span class="o">+</span> <span class="n">u0</span><span class="p">))</span>
+        <span class="c1"># Initial lateral bounds; uR / (u_initial + u0) is identically 1/2, independent of u_initial</span>
+        <span class="n">sigma_z0</span> <span class="o">=</span> <span class="n">rotor_diameter_i</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
         <span class="n">sigma_y0</span> <span class="o">=</span> <span class="n">sigma_z0</span> <span class="o">*</span> <span class="n">cosd</span><span class="p">(</span><span class="n">yaw_angle</span><span class="p">)</span> <span class="o">*</span> <span class="n">cosd</span><span class="p">(</span><span class="n">wind_veer</span><span class="p">)</span>
 
         <span class="c1"># Compute the bounds of the near and far wake regions and a mask</span>

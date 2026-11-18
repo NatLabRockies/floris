@@ -35,7 +35,7 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=6a604523" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../_static/scripts/fontawesome.js?digest=55c26ed414f5f8a31ebb"></script>
@@ -54,7 +54,7 @@
     <script>let toggleOpenOnPrint = 'true';</script>
     <script src="../../../../_static/togglebutton.js?v=b8b12719"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../../../_static/design-tabs.js?v=fcb327ea"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-JV2SK7CNPR"></script>
     <script>
                 window.dataLayer = window.dataLayer || [];
@@ -1137,15 +1137,10 @@ window.runMermaid = runMermaid;</script>
         <span class="c1"># TODO: connect support for tilt</span>
         <span class="n">tilt</span> <span class="o">=</span> <span class="mf">0.0</span>  <span class="c1"># turbine.tilt_angle</span>
 
-        <span class="c1"># initial velocity deficits</span>
-        <span class="n">uR</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">freestream_velocity</span>
-            <span class="o">*</span> <span class="n">ct_i</span>
-            <span class="o">*</span> <span class="n">cosd</span><span class="p">(</span><span class="n">tilt</span><span class="p">)</span>
-            <span class="o">*</span> <span class="n">cosd</span><span class="p">(</span><span class="n">yaw_i</span><span class="p">)</span>
-            <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">ct_i</span> <span class="o">*</span> <span class="n">cosd</span><span class="p">(</span><span class="n">tilt</span><span class="p">)</span> <span class="o">*</span> <span class="n">cosd</span><span class="p">(</span><span class="n">yaw_i</span><span class="p">)))))</span>
-        <span class="p">)</span>
-        <span class="n">u0</span> <span class="o">=</span> <span class="n">freestream_velocity</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">ct_i</span><span class="p">)</span>
+        <span class="c1"># Initial velocity ratios normalized by the freestream so they remain well defined</span>
+        <span class="c1"># at zero inflow: u0 / u_init = sqrt(1 - ct) and uR / u_init = (1 + sqrt(1 - ct_eff)) / 2</span>
+        <span class="n">sqrt_1_m_ct</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">ct_i</span><span class="p">)</span>
+        <span class="n">sqrt_1_m_ct_eff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">ct_i</span> <span class="o">*</span> <span class="n">cosd</span><span class="p">(</span><span class="n">tilt</span><span class="p">)</span> <span class="o">*</span> <span class="n">cosd</span><span class="p">(</span><span class="n">yaw_i</span><span class="p">))</span>
 
         <span class="c1"># length of near wake</span>
         <span class="n">x0</span> <span class="o">=</span> <span class="p">(</span>
@@ -1160,12 +1155,14 @@ window.runMermaid = runMermaid;</script>
         <span class="n">ky</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ka</span> <span class="o">*</span> <span class="n">turbulence_intensity_i</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">kb</span>
         <span class="n">kz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ka</span> <span class="o">*</span> <span class="n">turbulence_intensity_i</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">kb</span>
 
-        <span class="n">C0</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">u0</span> <span class="o">/</span> <span class="n">freestream_velocity</span>
+        <span class="n">C0</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">sqrt_1_m_ct</span>
         <span class="n">M0</span> <span class="o">=</span> <span class="n">C0</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">-</span> <span class="n">C0</span><span class="p">)</span>
         <span class="n">E0</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">"C0 ** 2 - 3 * exp(1.0 / 12.0) * C0 + 3 * exp(1.0 / 3.0)"</span><span class="p">)</span>
 
         <span class="c1"># initial Gaussian wake expansion</span>
-        <span class="n">sigma_z0</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">"rotor_diameter_i * 0.5 * sqrt(uR / (freestream_velocity + u0))"</span><span class="p">)</span>
+        <span class="n">sigma_z0</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span>
+            <span class="s2">"rotor_diameter_i * 0.5 * sqrt((1 + sqrt_1_m_ct_eff) / (2 * (1 + sqrt_1_m_ct)))"</span>
+        <span class="p">)</span>
         <span class="n">sigma_y0</span> <span class="o">=</span> <span class="n">sigma_z0</span> <span class="o">*</span> <span class="n">cosd</span><span class="p">(</span><span class="n">yaw_i</span><span class="p">)</span> <span class="o">*</span> <span class="n">cosd</span><span class="p">(</span><span class="n">wind_veer</span><span class="p">)</span>
 
         <span class="c1"># yR = y - y_i</span>
@@ -1334,7 +1331,12 @@ window.runMermaid = runMermaid;</script>
     <span class="c1"># w_core = (-1 * Gamma_wake_rotation * yLocs) / (2 * pi * rC_squared) * core_shape * decay</span>
 
     <span class="c1"># Cap the effective yaw values between -45 and 45 degrees</span>
-    <span class="n">val</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">avg_v</span> <span class="o">-</span> <span class="n">v_core</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">v_top</span> <span class="o">+</span> <span class="n">v_bottom</span><span class="p">)</span>
+    <span class="c1"># The vortex strengths scale with the inflow, so numerator and denominator vanish together at</span>
+    <span class="c1"># zero inflow; no wake-added yaw there.</span>
+    <span class="n">denom</span> <span class="o">=</span> <span class="n">v_top</span> <span class="o">+</span> <span class="n">v_bottom</span>
+    <span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span>
+        <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">avg_v</span> <span class="o">-</span> <span class="n">v_core</span><span class="p">),</span> <span class="n">denom</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">denom</span><span class="p">),</span> <span class="n">where</span><span class="o">=</span><span class="n">denom</span> <span class="o">!=</span> <span class="mf">0.0</span>
+    <span class="p">)</span>
     <span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">val</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
     <span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">val</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
@@ -1407,8 +1409,9 @@ window.runMermaid = runMermaid;</script>
     <span class="n">lm</span> <span class="o">=</span> <span class="n">kappa</span> <span class="o">*</span> <span class="n">z</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">kappa</span> <span class="o">*</span> <span class="n">z</span> <span class="o">/</span> <span class="n">lmda</span><span class="p">)</span>
     <span class="n">nu</span> <span class="o">=</span> <span class="n">lm</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">dudz_initial</span><span class="p">)</span>
 
-    <span class="c1"># This is the decay downstream</span>
-    <span class="n">decay</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">"eps ** 2 / (4 * nu * delta_x / Uinf + eps ** 2)"</span><span class="p">)</span>
+    <span class="c1"># This is the decay downstream; nu is zero whenever Uinf is zero, so substituting 1 avoids 0/0</span>
+    <span class="n">Uinf_safe</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Uinf</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">Uinf</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">decay</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">"eps ** 2 / (4 * nu * delta_x / Uinf_safe + eps ** 2)"</span><span class="p">)</span>
     <span class="n">yLocs</span> <span class="o">=</span> <span class="n">delta_y</span> <span class="o">+</span> <span class="n">NUM_EPS</span>
 
     <span class="c1"># top vortex</span>
@@ -1524,8 +1527,13 @@ window.runMermaid = runMermaid;</script>
     <span class="c1"># Compute the new TKE (eq 23)</span>
     <span class="n">k_total</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">u_term</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">v_term</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">w_term</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
 
-    <span class="c1"># Convert TKE back to TI</span>
-    <span class="n">I_total</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="mi">2</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="n">k_total</span><span class="p">)</span> <span class="o">/</span> <span class="n">average_u_i</span>
+    <span class="c1"># Convert TKE back to TI; at zero inflow there is no mixing, so fall back to the ambient TI</span>
+    <span class="n">I_total</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="mi">2</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="n">k_total</span><span class="p">),</span>
+        <span class="n">average_u_i</span><span class="p">,</span>
+        <span class="n">out</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">I_i</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">),</span>
+        <span class="n">where</span><span class="o">=</span><span class="n">average_u_i</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="c1"># Remove ambient from total TI leaving only the TI due to mixing</span>
     <span class="n">I_mixing</span> <span class="o">=</span> <span class="n">I_total</span> <span class="o">-</span> <span class="n">I_i</span>

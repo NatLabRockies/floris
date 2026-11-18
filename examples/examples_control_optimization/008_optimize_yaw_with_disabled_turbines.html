@@ -36,7 +36,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../_static/scripts/fontawesome.js?digest=55c26ed414f5f8a31ebb"></script>
@@ -55,7 +55,7 @@
     <script>let toggleOpenOnPrint = 'true';</script>
     <script src="../../_static/togglebutton.js?v=b8b12719"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-JV2SK7CNPR"></script>
     <script>
                 window.dataLayer = window.dataLayer || [];
@@ -764,35 +764,36 @@
 [Serial Refine] Processing pass=0, turbine_depth=2 (33.3%)
 [Serial Refine] Processing pass=1, turbine_depth=0 (50.0%)
 [Serial Refine] Processing pass=1, turbine_depth=1 (66.7%)
-[Serial Refine] Processing pass=1, turbine_depth=2 (83.3%)
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Serial Refine optimized yaw angles (all turbines active) [deg]:
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[Serial Refine] Processing pass=1, turbine_depth=2 (83.3%)
+Serial Refine optimized yaw angles (all turbines active) [deg]:
  0    [25.0, 22.65625, 0.0]
 1    [25.0, 22.65625, 0.0]
 Name: yaw_angles_opt, dtype: object
 
 Geometric optimized yaw angles (all turbines active) [deg]:
- 0    [19.9952335557674, 19.9952335557674, 0.0]
-1    [19.9952335557674, 19.9952335557674, 0.0]
+ 0    [19.995234, 19.995234, 0.0]
+1    [19.995234, 19.995234, 0.0]
 Name: yaw_angles_opt, dtype: object
 [Serial Refine] Processing pass=0, turbine_depth=0 (0.0%)
-[Serial Refine] Processing pass=0, turbine_depth=1 (16.7%)
-[Serial Refine] Processing pass=0, turbine_depth=2 (33.3%)
-[Serial Refine] Processing pass=1, turbine_depth=0 (50.0%)
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[Serial Refine] Processing pass=1, turbine_depth=1 (66.7%)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[Serial Refine] Processing pass=0, turbine_depth=1 (16.7%)
+[Serial Refine] Processing pass=0, turbine_depth=2 (33.3%)
+[Serial Refine] Processing pass=1, turbine_depth=0 (50.0%)
+[Serial Refine] Processing pass=1, turbine_depth=1 (66.7%)
 [Serial Refine] Processing pass=1, turbine_depth=2 (83.3%)
-
-Serial Refine optimized yaw angles (some turbines disabled) [deg]:
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Serial Refine optimized yaw angles (some turbines disabled) [deg]:
  0    [20.3125, 0.0, 0.0]
 1       [0.0, 25.0, 0.0]
 Name: yaw_angles_opt, dtype: object
 
 Geometric optimized yaw angles (some turbines disabled) [deg]:
- 0    [14.990467111534794, 0.0, 0.0]
-1      [0.0, 19.9952335557674, 0.0]
+ 0    [14.990467, 0.0, 0.0]
+1    [0.0, 19.995234, 0.0]
 Name: yaw_angles_opt, dtype: object
 </pre></div>
 </div>

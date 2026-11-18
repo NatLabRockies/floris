@@ -36,7 +36,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=6a604523" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=55c26ed414f5f8a31ebb"></script>
@@ -55,7 +55,7 @@
     <script>let toggleOpenOnPrint = 'true';</script>
     <script src="../_static/togglebutton.js?v=b8b12719"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../_static/design-tabs.js?v=fcb327ea"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-JV2SK7CNPR"></script>
     <script>
                 window.dataLayer = window.dataLayer || [];
@@ -928,13 +928,11 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/floris/floris/floris/core/wake_deflection/gauss.py:327: RuntimeWarning: invalid value encountered in divide
-  val = 2 * (avg_v - v_core) / (v_top + v_bottom)
-/home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:76: RuntimeWarning: invalid value encountered in divide
-  uR = u_initial * ct_i / (2.0 * (1 - np.sqrt(1 - ct_i)))
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/floris/floris/floris/core/wake_velocity/gauss.py:220: RuntimeWarning: invalid value encountered in divide
+  d = np.clip(1 - (Ct * cosd(yaw) / ( 8.0 * sigma_y * sigma_z / (D * D) )), 0.0, 1.0)
 </pre></div>
 </div>
-<img alt="../_images/f3ae4e9744b4242a11e42aa4c0db5e53f44db517bce6c6570c6cac1fb3d595a6.png" src="../_images/f3ae4e9744b4242a11e42aa4c0db5e53f44db517bce6c6570c6cac1fb3d595a6.png" />
+<img alt="../_images/64c32fc7044e44148cd7b1f39a447e23e50bbadf83b6a4bc5f953bd30130887a.png" src="../_images/64c32fc7044e44148cd7b1f39a447e23e50bbadf83b6a4bc5f953bd30130887a.png" />
 </div>
 </div>
 </section>

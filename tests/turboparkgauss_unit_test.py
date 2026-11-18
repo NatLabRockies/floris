@@ -78,3 +78,42 @@ def test_row_of_turbines():
         velocities_comparison,
         rtol=1e-2,
     ) # Within 1% tolerance
+
+def test_mirror_wakes():
+    layout_x = np.array([0.0, 0.0, 0.0, 600.0, 600.0, 600.0])
+    layout_y = np.array([-360.0, 0.0, 360.0, -360.0, 0.0, 360.0])
+    front_row = layout_x == 0.0
+
+    front_row_velocities = []
+    for include_mirror_wake in [False, True]:
+        fmodel = FlorisModel(configuration=YAML_INPUT)
+
+        fmodel_dict = fmodel.core.as_dict()
+        fmodel_dict["wake"]["model_strings"]["velocity_model"] = "turboparkgauss"
+        fmodel_dict["wake"]["model_strings"]["turbulence_model"] = "none"
+        fmodel_dict["wake"]["model_strings"]["deflection_model"] = "none"
+        fmodel_dict["wake"]["model_strings"]["combination_model"] = "sosfs"
+        fmodel_dict["wake"]["enable_secondary_steering"] = False
+        fmodel_dict["wake"]["enable_yaw_added_recovery"] = False
+        fmodel_dict["wake"]["enable_active_wake_mixing"] = False
+        fmodel_dict["wake"]["enable_transverse_velocities"] = False
+        fmodel_dict["wake"]["wake_velocity_parameters"]["turboparkgauss"][
+            "include_mirror_wake"
+        ] = include_mirror_wake
+        fmodel_dict["solver"]["type"] = "turbine_cubature_grid"
+        fmodel_dict["solver"]["turbine_grid_points"] = 6
+        fmodel = FlorisModel(configuration=fmodel_dict)
+
+        fmodel.set(
+            layout_x=layout_x,
+            layout_y=layout_y,
+            wind_speeds=[8.0],
+            wind_directions=[270.0],
+            turbulence_intensities=[0.06],
+            wind_shear=0.2, # High shear to ensure difference from nominal wind speed
+        )
+        fmodel.run()
+
+        front_row_velocities.append(fmodel.turbine_average_velocities[0, front_row])
+
+    np.testing.assert_allclose(front_row_velocities[0], front_row_velocities[1])

@@ -52,6 +52,8 @@ class FlowField(BaseClass):
     turbulence_intensity_field_sorted_avg: NDArrayFloat = field(
         init=False, factory=lambda: np.array([])
     )
+    # Will only be initialized (in solvers) if needed
+    turbulence_wake_mixing_sorted: NDArrayFloat = field(init=False, factory=lambda: np.array([]))
 
     @turbulence_intensities.validator
     def turbulence_intensities_validator(
@@ -344,6 +346,51 @@ class FlowField(BaseClass):
                 interps_f[findex] = copy.deepcopy(interp_2d)
 
         self.het_map = interps_f
+
+    def get_sector_averaged_turbine_wind_speeds(self) -> NDArrayFloat:
+        n_turbines = np.shape(self.u)[1]
+        sector_average_ws = np.zeros((self.n_findex, n_turbines, 4))
+        for i in range(n_turbines):
+            # TODO: Is this loop needed?
+            vels = self.u[:, i]
+
+            # simple average
+            sector_average_ws[:, i, 0] = np.mean(vels[:, :, -1], axis=1)    # Up
+            sector_average_ws[:, i, 3] = np.mean(vels[:, -1, :], axis=1)    # Right
+            sector_average_ws[:, i, 2] = np.mean(vels[:, :, 0], axis=1)     # Down
+            sector_average_ws[:, i, 1] = np.mean(vels[:, 0, :], axis=1)     # Left
+
+        return sector_average_ws
+
+    def get_sector_averaged_turbine_TIs(self, unsorted_indices) -> NDArrayFloat:
+        n_turbines = np.shape(self.u)[1]
+        sector_average_TI = np.zeros(
+            (self.n_findex, n_turbines, 4)
+        )
+        turbulence_wake_mixing = np.take_along_axis(
+            self.turbulence_wake_mixing_sorted,
+            unsorted_indices,
+            axis=1
+        )
+        for i in range(n_turbines):
+            # TODO: Is this loop needed?
+            TIs = turbulence_wake_mixing[:, i]
+
+            # simple average
+            sector_average_TI[:, i, 0] = np.mean(TIs[:, :, -1], axis=1)     # Up
+            sector_average_TI[:, i, 3] = np.mean(TIs[:, -1, :], axis=1)     # Right
+            sector_average_TI[:, i, 2] = np.mean(TIs[:, :, 0], axis=1)      # Down
+            sector_average_TI[:, i, 1] = np.mean(TIs[:, 0, :], axis=1)      # Left
+
+        return sector_average_TI
+
+    def get_turbine_grid_TIs(self, unsorted_indices: NDArrayFloat) -> NDArrayFloat:
+        turbulence_intensity_field_grid = np.take_along_axis(
+            self.turbulence_intensity_field_sorted,
+            unsorted_indices,
+            axis=1
+        )
+        return turbulence_intensity_field_grid
 
     @staticmethod
     def interpolate_multiplier_xy(

@@ -1059,6 +1059,30 @@ class FlorisModel(LoggingManager):
     def get_turbine_TIs(self) -> NDArrayFloat:
         return self.core.flow_field.turbulence_intensity_field
 
+    def get_turbine_grid_TIs(self) -> NDArrayFloat:
+        if not self.core.wake.enable_turbine_turbulence_grid:
+            raise ValueError(
+                "Grid TI quantities are only available if FLORIS "
+                "is run with enable_turbine_turbulence_grid = True."
+            )
+        return self.core.flow_field.get_turbine_grid_TIs(self.core.grid.unsorted_indices)
+
+    def get_turbine_sector_average_wind_speed(self) -> NDArrayFloat:
+        if not self.core.wake.enable_turbine_turbulence_grid:
+            raise ValueError(
+                "Sector-averaged quantities are only available if FLORIS "
+                "is run with enable_turbine_turbulence_grid = True."
+            )
+        return self.core.flow_field.get_sector_averaged_turbine_wind_speeds()
+
+    def get_turbine_sector_average_TI(self) -> NDArrayFloat:
+        if not self.core.wake.enable_turbine_turbulence_grid:
+            raise ValueError(
+                "Sector-averaged quantities are only available if FLORIS "
+                "is run with enable_turbine_turbulence_grid = True."
+            )
+        return self.core.flow_field.get_sector_averaged_turbine_TIs(self.core.grid.unsorted_indices)
+
 
     ### Methods for sampling and visualization
 

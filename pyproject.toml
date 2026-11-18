@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "floris"
-version = "4.6.6"
+version = "4.7"
 description = "A controls-oriented engineering wake model."
 readme = "README.md"
 requires-python = ">=3.11, <3.16"
@@ -57,7 +57,7 @@ develop = [
     "pytest-benchmark~=5.1",
     "pre-commit~=4.0",
     "ruff~=0.9",
-    "isort>=5,<9"
+    "isort>=5,<10"
 ]
 
 [tool.setuptools.packages.find]

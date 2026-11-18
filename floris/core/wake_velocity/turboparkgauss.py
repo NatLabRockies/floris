@@ -90,7 +90,7 @@ class TurboparkgaussVelocityDeficit(BaseModel):
         # Compute deficits for real turbines and for mirrored (image) turbines
         delta_real  = (x_dist > 0) * gaussian_function(C, r_dist, 2, sigma)
         if self.include_mirror_wake:
-            r_dist_image = np.sqrt((y - y_i) ** 2 + (z - 3*z_i) ** 2)
+            r_dist_image = np.sqrt((y - y_i) ** 2 + (z + z_i) ** 2)
             delta_image = (x_dist > 0) * gaussian_function(C, r_dist_image, 2, sigma)
             delta = np.hypot(delta_real, delta_image)
         else: # No mirror wakes

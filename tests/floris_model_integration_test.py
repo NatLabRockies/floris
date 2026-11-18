@@ -873,6 +873,55 @@ def test_merge_floris_models():
     with pytest.raises(TypeError):
         merged_fmodel = FlorisModel.merge_floris_models(fmodel_list)
 
+
+def test_turbine_grid_and_sector_getters_raise_without_flag():
+    fmodel = FlorisModel(configuration=YAML_INPUT)
+    fmodel.run()
+
+    assert fmodel.core.wake.enable_turbine_turbulence_grid is False
+
+    with pytest.raises(ValueError):
+        fmodel.get_turbine_grid_TIs()
+
+    with pytest.raises(ValueError):
+        fmodel.get_turbine_sector_average_wind_speed()
+
+    with pytest.raises(ValueError):
+        fmodel.get_turbine_sector_average_TI()
+
+
+def test_turbine_grid_and_sector_getters_with_flag():
+    fmodel = FlorisModel(configuration=YAML_INPUT)
+    fmodel.core.wake.enable_turbine_turbulence_grid = True
+    fmodel.run()
+
+    n_findex = fmodel.core.flow_field.n_findex
+    n_turbines = fmodel.core.farm.n_turbines
+    grid_resolution = fmodel.core.grid.grid_resolution
+
+    # get_turbine_grid_TIs matches the underlying flow_field call and has the expected shape.
+    grid_TIs = fmodel.get_turbine_grid_TIs()
+    expected_grid_TIs = fmodel.core.flow_field.get_turbine_grid_TIs(
+        fmodel.core.grid.unsorted_indices
+    )
+    np.testing.assert_allclose(grid_TIs, expected_grid_TIs)
+    assert grid_TIs.shape == (n_findex, n_turbines, grid_resolution, grid_resolution)
+
+    # get_turbine_sector_average_wind_speed matches the underlying flow_field call
+    # and has the expected shape.
+    sector_ws = fmodel.get_turbine_sector_average_wind_speed()
+    expected_sector_ws = fmodel.core.flow_field.get_sector_averaged_turbine_wind_speeds()
+    np.testing.assert_allclose(sector_ws, expected_sector_ws)
+    assert sector_ws.shape == (n_findex, n_turbines, 4)
+
+    # get_turbine_sector_average_TI matches the underlying flow_field call
+    # and has the expected shape.
+    sector_TI = fmodel.get_turbine_sector_average_TI()
+    expected_sector_TI = fmodel.core.flow_field.get_sector_averaged_turbine_TIs(
+        fmodel.core.grid.unsorted_indices
+    )
+    np.testing.assert_allclose(sector_TI, expected_sector_TI)
+    assert sector_TI.shape == (n_findex, n_turbines, 4)
 def test_sample_flow_at_points():
 
     fmodel = FlorisModel(configuration=YAML_INPUT)

@@ -65,6 +65,13 @@ def sequential_solver(
     # Expand input turbulence intensity to 4d for (n_turbines, grid, grid)
     turbine_turbulence_intensity = flow_field.turbulence_intensities[:, None, None, None]
     turbine_turbulence_intensity = np.repeat(turbine_turbulence_intensity, farm.n_turbines, axis=1)
+    if model_manager.enable_turbine_turbulence_grid:
+        turbine_turbulence_intensity = np.repeat(
+            turbine_turbulence_intensity, grid.grid_resolution, axis=2
+        )
+        turbine_turbulence_intensity = np.repeat(
+            turbine_turbulence_intensity, grid.grid_resolution, axis=3
+        )
 
     # Ambient turbulent intensity should be a copy of n_findex-long turbulence_intensity
     # with dimensions expanded for (n_turbines, grid, grid)
@@ -188,6 +195,7 @@ def sequential_solver(
                 flow_field.w_sorted[:, i:i+1],
                 v_wake[:, i:i+1],
                 w_wake[:, i:i+1],
+                model_manager.enable_turbine_turbulence_grid,
             )
             gch_gain = 2
             turbine_turbulence_intensity[:, i:i+1] = turbulence_intensity_i + gch_gain * I_mixing
@@ -247,6 +255,12 @@ def sequential_solver(
         flow_field.w_sorted += w_wake
 
     flow_field.turbulence_intensity_field_sorted = turbine_turbulence_intensity
+    if model_manager.enable_turbine_turbulence_grid:
+        # An approximate method to account for scaling of turbulence intensity with
+        # the local flow velocity. Unvalidated method used for informing surrogate models.
+        flow_field.turbulence_wake_mixing_sorted = (
+            turbine_turbulence_intensity * flow_field.u_initial_sorted / flow_field.u_sorted
+        )
     flow_field.turbulence_intensity_field_sorted_avg = np.mean(
         turbine_turbulence_intensity,
         axis=(2,3),
@@ -494,6 +508,13 @@ def cc_solver(
     # Set up turbulence arrays
     turbine_turbulence_intensity = flow_field.turbulence_intensities[:, None, None, None]
     turbine_turbulence_intensity = np.repeat(turbine_turbulence_intensity, farm.n_turbines, axis=1)
+    if model_manager.enable_turbine_turbulence_grid:
+        turbine_turbulence_intensity = np.repeat(
+            turbine_turbulence_intensity, grid.grid_resolution, axis=2
+        )
+        turbine_turbulence_intensity = np.repeat(
+            turbine_turbulence_intensity, grid.grid_resolution, axis=3
+        )
 
     # Ambient turbulent intensity should be a copy of n_findex-long turbulence_intensities
     # with extra dimension to reach 4d
@@ -657,6 +678,7 @@ def cc_solver(
                 flow_field.w_sorted[:, i:i+1],
                 v_wake[:, i:i+1],
                 w_wake[:, i:i+1],
+                model_manager.enable_turbine_turbulence_grid,
             )
             gch_gain = 1.0
             turbine_turbulence_intensity[:, i:i+1] = turbulence_intensity_i + gch_gain * I_mixing
@@ -711,6 +733,12 @@ def cc_solver(
     flow_field.u_sorted = turb_inflow_field
 
     flow_field.turbulence_intensity_field_sorted = turbine_turbulence_intensity
+    if model_manager.enable_turbine_turbulence_grid:
+        # An approximate method to account for scaling of turbulence intensity with
+        # the local flow velocity. Unvalidated method used for informing surrogate models.
+        flow_field.turbulence_wake_mixing_sorted = (
+            turbine_turbulence_intensity * flow_field.u_initial_sorted / flow_field.u_sorted
+        )
     flow_field.turbulence_intensity_field_sorted_avg = np.mean(
         turbine_turbulence_intensity,
         axis=(2,3),
@@ -966,6 +994,13 @@ def turbopark_solver(
     # Set up turbulence arrays
     turbine_turbulence_intensity = flow_field.turbulence_intensities[:, None, None, None]
     turbine_turbulence_intensity = np.repeat(turbine_turbulence_intensity, farm.n_turbines, axis=1)
+    if model_manager.enable_turbine_turbulence_grid:
+        turbine_turbulence_intensity = np.repeat(
+            turbine_turbulence_intensity, grid.grid_resolution, axis=2
+        )
+        turbine_turbulence_intensity = np.repeat(
+            turbine_turbulence_intensity, grid.grid_resolution, axis=3
+        )
 
     # Ambient turbulent intensity should be a copy of n_findex-long turbulence_intensities
     # with extra dimension to reach 4d
@@ -1169,6 +1204,12 @@ def turbopark_solver(
         flow_field.w_sorted += w_wake
 
     flow_field.turbulence_intensity_field_sorted = turbine_turbulence_intensity
+    if model_manager.enable_turbine_turbulence_grid:
+        # An approximate method to account for scaling of turbulence intensity with
+        # the local flow velocity. Unvalidated method used for informing surrogate models.
+        flow_field.turbulence_wake_mixing_sorted = (
+            turbine_turbulence_intensity * flow_field.u_initial_sorted / flow_field.u_sorted
+        )
     flow_field.turbulence_intensity_field_sorted_avg = np.mean(
         turbine_turbulence_intensity,
         axis=(2, 3),
@@ -1400,6 +1441,13 @@ def empirical_gauss_solver(
         flow_field.u_sorted = flow_field.u_initial_sorted - wake_field
         flow_field.v_sorted += v_wake
         flow_field.w_sorted += w_wake
+
+    if model_manager.enable_turbine_turbulence_grid:
+        # An approximate method to account for scaling of turbulence intensity with
+        # the local flow velocity. Unvalidated method used for informing surrogate models.
+        flow_field.turbulence_wake_mixing_sorted = (
+            np.nan * flow_field.u_initial_sorted / flow_field.u_sorted
+        )
 
     return mixing_factor
 

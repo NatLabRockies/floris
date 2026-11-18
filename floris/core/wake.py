@@ -87,6 +87,8 @@ class WakeModelManager(BaseClass):
     turbulence_model: BaseModel = field(init=False)
     velocity_model: BaseModel = field(init=False)
 
+    enable_turbine_turbulence_grid: bool = field(converter=bool, default=False)
+
     def __attrs_post_init__(self) -> None:
         velocity_model_string = self.model_strings["velocity_model"].lower()
         model: BaseModel = MODEL_MAP["velocity_model"][velocity_model_string]

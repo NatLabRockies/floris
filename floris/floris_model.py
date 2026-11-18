@@ -570,6 +570,51 @@ class FlorisModel(LoggingManager):
         return turbine_powers
 
 
+    def as_rose(self, values: NDArrayFloat) -> NDArrayFloat:
+        """Expand the wind-condition axis of an array to match the model's wind rose.
+
+        For WindRose and WindRoseWRG, the new axes are wind direction and wind speed.
+        WindTIRose adds turbulence intensity as the third axis. Bins skipped by the solver
+        are filled with NaN. For other wind data inputs, the input array is returned directly.
+
+        For example, use ``fmodel.as_rose(fmodel.get_turbine_thrust_coefficients())``
+        after running the model to align thrust coefficients with turbine powers.
+
+        Args:
+            values: Array with one row per computed wind condition in FLORIS order.
+                Any trailing dimensions, such as the turbine axis, are preserved.
+
+        Returns:
+            Array with the wind rose axes replacing the first axis of ``values``.
+
+        Raises:
+            ValueError: If the input lacks a wind-condition axis or its length does not
+                match the number of computed wind conditions for the wind rose.
+        """
+        wind_data = self.wind_data
+        if isinstance(wind_data, (WindRose, WindRoseWRG)):
+            rose_shape = (len(wind_data.wind_directions), len(wind_data.wind_speeds))
+        elif type(wind_data) is WindTIRose:
+            rose_shape = (
+                len(wind_data.wind_directions),
+                len(wind_data.wind_speeds),
+                len(wind_data.turbulence_intensities),
+            )
+        else:
+            return values
+
+        computed = wind_data.non_zero_freq_mask
+        n_conditions = np.count_nonzero(computed)
+        if values.ndim == 0 or values.shape[0] != n_conditions:
+            raise ValueError(
+                f"Expected {n_conditions} wind conditions on axis 0, got shape {values.shape}."
+            )
+
+        trailing_shape = values.shape[1:]
+        rose_values = np.full((len(computed), *trailing_shape), np.nan)
+        rose_values[computed] = values
+        return rose_values.reshape((*rose_shape, *trailing_shape))
+
     def get_turbine_powers(self):
         """
         Calculates the power at each turbine in the wind farm.
@@ -577,34 +622,7 @@ class FlorisModel(LoggingManager):
         Returns:
             NDArrayFloat: Powers at each turbine.
         """
-        turbine_powers = self._get_turbine_powers()
-
-        if self.wind_data is not None:
-            if isinstance(self.wind_data, (WindRose, WindRoseWRG)):
-                turbine_powers_rose = np.full(
-                    (len(self.wind_data.wd_flat), self.core.farm.n_turbines),
-                    np.nan
-                )
-                turbine_powers_rose[self.wind_data.non_zero_freq_mask, :] = turbine_powers
-                turbine_powers = turbine_powers_rose.reshape(
-                    len(self.wind_data.wind_directions),
-                    len(self.wind_data.wind_speeds),
-                    self.core.farm.n_turbines
-                )
-            elif type(self.wind_data) is WindTIRose:
-                turbine_powers_rose = np.full(
-                    (len(self.wind_data.wd_flat), self.core.farm.n_turbines),
-                    np.nan
-                )
-                turbine_powers_rose[self.wind_data.non_zero_freq_mask, :] = turbine_powers
-                turbine_powers = turbine_powers_rose.reshape(
-                    len(self.wind_data.wind_directions),
-                    len(self.wind_data.wind_speeds),
-                    len(self.wind_data.turbulence_intensities),
-                    self.core.farm.n_turbines
-                )
-
-        return turbine_powers
+        return self.as_rose(self._get_turbine_powers())
 
     def get_expected_turbine_powers(self, freq=None):
         """
@@ -756,25 +774,7 @@ class FlorisModel(LoggingManager):
             float: Sum of wind turbine powers in W.
         """
         farm_power = self._get_farm_power(turbine_weights, use_turbulence_correction)
-
-        if self.wind_data is not None:
-            if isinstance(self.wind_data, (WindRose, WindRoseWRG)):
-                farm_power_rose = np.full(len(self.wind_data.wd_flat), np.nan)
-                farm_power_rose[self.wind_data.non_zero_freq_mask] = farm_power
-                farm_power = farm_power_rose.reshape(
-                    len(self.wind_data.wind_directions),
-                    len(self.wind_data.wind_speeds)
-                )
-            elif type(self.wind_data) is WindTIRose:
-                farm_power_rose = np.full(len(self.wind_data.wd_flat), np.nan)
-                farm_power_rose[self.wind_data.non_zero_freq_mask] = farm_power
-                farm_power = farm_power_rose.reshape(
-                    len(self.wind_data.wind_directions),
-                    len(self.wind_data.wind_speeds),
-                    len(self.wind_data.turbulence_intensities)
-                )
-
-        return farm_power
+        return self.as_rose(farm_power)
 
     def get_expected_farm_power(
             self,

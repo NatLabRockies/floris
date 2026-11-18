@@ -5,6 +5,7 @@ import numpy as np
 import pytest
 
 from floris import (
+    HeterogeneousMap,
     TimeSeries,
     WindRose,
     WindTIRose,
@@ -1058,6 +1059,38 @@ def test_time_series_to_WindTIRose():
     # The 6 m/s bin should be empty
     freq_table = wind_rose.freq_table
     np.testing.assert_almost_equal(freq_table[0, 1, :], [0, 0])
+
+
+def test_time_series_to_wind_roses_keeps_heterogeneous_map():
+    heterogeneous_map = HeterogeneousMap(
+        x=np.array([0.0, 0.0, 500.0]),
+        y=np.array([0.0, 500.0, 0.0]),
+        speed_multipliers=np.array([[1.0, 1.1, 1.2]]),
+    )
+    # The 272 deg and 6 m/s bins are empty
+    time_series = TimeSeries(
+        wind_directions=np.array([270.0, 274.0]),
+        wind_speeds=np.array([5.0, 7.0]),
+        turbulence_intensities=0.06,
+        heterogeneous_map=heterogeneous_map,
+    )
+
+    wind_rose = time_series.to_WindRose(wd_step=2.0, ws_step=1.0)
+    assert wind_rose.heterogeneous_map is heterogeneous_map
+    assert wind_rose.compute_zero_freq_occurrence is False
+
+    wind_ti_rose = time_series.to_WindTIRose(wd_step=2.0, ws_step=1.0)
+    assert wind_ti_rose.heterogeneous_map is heterogeneous_map
+    assert wind_ti_rose.compute_zero_freq_occurrence is False
+
+    # downsample() bins through TimeSeries.to_WindRose and must also keep the map
+    wind_rose = WindRose(
+        np.array([268.0, 270.0, 272.0]),
+        np.array([8.0]),
+        0.06,
+        heterogeneous_map=heterogeneous_map,
+    )
+    assert wind_rose.downsample(wd_step=6.0).heterogeneous_map is heterogeneous_map
 
 
 def test_gen_heterogeneous_inflow_config():

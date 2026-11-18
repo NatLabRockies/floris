@@ -2666,7 +2666,7 @@ class TimeSeries(WindDataBase):
             ti_table,
             freq_table,
             value_table,
-            self.heterogeneous_map,
+            heterogeneous_map=self.heterogeneous_map,
         )
 
     def to_WindTIRose(
@@ -2833,7 +2833,7 @@ class TimeSeries(WindDataBase):
             ti_centers,
             freq_table,
             value_table,
-            self.heterogeneous_map,
+            heterogeneous_map=self.heterogeneous_map,
         )
 
 

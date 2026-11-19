@@ -6,6 +6,7 @@ from floris.core import BaseClass, BaseModel
 from floris.core.wake_combination import (
     FLS,
     MAX,
+    NoneWakeCombination,
     SOSFS,
 )
 from floris.core.wake_deflection import (
@@ -21,6 +22,7 @@ from floris.core.wake_turbulence import (
 )
 from floris.core.wake_velocity import (
     CumulativeGaussCurlVelocityDeficit,
+    CurledWakeVelocityDeficit,
     EmpiricalGaussVelocityDeficit,
     GaussVelocityDeficit,
     JensenVelocityDeficit,
@@ -32,6 +34,7 @@ from floris.core.wake_velocity import (
 
 MODEL_MAP = {
     "combination_model": {
+        "none": NoneWakeCombination,
         "fls": FLS,
         "max": MAX,
         "sosfs": SOSFS
@@ -50,6 +53,7 @@ MODEL_MAP = {
     "velocity_model": {
         "none": NoneVelocityDeficit,
         "cc": CumulativeGaussCurlVelocityDeficit,
+        "cwm": CurledWakeVelocityDeficit,
         "gauss": GaussVelocityDeficit,
         "jensen": JensenVelocityDeficit,
         "turbopark": TurbOParkVelocityDeficit,

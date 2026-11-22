@@ -719,12 +719,15 @@ def test_as_rose_turbine_coefficients(use_ti_rose, compute_zero_freq_occurrence)
     assert np.isnan(powers[~computed]).all()
     np.testing.assert_allclose(fmodel.get_farm_power(), powers.sum(axis=-1))
 
-    for values in (fmodel.get_turbine_ais(), fmodel.get_turbine_thrust_coefficients()):
+    for getter in (fmodel.get_turbine_ais, fmodel.get_turbine_thrust_coefficients):
+        values = getter()
         assert values.shape == (computed.sum(), 2)
+        np.testing.assert_array_equal(getter(return_as_rose=False), values)
         reshaped = fmodel.as_rose(values)
         assert reshaped.shape == powers.shape
         np.testing.assert_array_equal(reshaped[computed], values)
         assert np.isnan(reshaped[~computed]).all()
+        np.testing.assert_array_equal(getter(return_as_rose=True), reshaped)
 
     with pytest.raises(ValueError, match="wind conditions on axis 0"):
         fmodel.as_rose(np.zeros((1, 2)))
@@ -741,6 +744,9 @@ def test_as_rose_with_time_series():
         turbulence_intensities=0.06,
     ))
     assert fmodel.as_rose(values) is values
+    fmodel.run()
+    for getter in (fmodel.get_turbine_ais, fmodel.get_turbine_thrust_coefficients):
+        np.testing.assert_array_equal(getter(return_as_rose=True), getter())
 
 
 def test_get_powers_with_wind_data():

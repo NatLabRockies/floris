@@ -591,19 +591,18 @@ class FlorisModel(LoggingManager):
             ValueError: If the input lacks a wind-condition axis or its length does not
                 match the number of computed wind conditions for the wind rose.
         """
-        wind_data = self.wind_data
-        if isinstance(wind_data, (WindRose, WindRoseWRG)):
-            rose_shape = (len(wind_data.wind_directions), len(wind_data.wind_speeds))
-        elif type(wind_data) is WindTIRose:
+        if isinstance(self.wind_data, (WindRose, WindRoseWRG)):
+            rose_shape = (len(self.wind_data.wind_directions), len(self.wind_data.wind_speeds))
+        elif type(self.wind_data) is WindTIRose:
             rose_shape = (
-                len(wind_data.wind_directions),
-                len(wind_data.wind_speeds),
-                len(wind_data.turbulence_intensities),
+                len(self.wind_data.wind_directions),
+                len(self.wind_data.wind_speeds),
+                len(self.wind_data.turbulence_intensities),
             )
         else:
             return values
 
-        computed = wind_data.non_zero_freq_mask
+        computed = self.wind_data.non_zero_freq_mask
         n_conditions = np.count_nonzero(computed)
         if values.ndim == 0 or values.shape[0] != n_conditions:
             raise ValueError(
@@ -1014,7 +1013,14 @@ class FlorisModel(LoggingManager):
             turbine_weights=turbine_weights
         ) * hours_per_year
 
-    def get_turbine_ais(self) -> NDArrayFloat:
+    def get_turbine_ais(self, return_as_rose: bool = False) -> NDArrayFloat:
+        """Return the axial induction factors for each wind condition and turbine.
+
+        Args:
+            return_as_rose: For wind rose inputs, expand the wind-condition axis
+                with :meth:`as_rose` to match the shape of turbine powers. By default,
+                return one row per computed wind condition.
+        """
         turbine_ais = axial_induction(
             velocities=self.core.flow_field.u,
             turbulence_intensities=self.core.flow_field.turbulence_intensity_field[:,:,None,None],
@@ -1033,9 +1039,18 @@ class FlorisModel(LoggingManager):
             cubature_weights=self.core.grid.cubature_weights,
             multidim_condition=self.core.flow_field.multidim_conditions,
         )
+        if return_as_rose:
+            return self.as_rose(turbine_ais)
         return turbine_ais
 
-    def get_turbine_thrust_coefficients(self) -> NDArrayFloat:
+    def get_turbine_thrust_coefficients(self, return_as_rose: bool = False) -> NDArrayFloat:
+        """Return the thrust coefficients for each wind condition and turbine.
+
+        Args:
+            return_as_rose: For wind rose inputs, expand the wind-condition axis
+                with :meth:`as_rose` to match the shape of turbine powers. By default,
+                return one row per computed wind condition.
+        """
         turbine_thrust_coefficients = thrust_coefficient(
             velocities=self.core.flow_field.u,
             turbulence_intensities=self.core.flow_field.turbulence_intensity_field[:,:,None,None],
@@ -1054,6 +1069,8 @@ class FlorisModel(LoggingManager):
             cubature_weights=self.core.grid.cubature_weights,
             multidim_condition=self.core.flow_field.multidim_conditions,
         )
+        if return_as_rose:
+            return self.as_rose(turbine_thrust_coefficients)
         return turbine_thrust_coefficients
 
     def get_turbine_TIs(self) -> NDArrayFloat:

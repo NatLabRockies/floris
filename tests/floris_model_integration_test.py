@@ -9,6 +9,7 @@ from floris import (
     FlorisModel,
     TimeSeries,
     WindRose,
+    WindTIRose,
 )
 from floris.core.turbine.operation_models import POWER_SETPOINT_DEFAULT, POWER_SETPOINT_DISABLED
 from tests.conftest import SampleInputs
@@ -681,6 +682,76 @@ def test_get_turbine_powers_with_WindRose():
     fmodel.run()
     turbine_powers = fmodel.get_turbine_powers()
     assert np.isnan(turbine_powers[0, 2, 0])
+
+@pytest.mark.parametrize("wind_data_type", ["WindRose", "WindTIRose"])
+def test_set_operation_with_zero_frequency_bins(wind_data_type):
+    """
+    Operation inputs with one row per wind rose bin can be set when some bins have zero
+    frequency and are therefore not computed (#963). The powers in the computed bins should
+    match those of a run in which every bin is computed.
+    """
+    wind_directions = np.array([260.0, 270.0, 280.0])
+    wind_speeds = np.array([8.0, 10.0])
+    turbulence_intensities = np.array([0.06, 0.08])
+    if wind_data_type == "WindRose":
+        freq_table = np.ones((3, 2))
+        freq_table[0, 0] = 0.0
+        freq_table[2, 1] = 0.0
+    else:
+        freq_table = np.ones((3, 2, 2))
+        freq_table[0, 0, 1] = 0.0
+        freq_table[2, 1, 0] = 0.0
+    freq_table = freq_table / freq_table.sum()
+    n_bins = freq_table.size
+    non_zero_bins = freq_table.flatten() > 0.0
+
+    def make_wind_data(compute_zero_freq_occurrence):
+        if wind_data_type == "WindRose":
+            return WindRose(
+                wind_directions=wind_directions,
+                wind_speeds=wind_speeds,
+                ti_table=0.06,
+                freq_table=freq_table,
+                compute_zero_freq_occurrence=compute_zero_freq_occurrence,
+            )
+        return WindTIRose(
+            wind_directions=wind_directions,
+            wind_speeds=wind_speeds,
+            turbulence_intensities=turbulence_intensities,
+            freq_table=freq_table,
+            compute_zero_freq_occurrence=compute_zero_freq_occurrence,
+        )
+
+    def get_turbine_powers(wind_data, operation_inputs):
+        fmodel = FlorisModel(configuration=YAML_INPUT)
+        fmodel.set_operation_model("mixed")
+        fmodel.set(layout_x=[0, 630, 1260], layout_y=[0, 0, 0])
+        fmodel.set(wind_data=wind_data, **operation_inputs)
+        fmodel.run()
+        return fmodel.get_turbine_powers().reshape(n_bins, 3)
+
+    # Use a different value in every row so that a mix-up of rows would be detected
+    yaw_angles = np.linspace(-20.0, 20.0, n_bins * 3).reshape(n_bins, 3)
+    power_setpoints = np.linspace(1.0e6, 4.0e6, n_bins * 3).reshape(n_bins, 3)
+    disable_turbines = np.zeros((n_bins, 3), dtype=bool)
+    disable_turbines[1::2, 1] = True
+
+    for operation_inputs in [
+        {"yaw_angles": yaw_angles},
+        {"power_setpoints": power_setpoints},
+        {"disable_turbines": disable_turbines},
+    ]:
+        powers_all_bins = get_turbine_powers(make_wind_data(True), operation_inputs)
+
+        # Inputs sized to every bin of the rose
+        powers = get_turbine_powers(make_wind_data(False), operation_inputs)
+        assert np.isnan(powers[~non_zero_bins]).all()
+        assert np.allclose(powers[non_zero_bins], powers_all_bins[non_zero_bins])
+
+        # Inputs sized to n_findex (the computed bins only) still work as before
+        operation_inputs_findex = {k: v[non_zero_bins] for k, v in operation_inputs.items()}
+        powers = get_turbine_powers(make_wind_data(False), operation_inputs_findex)
+        assert np.allclose(powers[non_zero_bins], powers_all_bins[non_zero_bins])
 
 def test_get_powers_with_wind_data():
     fmodel = FlorisModel(configuration=YAML_INPUT)

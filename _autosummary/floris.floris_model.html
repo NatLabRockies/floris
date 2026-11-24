@@ -710,6 +710,7 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.floris_model.FlorisModel.reset_operation"><code class="docutils literal notranslate"><span class="pre">FlorisModel.reset_operation()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.floris_model.FlorisModel.run"><code class="docutils literal notranslate"><span class="pre">FlorisModel.run()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.floris_model.FlorisModel.run_no_wake"><code class="docutils literal notranslate"><span class="pre">FlorisModel.run_no_wake()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.floris_model.FlorisModel.as_rose"><code class="docutils literal notranslate"><span class="pre">FlorisModel.as_rose()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.floris_model.FlorisModel.get_turbine_powers"><code class="docutils literal notranslate"><span class="pre">FlorisModel.get_turbine_powers()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.floris_model.FlorisModel.get_expected_turbine_powers"><code class="docutils literal notranslate"><span class="pre">FlorisModel.get_expected_turbine_powers()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.floris_model.FlorisModel.get_farm_power"><code class="docutils literal notranslate"><span class="pre">FlorisModel.get_farm_power()</span></code></a></li>
@@ -942,6 +943,39 @@ reduce the power and thrust of the turbine to where they're applied.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="floris.floris_model.FlorisModel.as_rose">
+<span class="sig-name descname"><span class="pre">as_rose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/floris/floris_model.html#FlorisModel.as_rose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#floris.floris_model.FlorisModel.as_rose" title="Link to this definition">#</a></dt>
+<dd><p>Expand the wind-condition axis of an array to match the model's wind rose.</p>
+<p>For WindRose and WindRoseWRG, the new axes are wind direction and wind speed.
+WindTIRose adds turbulence intensity as the third axis. Bins skipped by the solver
+are filled with NaN. For other wind data inputs, the input array is returned directly.</p>
+<p>For example, use <code class="docutils literal notranslate"><span class="pre">fmodel.as_rose(fmodel.get_turbine_thrust_coefficients())</span></code>
+after running the model to align thrust coefficients with turbine powers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericAlias</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code>]</span></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>values</strong> (<em>NDArray</em><em>[</em><em>float64</em><em>]</em>)</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>values: Array with one row per computed wind condition in FLORIS order.</dt><dd><p>Any trailing dimensions, such as the turbine axis, are preserved.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>Array with the wind rose axes replacing the first axis of <code class="docutils literal notranslate"><span class="pre">values</span></code>.</p>
+</dd>
+<dt>Raises:</dt><dd><dl class="simple">
+<dt>ValueError: If the input lacks a wind-condition axis or its length does not</dt><dd><p>match the number of computed wind conditions for the wind rose.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd></dl>
@@ -1207,20 +1241,44 @@ of value.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="floris.floris_model.FlorisModel.get_turbine_ais">
-<span class="sig-name descname"><span class="pre">get_turbine_ais</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/floris/floris_model.html#FlorisModel.get_turbine_ais"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#floris.floris_model.FlorisModel.get_turbine_ais" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
+<span class="sig-name descname"><span class="pre">get_turbine_ais</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">return_as_rose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/floris/floris_model.html#FlorisModel.get_turbine_ais"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#floris.floris_model.FlorisModel.get_turbine_ais" title="Link to this definition">#</a></dt>
+<dd><p>Return the axial induction factors for each wind condition and turbine.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericAlias</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code>]</span></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>return_as_rose</strong> (<em>bool</em>)</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>return_as_rose: For wind rose inputs, expand the wind-condition axis</dt><dd><p>with <a class="reference internal" href="#floris.floris_model.FlorisModel.as_rose" title="floris.floris_model.FlorisModel.as_rose"><code class="xref py py-meth docutils literal notranslate"><span class="pre">as_rose()</span></code></a> to match the shape of turbine powers. By default,
+return one row per computed wind condition.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="floris.floris_model.FlorisModel.get_turbine_thrust_coefficients">
-<span class="sig-name descname"><span class="pre">get_turbine_thrust_coefficients</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/floris/floris_model.html#FlorisModel.get_turbine_thrust_coefficients"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#floris.floris_model.FlorisModel.get_turbine_thrust_coefficients" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
+<span class="sig-name descname"><span class="pre">get_turbine_thrust_coefficients</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">return_as_rose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/floris/floris_model.html#FlorisModel.get_turbine_thrust_coefficients"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#floris.floris_model.FlorisModel.get_turbine_thrust_coefficients" title="Link to this definition">#</a></dt>
+<dd><p>Return the thrust coefficients for each wind condition and turbine.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericAlias</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code>]</span></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>return_as_rose</strong> (<em>bool</em>)</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>return_as_rose: For wind rose inputs, expand the wind-condition axis</dt><dd><p>with <a class="reference internal" href="#floris.floris_model.FlorisModel.as_rose" title="floris.floris_model.FlorisModel.as_rose"><code class="xref py py-meth docutils literal notranslate"><span class="pre">as_rose()</span></code></a> to match the shape of turbine powers. By default,
+return one row per computed wind condition.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd></dl>
@@ -1862,6 +1920,7 @@ or general solver settings.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.floris_model.FlorisModel.reset_operation"><code class="docutils literal notranslate"><span class="pre">FlorisModel.reset_operation()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.floris_model.FlorisModel.run"><code class="docutils literal notranslate"><span class="pre">FlorisModel.run()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.floris_model.FlorisModel.run_no_wake"><code class="docutils literal notranslate"><span class="pre">FlorisModel.run_no_wake()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.floris_model.FlorisModel.as_rose"><code class="docutils literal notranslate"><span class="pre">FlorisModel.as_rose()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.floris_model.FlorisModel.get_turbine_powers"><code class="docutils literal notranslate"><span class="pre">FlorisModel.get_turbine_powers()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.floris_model.FlorisModel.get_expected_turbine_powers"><code class="docutils literal notranslate"><span class="pre">FlorisModel.get_expected_turbine_powers()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#floris.floris_model.FlorisModel.get_farm_power"><code class="docutils literal notranslate"><span class="pre">FlorisModel.get_farm_power()</span></code></a></li>

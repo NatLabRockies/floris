@@ -1586,6 +1586,53 @@ window.runMermaid = runMermaid;</script>
         <span class="k">return</span> <span class="n">turbine_powers</span>
 
 
+<div class="viewcode-block" id="FlorisModel.as_rose">
+<a class="viewcode-back" href="../../_autosummary/floris.floris_model.html#floris.floris_model.FlorisModel.as_rose">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_rose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">NDArrayFloat</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArrayFloat</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Expand the wind-condition axis of an array to match the model's wind rose.</span>
+
+<span class="sd">        For WindRose and WindRoseWRG, the new axes are wind direction and wind speed.</span>
+<span class="sd">        WindTIRose adds turbulence intensity as the third axis. Bins skipped by the solver</span>
+<span class="sd">        are filled with NaN. For other wind data inputs, the input array is returned directly.</span>
+
+<span class="sd">        For example, use ``fmodel.as_rose(fmodel.get_turbine_thrust_coefficients())``</span>
+<span class="sd">        after running the model to align thrust coefficients with turbine powers.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            values: Array with one row per computed wind condition in FLORIS order.</span>
+<span class="sd">                Any trailing dimensions, such as the turbine axis, are preserved.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Array with the wind rose axes replacing the first axis of ``values``.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If the input lacks a wind-condition axis or its length does not</span>
+<span class="sd">                match the number of computed wind conditions for the wind rose.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_data</span><span class="p">,</span> <span class="p">(</span><span class="n">WindRose</span><span class="p">,</span> <span class="n">WindRoseWRG</span><span class="p">)):</span>
+            <span class="n">rose_shape</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_data</span><span class="o">.</span><span class="n">wind_directions</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_data</span><span class="o">.</span><span class="n">wind_speeds</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_data</span><span class="p">)</span> <span class="ow">is</span> <span class="n">WindTIRose</span><span class="p">:</span>
+            <span class="n">rose_shape</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_data</span><span class="o">.</span><span class="n">wind_directions</span><span class="p">),</span>
+                <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_data</span><span class="o">.</span><span class="n">wind_speeds</span><span class="p">),</span>
+                <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_data</span><span class="o">.</span><span class="n">turbulence_intensities</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">values</span>
+
+        <span class="n">computed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wind_data</span><span class="o">.</span><span class="n">non_zero_freq_mask</span>
+        <span class="n">n_conditions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">computed</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">values</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">n_conditions</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Expected </span><span class="si">{</span><span class="n">n_conditions</span><span class="si">}</span><span class="s2"> wind conditions on axis 0, got shape </span><span class="si">{</span><span class="n">values</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+
+        <span class="n">trailing_shape</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">rose_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">computed</span><span class="p">),</span> <span class="o">*</span><span class="n">trailing_shape</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+        <span class="n">rose_values</span><span class="p">[</span><span class="n">computed</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span>
+        <span class="k">return</span> <span class="n">rose_values</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">*</span><span class="n">rose_shape</span><span class="p">,</span> <span class="o">*</span><span class="n">trailing_shape</span><span class="p">))</span></div>
+
+
 <div class="viewcode-block" id="FlorisModel.get_turbine_powers">
 <a class="viewcode-back" href="../../_autosummary/floris.floris_model.html#floris.floris_model.FlorisModel.get_turbine_powers">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_turbine_powers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1595,34 +1642,7 @@ window.runMermaid = runMermaid;</script>
 <span class="sd">        Returns:</span>
 <span class="sd">            NDArrayFloat: Powers at each turbine.</span>
 <span class="sd">        """</span>
-        <span class="n">turbine_powers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_turbine_powers</span><span class="p">()</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">wind_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_data</span><span class="p">,</span> <span class="p">(</span><span class="n">WindRose</span><span class="p">,</span> <span class="n">WindRoseWRG</span><span class="p">)):</span>
-                <span class="n">turbine_powers_rose</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span>
-                    <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_data</span><span class="o">.</span><span class="n">wd_flat</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">farm</span><span class="o">.</span><span class="n">n_turbines</span><span class="p">),</span>
-                    <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-                <span class="p">)</span>
-                <span class="n">turbine_powers_rose</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_data</span><span class="o">.</span><span class="n">non_zero_freq_mask</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">turbine_powers</span>
-                <span class="n">turbine_powers</span> <span class="o">=</span> <span class="n">turbine_powers_rose</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
-                    <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_data</span><span class="o">.</span><span class="n">wind_directions</span><span class="p">),</span>
-                    <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_data</span><span class="o">.</span><span class="n">wind_speeds</span><span class="p">),</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">farm</span><span class="o">.</span><span class="n">n_turbines</span>
-                <span class="p">)</span>
-            <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_data</span><span class="p">)</span> <span class="ow">is</span> <span class="n">WindTIRose</span><span class="p">:</span>
-                <span class="n">turbine_powers_rose</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span>
-                    <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_data</span><span class="o">.</span><span class="n">wd_flat</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">farm</span><span class="o">.</span><span class="n">n_turbines</span><span class="p">),</span>
-                    <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-                <span class="p">)</span>
-                <span class="n">turbine_powers_rose</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_data</span><span class="o">.</span><span class="n">non_zero_freq_mask</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">turbine_powers</span>
-                <span class="n">turbine_powers</span> <span class="o">=</span> <span class="n">turbine_powers_rose</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
-                    <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_data</span><span class="o">.</span><span class="n">wind_directions</span><span class="p">),</span>
-                    <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_data</span><span class="o">.</span><span class="n">wind_speeds</span><span class="p">),</span>
-                    <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_data</span><span class="o">.</span><span class="n">turbulence_intensities</span><span class="p">),</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">farm</span><span class="o">.</span><span class="n">n_turbines</span>
-                <span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">turbine_powers</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_rose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_turbine_powers</span><span class="p">())</span></div>
 
 
 <div class="viewcode-block" id="FlorisModel.get_expected_turbine_powers">
@@ -1780,25 +1800,7 @@ window.runMermaid = runMermaid;</script>
 <span class="sd">            float: Sum of wind turbine powers in W.</span>
 <span class="sd">        """</span>
         <span class="n">farm_power</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_farm_power</span><span class="p">(</span><span class="n">turbine_weights</span><span class="p">,</span> <span class="n">use_turbulence_correction</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">wind_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_data</span><span class="p">,</span> <span class="p">(</span><span class="n">WindRose</span><span class="p">,</span> <span class="n">WindRoseWRG</span><span class="p">)):</span>
-                <span class="n">farm_power_rose</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_data</span><span class="o">.</span><span class="n">wd_flat</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
-                <span class="n">farm_power_rose</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_data</span><span class="o">.</span><span class="n">non_zero_freq_mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">farm_power</span>
-                <span class="n">farm_power</span> <span class="o">=</span> <span class="n">farm_power_rose</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
-                    <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_data</span><span class="o">.</span><span class="n">wind_directions</span><span class="p">),</span>
-                    <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_data</span><span class="o">.</span><span class="n">wind_speeds</span><span class="p">)</span>
-                <span class="p">)</span>
-            <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_data</span><span class="p">)</span> <span class="ow">is</span> <span class="n">WindTIRose</span><span class="p">:</span>
-                <span class="n">farm_power_rose</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_data</span><span class="o">.</span><span class="n">wd_flat</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
-                <span class="n">farm_power_rose</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_data</span><span class="o">.</span><span class="n">non_zero_freq_mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">farm_power</span>
-                <span class="n">farm_power</span> <span class="o">=</span> <span class="n">farm_power_rose</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
-                    <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_data</span><span class="o">.</span><span class="n">wind_directions</span><span class="p">),</span>
-                    <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_data</span><span class="o">.</span><span class="n">wind_speeds</span><span class="p">),</span>
-                    <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_data</span><span class="o">.</span><span class="n">turbulence_intensities</span><span class="p">)</span>
-                <span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">farm_power</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_rose</span><span class="p">(</span><span class="n">farm_power</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="FlorisModel.get_expected_farm_power">
@@ -2053,7 +2055,14 @@ window.runMermaid = runMermaid;</script>
 
 <div class="viewcode-block" id="FlorisModel.get_turbine_ais">
 <a class="viewcode-back" href="../../_autosummary/floris.floris_model.html#floris.floris_model.FlorisModel.get_turbine_ais">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_turbine_ais</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArrayFloat</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_turbine_ais</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_as_rose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArrayFloat</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Return the axial induction factors for each wind condition and turbine.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            return_as_rose: For wind rose inputs, expand the wind-condition axis</span>
+<span class="sd">                with :meth:`as_rose` to match the shape of turbine powers. By default,</span>
+<span class="sd">                return one row per computed wind condition.</span>
+<span class="sd">        """</span>
         <span class="n">turbine_ais</span> <span class="o">=</span> <span class="n">axial_induction</span><span class="p">(</span>
             <span class="n">velocities</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">flow_field</span><span class="o">.</span><span class="n">u</span><span class="p">,</span>
             <span class="n">turbulence_intensities</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">flow_field</span><span class="o">.</span><span class="n">turbulence_intensity_field</span><span class="p">[:,:,</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">],</span>
@@ -2072,12 +2081,21 @@ window.runMermaid = runMermaid;</script>
             <span class="n">cubature_weights</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">cubature_weights</span><span class="p">,</span>
             <span class="n">multidim_condition</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">flow_field</span><span class="o">.</span><span class="n">multidim_conditions</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="k">if</span> <span class="n">return_as_rose</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_rose</span><span class="p">(</span><span class="n">turbine_ais</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">turbine_ais</span></div>
 
 
 <div class="viewcode-block" id="FlorisModel.get_turbine_thrust_coefficients">
 <a class="viewcode-back" href="../../_autosummary/floris.floris_model.html#floris.floris_model.FlorisModel.get_turbine_thrust_coefficients">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_turbine_thrust_coefficients</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArrayFloat</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_turbine_thrust_coefficients</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_as_rose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArrayFloat</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Return the thrust coefficients for each wind condition and turbine.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            return_as_rose: For wind rose inputs, expand the wind-condition axis</span>
+<span class="sd">                with :meth:`as_rose` to match the shape of turbine powers. By default,</span>
+<span class="sd">                return one row per computed wind condition.</span>
+<span class="sd">        """</span>
         <span class="n">turbine_thrust_coefficients</span> <span class="o">=</span> <span class="n">thrust_coefficient</span><span class="p">(</span>
             <span class="n">velocities</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">flow_field</span><span class="o">.</span><span class="n">u</span><span class="p">,</span>
             <span class="n">turbulence_intensities</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">flow_field</span><span class="o">.</span><span class="n">turbulence_intensity_field</span><span class="p">[:,:,</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">],</span>
@@ -2096,6 +2114,8 @@ window.runMermaid = runMermaid;</script>
             <span class="n">cubature_weights</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">cubature_weights</span><span class="p">,</span>
             <span class="n">multidim_condition</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">flow_field</span><span class="o">.</span><span class="n">multidim_conditions</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="k">if</span> <span class="n">return_as_rose</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_rose</span><span class="p">(</span><span class="n">turbine_thrust_coefficients</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">turbine_thrust_coefficients</span></div>
 
 

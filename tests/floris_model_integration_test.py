@@ -9,6 +9,7 @@ from floris import (
     FlorisModel,
     TimeSeries,
     WindRose,
+    WindTIRose,
 )
 from floris.core.turbine.operation_models import POWER_SETPOINT_DEFAULT, POWER_SETPOINT_DISABLED
 from tests.conftest import SampleInputs
@@ -681,6 +682,72 @@ def test_get_turbine_powers_with_WindRose():
     fmodel.run()
     turbine_powers = fmodel.get_turbine_powers()
     assert np.isnan(turbine_powers[0, 2, 0])
+
+
+@pytest.mark.parametrize("use_ti_rose", [False, True], ids=["wind_rose", "wind_ti_rose"])
+@pytest.mark.parametrize("compute_zero_freq_occurrence", [False, True])
+def test_as_rose_turbine_coefficients(use_ti_rose, compute_zero_freq_occurrence):
+    fmodel = FlorisModel(configuration=YAML_INPUT)
+    wind_directions = np.array([270.0, 280.0])
+    wind_speeds = np.array([8.0, 10.0, 12.0])
+    freq_table = np.array([[0.25, 0.0, 0.25], [0.0, 0.5, 0.0]])
+    if use_ti_rose:
+        freq_table = np.stack((freq_table, np.flip(freq_table, axis=1)), axis=-1)
+        wind_data = WindTIRose(
+            wind_directions,
+            wind_speeds,
+            turbulence_intensities=np.array([0.06, 0.10]),
+            freq_table=freq_table,
+            compute_zero_freq_occurrence=compute_zero_freq_occurrence,
+        )
+    else:
+        wind_data = WindRose(
+            wind_directions,
+            wind_speeds,
+            ti_table=0.06,
+            freq_table=freq_table,
+            compute_zero_freq_occurrence=compute_zero_freq_occurrence,
+        )
+
+    fmodel.set(wind_data=wind_data, layout_x=[0, 630], layout_y=[0, 0])
+    fmodel.run()
+    computed = freq_table > 0
+    if compute_zero_freq_occurrence:
+        computed[:] = True
+    powers = fmodel.get_turbine_powers()
+    assert powers.shape == (*freq_table.shape, 2)
+    assert np.isnan(powers[~computed]).all()
+    np.testing.assert_allclose(fmodel.get_farm_power(), powers.sum(axis=-1))
+
+    for getter in (fmodel.get_turbine_ais, fmodel.get_turbine_thrust_coefficients):
+        values = getter()
+        assert values.shape == (computed.sum(), 2)
+        np.testing.assert_array_equal(getter(return_as_rose=False), values)
+        reshaped = fmodel.as_rose(values)
+        assert reshaped.shape == powers.shape
+        np.testing.assert_array_equal(reshaped[computed], values)
+        assert np.isnan(reshaped[~computed]).all()
+        np.testing.assert_array_equal(getter(return_as_rose=True), reshaped)
+
+    with pytest.raises(ValueError, match="wind conditions on axis 0"):
+        fmodel.as_rose(np.zeros((1, 2)))
+
+
+def test_as_rose_with_time_series():
+    fmodel = FlorisModel(configuration=YAML_INPUT)
+    values = np.array([1.0, 2.0])
+    assert fmodel.as_rose(values) is values
+
+    fmodel.set(wind_data=TimeSeries(
+        wind_directions=np.array([270.0, 280.0]),
+        wind_speeds=8.0,
+        turbulence_intensities=0.06,
+    ))
+    assert fmodel.as_rose(values) is values
+    fmodel.run()
+    for getter in (fmodel.get_turbine_ais, fmodel.get_turbine_thrust_coefficients):
+        np.testing.assert_array_equal(getter(return_as_rose=True), getter())
+
 
 def test_get_powers_with_wind_data():
     fmodel = FlorisModel(configuration=YAML_INPUT)

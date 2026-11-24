@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1795034598837,
+  "lastUpdate": 1795563177368,
   "repoUrl": "https://github.com/NatLabRockies/floris",
   "entries": {
     "Python Benchmark with pytest-benchmark": [
@@ -6110,6 +6110,72 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.00012879329063069845",
             "extra": "mean: 7.5035590990893555 msec\nrounds: 111"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "xlc.xiong@gmail.com",
+            "name": "maoji-y",
+            "username": "maoji-y"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "c46c11256101ef43d56934b962f8b9da0501dd86",
+          "message": "Add FlorisModel.as_rose for wind rose outputs (#1214)\n\n* Add FlorisModel.as_rose for wind rose outputs\n\n* Cover wind rose reshaping with integration tests\n\n* Add optional wind rose output for turbine coefficients\n\nReuse as_rose for the axial induction and thrust coefficient getters when requested. Preserve the flat output by default and cover skipped bins and time-series inputs.\n\n---------\n\nCo-authored-by: misi9170 <michael.sinner@nlr.gov>\nCo-authored-by: maoji-y <255648417+maoji-y@users.noreply.github.com>",
+          "timestamp": "2026-11-24T16:07:34-07:00",
+          "tree_id": "df42a3bc871f1f13c5a9fd07d6b588ea4954d879",
+          "url": "https://github.com/NatLabRockies/floris/commit/c46c11256101ef43d56934b962f8b9da0501dd86"
+        },
+        "date": 1795563174805,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_set",
+            "value": 41.09572867396298,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0003741809025287089",
+            "extra": "mean: 24.333429099982595 msec\nrounds: 40"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_run",
+            "value": 55.04236067949208,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0003977499012840566",
+            "extra": "mean: 18.167825428544607 msec\nrounds: 28"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_set",
+            "value": 25.47843554030655,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0008669061198701068",
+            "extra": "mean: 39.24887768002918 msec\nrounds: 25"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_run",
+            "value": 0.29238043617427134,
+            "unit": "iter/sec",
+            "range": "stddev: 0.10907948748448835",
+            "extra": "mean: 3.4202014781999877 sec\nrounds: 5"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_set",
+            "value": 34.627496014979286,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0007666704687051835",
+            "extra": "mean: 28.87878463887243 msec\nrounds: 36"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_run",
+            "value": 117.70996340301602,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00011856507641786787",
+            "extra": "mean: 8.49545757291755 msec\nrounds: 96"
           }
         ]
       }

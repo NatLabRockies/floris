@@ -93,7 +93,5 @@ class WakeModelManager(BaseClass):
         self.model.assign_combination_function(self.combination_model)
 
     def assign_user_defined_wake_model(self, wake_model: BaseWakeModel):
-        self.parameters = {
-            k: v for k, v in wake_model.as_dict().items() if k != "__classinfo__"
-        }
+        self.parameters = {k: v for k, v in wake_model.as_dict().items() if k != "__classinfo__"}
         self.model = wake_model

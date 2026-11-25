@@ -1640,7 +1640,7 @@ class FlorisModel(LoggingManager):
         parameter_idx: Optional[int] = None
     ):
         """Set a parameter in a FlorisModel object. Control setpoints (yaw angles, power
-        setpoints, and active wake control settings) are retained.
+        setpoints, and active wake control settings) and wind_data are retained.
 
         Args:
             parameter (str): The name of the wake parameter to set.
@@ -1650,7 +1650,7 @@ class FlorisModel(LoggingManager):
         control_setpoints = self._get_control_setpoints()
         fm_dict_mod = self.core.as_dict()
         nested_set(fm_dict_mod, ["wake", "parameters", parameter], value, parameter_idx)
-        self.__init__(fm_dict_mod, **self.secondary_init_kwargs)
+        self.core = Core.from_dict(fm_dict_mod)
         self._restore_control_setpoints(control_setpoints)
 
     def get_turbine_layout(self, z=False):

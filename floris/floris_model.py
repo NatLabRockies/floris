@@ -506,15 +506,15 @@ class FlorisModel(LoggingManager):
         Restore control setpoints saved by _get_control_setpoints(). Setpoints at their default
         values are not restored.
         """
-        if not (control_setpoints["yaw_angles"] == 0).all():
+        if not (np.asarray(control_setpoints["yaw_angles"]) == 0).all():
             self.core.farm.set_yaw_angles(control_setpoints["yaw_angles"])
-        if not (control_setpoints["power_setpoints"] == POWER_SETPOINT_DEFAULT).all():
+        if not (np.asarray(control_setpoints["power_setpoints"]) == POWER_SETPOINT_DEFAULT).all():
             self.core.farm.set_power_setpoints(control_setpoints["power_setpoints"])
         if control_setpoints["awc_modes"] is not None:
             self.core.farm.set_awc_modes(control_setpoints["awc_modes"])
-        if not (control_setpoints["awc_amplitudes"] == 0).all():
+        if not (np.asarray(control_setpoints["awc_amplitudes"]) == 0).all():
             self.core.farm.set_awc_amplitudes(control_setpoints["awc_amplitudes"])
-        if not (control_setpoints["awc_frequencies"] == 0).all():
+        if not (np.asarray(control_setpoints["awc_frequencies"]) == 0).all():
             self.core.farm.set_awc_frequencies(control_setpoints["awc_frequencies"])
 
     def reset_operation(self):

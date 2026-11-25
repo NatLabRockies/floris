@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1795563177368,
+  "lastUpdate": 1795625238818,
   "repoUrl": "https://github.com/NatLabRockies/floris",
   "entries": {
     "Python Benchmark with pytest-benchmark": [
@@ -6176,6 +6176,72 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.00011856507641786787",
             "extra": "mean: 8.49545757291755 msec\nrounds: 96"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "gurrambhaskar.ai@gmail.com",
+            "name": "Bhaskar Gurram",
+            "username": "bhaskargurram-ai"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "799eb95db4fe4084acbe19cba6fa0e0118ca889f",
+          "message": "Accept rose-sized operation inputs when wind rose bins have zero frequency (#1216)\n\n* Accept rose-sized operation inputs when wind rose bins have zero frequency\n\nWindRose and WindTIRose skip zero-frequency bins unless\ncompute_zero_freq_occurrence is True, so n_findex is smaller than the\nnumber of bins in the rose. Operation inputs sized to the full rose\n(for example yaw angles with len(wind_rose.wd_flat) rows) were passed\non unchanged and run() failed with a shape mismatch in\nFarm.initialize.\n\nFlorisModel.set now passes all operation inputs through one helper\nthat applies the wind data's non_zero_freq_mask to any input whose\nfirst dimension equals the number of bins. Inputs already sized\nn_findex are unchanged. ParFlorisModel and UncertainFlorisModel go\nthrough FlorisModel.set and are covered as well.\n\nFixes #963\n\n* Move match_operation functionality to inside set_operation.\n\n---------\n\nCo-authored-by: misi9170 <michael.sinner@nlr.gov>",
+          "timestamp": "2026-11-25T09:28:52-07:00",
+          "tree_id": "2a561236c84a183af3cde3ba177cb605f28a783b",
+          "url": "https://github.com/NatLabRockies/floris/commit/799eb95db4fe4084acbe19cba6fa0e0118ca889f"
+        },
+        "date": 1795625236969,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_set",
+            "value": 79.78600905271115,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00021179820095270537",
+            "extra": "mean: 12.533525763136534 msec\nrounds: 76"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_small_farm_run",
+            "value": 110.31971591404192,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0003091837056174183",
+            "extra": "mean: 9.064562863624236 msec\nrounds: 44"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_set",
+            "value": 47.57746217726836,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0008563305929896474",
+            "extra": "mean: 21.018355209323914 msec\nrounds: 43"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_large_farm_run",
+            "value": 0.49617341476462246,
+            "unit": "iter/sec",
+            "range": "stddev: 0.032863275256205464",
+            "extra": "mean: 2.0154243864000363 sec\nrounds: 5"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_set",
+            "value": 65.60797117774698,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0006346367771289893",
+            "extra": "mean: 15.242050349198752 msec\nrounds: 63"
+          },
+          {
+            "name": "benchmarks/bench.py::test_timing_het_run",
+            "value": 254.08072108400836,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0001901836539471162",
+            "extra": "mean: 3.935757092209147 msec\nrounds: 141"
           }
         ]
       }

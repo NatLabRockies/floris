@@ -272,6 +272,37 @@ def test_get_powers_with_wind_data():
     assert np.allclose(farm_power_weighted, ufmodel.get_turbine_powers()[:, :, :-1].sum(axis=2))
 
 
+def test_set_operation_with_zero_frequency_bins():
+    """
+    Yaw angles with one row per wind rose bin can be set when some bins have zero frequency
+    (#963), and give the same powers in the computed bins as a run computing every bin.
+    """
+    wind_directions = np.array([260.0, 270.0, 280.0])
+    wind_speeds = np.array([8.0, 10.0])
+    freq_table = np.ones((3, 2))
+    freq_table[0, 0] = 0.0
+    freq_table = freq_table / freq_table.sum()
+    yaw_angles = np.linspace(-20.0, 20.0, 6 * 3).reshape(6, 3)
+
+    turbine_powers = []
+    for compute_zero_freq_occurrence in [True, False]:
+        wind_rose = WindRose(
+            wind_directions=wind_directions,
+            wind_speeds=wind_speeds,
+            ti_table=0.06,
+            freq_table=freq_table,
+            compute_zero_freq_occurrence=compute_zero_freq_occurrence,
+        )
+        ufmodel = UncertainFlorisModel(configuration=YAML_INPUT)
+        ufmodel.set(layout_x=[0, 630, 1260], layout_y=[0, 0, 0])
+        ufmodel.set(wind_data=wind_rose, yaw_angles=yaw_angles)
+        ufmodel.run()
+        turbine_powers.append(ufmodel.get_turbine_powers())
+
+    assert np.isnan(turbine_powers[1][0, 0, :]).all()
+    assert np.allclose(turbine_powers[1].reshape(6, 3)[1:], turbine_powers[0].reshape(6, 3)[1:])
+
+
 def test_AEP_with_wind_data():
     wind_speeds = np.array([8.0, 10.0])
     wind_directions = np.array([270.0, 280.0])

@@ -262,6 +262,39 @@ def test_wind_data_objects(sample_inputs_fixture):
     assert powers_fmodel_ts.shape == powers_pfmodel_ts.shape
     assert np.allclose(powers_fmodel_ts, powers_pfmodel_ts)
 
+def test_control_setpoints_with_zero_frequency_bins(sample_inputs_fixture):
+    """
+    Check that the ParFlorisModel accepts yaw angles with one row per wind rose bin when some
+    bins have zero frequency (#963).
+    """
+    sample_inputs_fixture.core["wake"]["model_strings"]["velocity_model"] = VELOCITY_MODEL
+    sample_inputs_fixture.core["wake"]["model_strings"]["deflection_model"] = DEFLECTION_MODEL
+
+    fmodel = FlorisModel(sample_inputs_fixture.core)
+    pfmodel = ParFlorisModel(sample_inputs_fixture.core, max_workers=2)
+
+    freq_table = np.ones((2, 3))
+    freq_table[0, 1] = 0.0
+    wind_rose = WindRose(
+        wind_directions=np.array([270.0, 280.0]),
+        wind_speeds=np.array([8.0, 10.0, 12.0]),
+        ti_table=0.06,
+        freq_table=freq_table / freq_table.sum(),
+    )
+    n_turbines = len(fmodel.layout_x)
+    yaw_angles = np.linspace(-20.0, 20.0, 6 * n_turbines).reshape(6, n_turbines)
+
+    # The FlorisModel gets the yaw angles of the computed bins only
+    fmodel.set(wind_data=wind_rose, yaw_angles=yaw_angles[freq_table.flatten() > 0.0])
+    pfmodel.set(wind_data=wind_rose, yaw_angles=yaw_angles)
+
+    fmodel.run()
+    pfmodel.run()
+
+    assert np.allclose(
+        fmodel.get_turbine_powers(), pfmodel.get_turbine_powers(), equal_nan=True
+    )
+
 def test_control_setpoints(sample_inputs_fixture):
     """
     Check that the ParFlorisModel is compatible with control set points.

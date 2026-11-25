@@ -315,7 +315,30 @@ class FlorisModel(LoggingManager):
                 Turbine power setpoints. Defaults to None.
             disable_turbines (NDArrayBool | list[bool] | None, optional): Boolean array on whether
                 to disable turbines. Defaults to None.
+
+        If a wind rose (WindRose or WindTIRose) is present on self that contains zero-frequency bins
+        (which are not computed unless compute_zero_freq_occurrence is True), the operation inputs
+        may also be given with one row per bin of the rose (e.g. len(wind_rose.wd_flat) rows).
+        The rows of the zero-frequency bins are then dropped. It is left to the user to check that
+        the remaining rows correspond correctly to the flattened wind rose data.
         """
+
+        # Apply zero-frequency matching if needed
+        operation_inputs = self._match_operation_to_findex(
+                yaw_angles=yaw_angles,
+                power_setpoints=power_setpoints,
+                awc_modes=awc_modes,
+                awc_amplitudes=awc_amplitudes,
+                awc_frequencies=awc_frequencies,
+                disable_turbines=disable_turbines,
+            )
+        yaw_angles = operation_inputs["yaw_angles"]
+        power_setpoints = operation_inputs["power_setpoints"]
+        awc_modes = operation_inputs["awc_modes"]
+        awc_amplitudes = operation_inputs["awc_amplitudes"]
+        awc_frequencies = operation_inputs["awc_frequencies"]
+        disable_turbines = operation_inputs["disable_turbines"]
+
         # Add operating conditions to the floris object
         if yaw_angles is not None:
             if np.array(yaw_angles).shape[1] != self.core.farm.n_turbines:
@@ -453,6 +476,12 @@ class FlorisModel(LoggingManager):
             disable_turbines (NDArrayBool | list[bool] | None, optional): NDArray with dimensions
                 n_findex x n_turbines. True values indicate the turbine is disabled at that findex
                 and the power setpoint at that position is set to 0. Defaults to None.
+
+        If the wind data is a WindRose or WindTIRose with zero-frequency bins (which are not
+        computed unless compute_zero_freq_occurrence is True), the operation inputs may also be
+        given with one row per bin of the rose (e.g. len(wind_rose.wd_flat) rows). The rows of the
+        zero-frequency bins are then dropped. It is left to the user to check that the remaining
+        rows correspond correctly to the flattened wind rose data.
         """
         # Initialize a new Floris object after saving the setpoints
         _yaw_angles = self.core.farm.yaw_angles
@@ -500,6 +529,33 @@ class FlorisModel(LoggingManager):
             awc_frequencies=awc_frequencies,
             disable_turbines=disable_turbines,
         )
+
+    def _match_operation_to_findex(self, **operation_inputs) -> dict:
+        """
+        Drop the rows of the operation inputs that belong to wind rose bins which are not
+        computed.
+
+        WindRose and WindTIRose skip bins with zero frequency (unless
+        compute_zero_freq_occurrence is True), so n_findex can be smaller than the number of
+        bins in the rose. Any input whose first dimension equals the number of bins is reduced
+        with the same non_zero_freq_mask that is applied to the wind conditions. Inputs that are
+        None or already sized n_findex are returned unchanged.
+
+        Args:
+            **operation_inputs: Operation inputs, keyed by their set_operation() argument name.
+
+        Returns:
+            dict: The operation inputs, with rose-sized inputs reduced to n_findex.
+        """
+        mask = getattr(self.wind_data, "non_zero_freq_mask", None)
+        if mask is None or np.all(mask):
+            return operation_inputs
+
+        mask = np.asarray(mask, dtype=bool)
+        return {
+            k: np.asarray(v)[mask] if np.ndim(v) > 0 and len(v) == len(mask) else v
+            for k, v in operation_inputs.items()
+        }
 
     def reset_operation(self):
         """

@@ -823,6 +823,11 @@ the set() method.</p>
 </dl>
 </dd>
 </dl>
+<p>If a wind rose (WindRose or WindTIRose) is present on self that contains zero-frequency bins
+(which are not computed unless compute_zero_freq_occurrence is True), the operation inputs
+may also be given with one row per bin of the rose (e.g. len(wind_rose.wd_flat) rows).
+The rows of the zero-frequency bins are then dropped. It is left to the user to check that
+the remaining rows correspond correctly to the flattened wind rose data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -888,6 +893,11 @@ and the power setpoint at that position is set to 0. Defaults to None.</p>
 </dl>
 </dd>
 </dl>
+<p>If the wind data is a WindRose or WindTIRose with zero-frequency bins (which are not
+computed unless compute_zero_freq_occurrence is True), the operation inputs may also be
+given with one row per bin of the rose (e.g. len(wind_rose.wd_flat) rows). The rows of the
+zero-frequency bins are then dropped. It is left to the user to check that the remaining
+rows correspond correctly to the flattened wind rose data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

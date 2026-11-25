@@ -1318,7 +1318,30 @@ window.runMermaid = runMermaid;</script>
 <span class="sd">                Turbine power setpoints. Defaults to None.</span>
 <span class="sd">            disable_turbines (NDArrayBool | list[bool] | None, optional): Boolean array on whether</span>
 <span class="sd">                to disable turbines. Defaults to None.</span>
+
+<span class="sd">        If a wind rose (WindRose or WindTIRose) is present on self that contains zero-frequency bins</span>
+<span class="sd">        (which are not computed unless compute_zero_freq_occurrence is True), the operation inputs</span>
+<span class="sd">        may also be given with one row per bin of the rose (e.g. len(wind_rose.wd_flat) rows).</span>
+<span class="sd">        The rows of the zero-frequency bins are then dropped. It is left to the user to check that</span>
+<span class="sd">        the remaining rows correspond correctly to the flattened wind rose data.</span>
 <span class="sd">        """</span>
+
+        <span class="c1"># Apply zero-frequency matching if needed</span>
+        <span class="n">operation_inputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match_operation_to_findex</span><span class="p">(</span>
+                <span class="n">yaw_angles</span><span class="o">=</span><span class="n">yaw_angles</span><span class="p">,</span>
+                <span class="n">power_setpoints</span><span class="o">=</span><span class="n">power_setpoints</span><span class="p">,</span>
+                <span class="n">awc_modes</span><span class="o">=</span><span class="n">awc_modes</span><span class="p">,</span>
+                <span class="n">awc_amplitudes</span><span class="o">=</span><span class="n">awc_amplitudes</span><span class="p">,</span>
+                <span class="n">awc_frequencies</span><span class="o">=</span><span class="n">awc_frequencies</span><span class="p">,</span>
+                <span class="n">disable_turbines</span><span class="o">=</span><span class="n">disable_turbines</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="n">yaw_angles</span> <span class="o">=</span> <span class="n">operation_inputs</span><span class="p">[</span><span class="s2">"yaw_angles"</span><span class="p">]</span>
+        <span class="n">power_setpoints</span> <span class="o">=</span> <span class="n">operation_inputs</span><span class="p">[</span><span class="s2">"power_setpoints"</span><span class="p">]</span>
+        <span class="n">awc_modes</span> <span class="o">=</span> <span class="n">operation_inputs</span><span class="p">[</span><span class="s2">"awc_modes"</span><span class="p">]</span>
+        <span class="n">awc_amplitudes</span> <span class="o">=</span> <span class="n">operation_inputs</span><span class="p">[</span><span class="s2">"awc_amplitudes"</span><span class="p">]</span>
+        <span class="n">awc_frequencies</span> <span class="o">=</span> <span class="n">operation_inputs</span><span class="p">[</span><span class="s2">"awc_frequencies"</span><span class="p">]</span>
+        <span class="n">disable_turbines</span> <span class="o">=</span> <span class="n">operation_inputs</span><span class="p">[</span><span class="s2">"disable_turbines"</span><span class="p">]</span>
+
         <span class="c1"># Add operating conditions to the floris object</span>
         <span class="k">if</span> <span class="n">yaw_angles</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">yaw_angles</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">farm</span><span class="o">.</span><span class="n">n_turbines</span><span class="p">:</span>
@@ -1459,6 +1482,12 @@ window.runMermaid = runMermaid;</script>
 <span class="sd">            disable_turbines (NDArrayBool | list[bool] | None, optional): NDArray with dimensions</span>
 <span class="sd">                n_findex x n_turbines. True values indicate the turbine is disabled at that findex</span>
 <span class="sd">                and the power setpoint at that position is set to 0. Defaults to None.</span>
+
+<span class="sd">        If the wind data is a WindRose or WindTIRose with zero-frequency bins (which are not</span>
+<span class="sd">        computed unless compute_zero_freq_occurrence is True), the operation inputs may also be</span>
+<span class="sd">        given with one row per bin of the rose (e.g. len(wind_rose.wd_flat) rows). The rows of the</span>
+<span class="sd">        zero-frequency bins are then dropped. It is left to the user to check that the remaining</span>
+<span class="sd">        rows correspond correctly to the flattened wind rose data.</span>
 <span class="sd">        """</span>
         <span class="c1"># Initialize a new Floris object after saving the setpoints</span>
         <span class="n">_yaw_angles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">farm</span><span class="o">.</span><span class="n">yaw_angles</span>
@@ -1507,6 +1536,33 @@ window.runMermaid = runMermaid;</script>
             <span class="n">disable_turbines</span><span class="o">=</span><span class="n">disable_turbines</span><span class="p">,</span>
         <span class="p">)</span></div>
 
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_match_operation_to_findex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">operation_inputs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Drop the rows of the operation inputs that belong to wind rose bins which are not</span>
+<span class="sd">        computed.</span>
+
+<span class="sd">        WindRose and WindTIRose skip bins with zero frequency (unless</span>
+<span class="sd">        compute_zero_freq_occurrence is True), so n_findex can be smaller than the number of</span>
+<span class="sd">        bins in the rose. Any input whose first dimension equals the number of bins is reduced</span>
+<span class="sd">        with the same non_zero_freq_mask that is applied to the wind conditions. Inputs that are</span>
+<span class="sd">        None or already sized n_findex are returned unchanged.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            **operation_inputs: Operation inputs, keyed by their set_operation() argument name.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: The operation inputs, with rose-sized inputs reduced to n_findex.</span>
+<span class="sd">        """</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_data</span><span class="p">,</span> <span class="s2">"non_zero_freq_mask"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">operation_inputs</span>
+
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="n">k</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">v</span><span class="p">)[</span><span class="n">mask</span><span class="p">]</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span> <span class="k">else</span> <span class="n">v</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">operation_inputs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>
 
 <div class="viewcode-block" id="FlorisModel.reset_operation">
 <a class="viewcode-back" href="../../_autosummary/floris.floris_model.html#floris.floris_model.FlorisModel.reset_operation">[docs]</a>

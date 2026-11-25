@@ -20,8 +20,14 @@ from floris.core.wake_deflection.gauss import (
     yaw_added_turbulence_mixing,
 )
 from floris.core.wake_velocity.empirical_gauss import awc_added_wake_mixing
-from floris.type_dec import NDArrayFloat
+from floris.type_dec import (
+    floris_float_type,
+    NDArrayFloat,
+)
 from floris.utilities import cosd
+
+# For the CWM
+from .solver_cwm import curled_wake_solver
 
 
 def calculate_area_overlap(wake_velocities, freestream_velocities, y_ngrid, z_ngrid):

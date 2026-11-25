@@ -20,7 +20,6 @@ from floris.type_dec import (
 from floris.utilities import (
     is_all_scalar_dict,
     nested_get,
-    nested_set,
     wrap_180,
 )
 from floris.wind_data import (
@@ -1032,7 +1031,8 @@ class UncertainFlorisModel(LoggingManager):
             return nested_get(fm_dict, ["wake", "parameters", parameter])[parameter_idx]
 
     def set_wake_parameter(self, parameter: str, value: Any, parameter_idx: Optional[int] = None):
-        """Set a parameter in a FlorisModel object.
+        """Set a parameter in a FlorisModel object. Control setpoints (yaw angles, power
+        setpoints, and active wake control settings) are retained.
 
         Args:
             parameter (str): The wake parameter to set.
@@ -1040,9 +1040,7 @@ class UncertainFlorisModel(LoggingManager):
             parameter_idx (Optional[int], optional): The index to set the value at.
                 Defaults to None.
         """
-        fm_dict_mod = self.fmodel_unexpanded.core.as_dict()
-        nested_set(fm_dict_mod, ["wake", "parameters", parameter], value, parameter_idx)
-        self.fmodel_unexpanded.__init__(fm_dict_mod, **self.fmodel_unexpanded.secondary_init_kwargs)
+        self.fmodel_unexpanded.set_wake_parameter(parameter, value, parameter_idx)
         self.set()
 
     @property

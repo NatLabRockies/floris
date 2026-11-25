@@ -3,8 +3,6 @@ This example illustrates the main parameters of the Empirical Gaussian
 velocity deficit model and their effects on the wind turbine wake.
 """
 
-import copy
-
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -103,8 +101,9 @@ fmodel.set(
     wind_directions=[270.0],
 )
 
-# Save dictionary to modify later
-fmodel_dict = fmodel.core.as_dict()
+# Save original parameter values to reset later
+wake_expansion_rates_orig = fmodel.get_wake_parameter("wake_expansion_rates")
+breakpoints_D_orig = fmodel.get_wake_parameter("breakpoints_D")
 
 # Run wake calculation
 fmodel.run()
@@ -127,10 +126,7 @@ if show_flow_cuts:
     generate_wake_visualization(fmodel, title)
 
 # Increase the base recovery rate
-fmodel_dict_mod = copy.deepcopy(fmodel_dict)
-fmodel_dict_mod["wake"]["parameters"]["wake_expansion_rates"] = [0.03, 0.015]
-fmodel = FlorisModel(fmodel_dict_mod)
-fmodel.set(wind_speeds=[8.0], wind_directions=[270.0])
+fmodel.set_wake_parameter("wake_expansion_rates", [0.03, 0.015])
 
 fmodel.run()
 turbine_powers = fmodel.get_turbine_powers().flatten() / 1e6
@@ -145,14 +141,8 @@ if show_flow_cuts:
     generate_wake_visualization(fmodel, title)
 
 # Add new expansion rate
-fmodel_dict_mod = copy.deepcopy(fmodel_dict)
-fmodel_dict_mod["wake"]["parameters"]["wake_expansion_rates"] = (
-    fmodel_dict["wake"]["parameters"]["wake_expansion_rates"] + [0.0]
-)
-fmodel_dict_mod["wake"]["parameters"]["breakpoints_D"] = [5, 10]
-
-fmodel = FlorisModel(fmodel_dict_mod)
-fmodel.set(wind_speeds=[8.0], wind_directions=[270.0])
+fmodel.set_wake_parameter("wake_expansion_rates", wake_expansion_rates_orig + [0.0])
+fmodel.set_wake_parameter("breakpoints_D", [5, 10])
 
 fmodel.run()
 turbine_powers = fmodel.get_turbine_powers().flatten() / 1e6
@@ -167,10 +157,10 @@ if show_flow_cuts:
     generate_wake_visualization(fmodel, title)
 
 # Increase the wake-induced mixing gain
-fmodel_dict_mod = copy.deepcopy(fmodel_dict)
-fmodel_dict_mod["wake"]["parameters"]["mixing_gain_velocity"] = 3.0
-fmodel = FlorisModel(fmodel_dict_mod)
-fmodel.set(wind_speeds=[8.0], wind_directions=[270.0])
+# (reset previously modified parameters first)
+fmodel.set_wake_parameter("wake_expansion_rates", wake_expansion_rates_orig)
+fmodel.set_wake_parameter("breakpoints_D", breakpoints_D_orig)
+fmodel.set_wake_parameter("mixing_gain_velocity", 3.0)
 
 fmodel.run()
 turbine_powers = fmodel.get_turbine_powers().flatten() / 1e6

@@ -55,8 +55,11 @@ def _wake_model_converter(model, model_parameters):
         else:
             return MODEL_MAP[model](**model_parameters)
 
-    # Handle dict representation of a wake model (use existing parameters on model)
+    # Handle dict representation of a wake model
+    # Use existing parameters on model, unless model_parameters are different
     elif isinstance(model, dict):
+        for k, v in model_parameters.items():
+            model[k] = v
         return BaseLibrary.from_dict(model)
 
     # Otherwise, raise an error
@@ -90,4 +93,5 @@ class WakeModelManager(BaseClass):
         self.model.assign_combination_function(self.combination_model)
 
     def assign_user_defined_wake_model(self, wake_model: BaseWakeModel):
+        self.parameters = {k: v for k, v in wake_model.as_dict().items() if k != "__classinfo__"}
         self.model = wake_model

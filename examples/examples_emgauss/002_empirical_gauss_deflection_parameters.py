@@ -140,7 +140,7 @@ if show_flow_cuts:
 
 # Increase the maximum deflection attained
 fmodel_dict_mod = copy.deepcopy(fmodel_dict)
-
+fmodel_dict_mod["wake"]["model"] = "empirical_gauss" # Override existing model instantiation
 fmodel_dict_mod["wake"]["parameters"]["horizontal_deflection_gain_D"] = 5.0
 
 fmodel = FlorisModel(fmodel_dict_mod)
@@ -164,6 +164,7 @@ if show_flow_cuts:
 
 # Add (increase) influence of wake added mixing
 fmodel_dict_mod = copy.deepcopy(fmodel_dict)
+fmodel_dict_mod["wake"]["model"] = "empirical_gauss"
 fmodel_dict_mod["wake"]["parameters"]["mixing_gain_deflection"] = 100.0
 
 fmodel = FlorisModel(fmodel_dict_mod)
@@ -189,6 +190,7 @@ if show_flow_cuts:
 fmodel_dict_mod = copy.deepcopy(fmodel_dict)
 # Include a WIM gain so that YAM is reflected in deflection as well
 # as deficit
+fmodel_dict_mod["wake"]["model"] = "empirical_gauss"
 fmodel_dict_mod["wake"]["parameters"]["mixing_gain_deflection"] = 100.0
 fmodel_dict_mod["wake"]["parameters"]["yaw_added_mixing_gain"] = 1.0
 fmodel = FlorisModel(fmodel_dict_mod)

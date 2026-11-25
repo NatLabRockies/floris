@@ -566,6 +566,9 @@ class FlorisModel(LoggingManager):
     def run(self) -> None:
         """
         Run the FLORIS solve to compute the velocity field and wake effects.
+
+        Raises:
+            RuntimeError: If there are no wind conditions to simulate.
         """
 
         # Initialize solution space
@@ -579,6 +582,9 @@ class FlorisModel(LoggingManager):
         This function is similar to `run()` except that it does not apply a wake model. That is,
         the wind farm is modeled as if there is no wake in the flow. Operation settings may
         reduce the power and thrust of the turbine to where they're applied.
+
+        Raises:
+            RuntimeError: If there are no wind conditions to simulate.
         """
 
         # Initialize solution space

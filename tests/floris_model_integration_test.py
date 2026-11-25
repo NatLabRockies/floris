@@ -41,6 +41,19 @@ def test_read_yaml():
     fmodel = FlorisModel(configuration=YAML_INPUT)
     assert isinstance(fmodel, FlorisModel)
 
+@pytest.mark.parametrize("method", ["run", "run_no_wake"])
+@pytest.mark.parametrize("use_wind_rose", [False, True], ids=["arrays", "wind_rose"])
+def test_run_without_wind_conditions(method, use_wind_rose):
+    fmodel = FlorisModel(configuration=YAML_INPUT)
+    if use_wind_rose:
+        fmodel.set(wind_data=WindRose(np.array([270.0]), np.array([]), ti_table=0.06))
+    else:
+        fmodel.set(wind_directions=[], wind_speeds=[], turbulence_intensities=[])
+
+    assert fmodel.n_findex == 0
+    with pytest.raises(RuntimeError, match="No wind conditions to simulate"):
+        getattr(fmodel, method)()
+
 def test_assign_setpoints():
 
     fmodel =  FlorisModel(configuration=YAML_INPUT)

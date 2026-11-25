@@ -129,6 +129,11 @@ class Core(BaseClass):
     def initialize_domain(self):
         """Initialize solution space prior to wake calculations"""
 
+        if self.flow_field.n_findex == 0:
+            raise RuntimeError(
+                "No wind conditions to simulate. Provide at least one wind condition."
+            )
+
         # Initialize field quantities; doing this immediately prior to doing
         # the calculation step allows for manipulating inputs in a script
         # without changing the data structures

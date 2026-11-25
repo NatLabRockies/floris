@@ -40,6 +40,13 @@ def test_None_interface(sample_inputs_fixture):
 
     assert np.allclose(f_turb_powers, pf_turb_powers)
 
+def test_run_without_wind_conditions(sample_inputs_fixture):
+    pfmodel = ParFlorisModel(sample_inputs_fixture.core, interface="concurrent", max_workers=2)
+    pfmodel.set(wind_directions=[], wind_speeds=[], turbulence_intensities=[])
+
+    with pytest.raises(RuntimeError, match="No wind conditions to simulate"):
+        pfmodel.run()
+
 def test_multiprocessing_interface(sample_inputs_fixture):
     """
     With interface="multiprocessing", the ParFlorisModel should return the same powers

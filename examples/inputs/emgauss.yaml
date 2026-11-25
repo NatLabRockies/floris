@@ -50,4 +50,5 @@ wake:
     sigma_0_D: 0.28
     smoothing_length_D: 2.0
     mixing_gain_velocity: 2.0
+    include_mirror_wake: true
   combination_model: sosfs

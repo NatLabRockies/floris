@@ -457,11 +457,7 @@ class FlorisModel(LoggingManager):
                 and the power setpoint at that position is set to 0. Defaults to None.
         """
         # Initialize a new Floris object after saving the setpoints
-        _yaw_angles = self.core.farm.yaw_angles
-        _power_setpoints = self.core.farm.power_setpoints
-        _awc_modes = self.core.farm.awc_modes
-        _awc_amplitudes = self.core.farm.awc_amplitudes
-        _awc_frequencies = self.core.farm.awc_frequencies
+        control_setpoints = self._get_control_setpoints()
         self._reinitialize(
             wind_speeds=wind_speeds,
             wind_directions=wind_directions,
@@ -480,18 +476,7 @@ class FlorisModel(LoggingManager):
             multidim_conditions=multidim_conditions,
         )
 
-        # If the yaw angles or power setpoints are not the default, set them back to the
-        # previous setting
-        if not (_yaw_angles == 0).all():
-            self.core.farm.set_yaw_angles(_yaw_angles)
-        if not (_power_setpoints == POWER_SETPOINT_DEFAULT).all():
-            self.core.farm.set_power_setpoints(_power_setpoints)
-        if _awc_modes is not None:
-            self.core.farm.set_awc_modes(_awc_modes)
-        if not (_awc_amplitudes == 0).all():
-            self.core.farm.set_awc_amplitudes(_awc_amplitudes)
-        if not (_awc_frequencies == 0).all():
-            self.core.farm.set_awc_frequencies(_awc_frequencies)
+        self._restore_control_setpoints(control_setpoints)
 
         # Set the operation
         self.set_operation(
@@ -502,6 +487,35 @@ class FlorisModel(LoggingManager):
             awc_frequencies=awc_frequencies,
             disable_turbines=disable_turbines,
         )
+
+    def _get_control_setpoints(self) -> dict:
+        """
+        Get the current control setpoints, which are not retained when the Core object is
+        re-instantiated from its dictionary representation.
+        """
+        return {
+            "yaw_angles": self.core.farm.yaw_angles,
+            "power_setpoints": self.core.farm.power_setpoints,
+            "awc_modes": self.core.farm.awc_modes,
+            "awc_amplitudes": self.core.farm.awc_amplitudes,
+            "awc_frequencies": self.core.farm.awc_frequencies,
+        }
+
+    def _restore_control_setpoints(self, control_setpoints: dict):
+        """
+        Restore control setpoints saved by _get_control_setpoints(). Setpoints at their default
+        values are not restored.
+        """
+        if not (control_setpoints["yaw_angles"] == 0).all():
+            self.core.farm.set_yaw_angles(control_setpoints["yaw_angles"])
+        if not (control_setpoints["power_setpoints"] == POWER_SETPOINT_DEFAULT).all():
+            self.core.farm.set_power_setpoints(control_setpoints["power_setpoints"])
+        if control_setpoints["awc_modes"] is not None:
+            self.core.farm.set_awc_modes(control_setpoints["awc_modes"])
+        if not (control_setpoints["awc_amplitudes"] == 0).all():
+            self.core.farm.set_awc_amplitudes(control_setpoints["awc_amplitudes"])
+        if not (control_setpoints["awc_frequencies"] == 0).all():
+            self.core.farm.set_awc_frequencies(control_setpoints["awc_frequencies"])
 
     def reset_operation(self):
         """
@@ -1625,16 +1639,19 @@ class FlorisModel(LoggingManager):
         value: Any,
         parameter_idx: Optional[int] = None
     ):
-        """Set a parameter in a FlorisModel object.
+        """Set a parameter in a FlorisModel object. Control setpoints (yaw angles, power
+        setpoints, and active wake control settings) are retained.
 
         Args:
             parameter (str): The name of the wake parameter to set.
             value (Any): The value to set.
             param_idx (Optional[int], optional): The index to set the value at. Defaults to None.
         """
+        control_setpoints = self._get_control_setpoints()
         fm_dict_mod = self.core.as_dict()
         nested_set(fm_dict_mod, ["wake", "parameters", parameter], value, parameter_idx)
         self.__init__(fm_dict_mod, **self.secondary_init_kwargs)
+        self._restore_control_setpoints(control_setpoints)
 
     def get_turbine_layout(self, z=False):
         """

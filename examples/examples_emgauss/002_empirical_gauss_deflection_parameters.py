@@ -4,8 +4,6 @@ This example illustrates the main parameters of the Empirical Gaussian
 deflection model and their effects on the wind turbine wake.
 """
 
-import copy
-
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -115,8 +113,8 @@ fmodel.set(
     yaw_angles=yaw_angles,
 )
 
-# Save dictionary to modify later
-fmodel_dict = fmodel.core.as_dict()
+# Save original parameter value to reset later
+horizontal_deflection_gain_D_orig = fmodel.get_wake_parameter("horizontal_deflection_gain_D")
 
 # Run wake calculation
 fmodel.run()
@@ -139,16 +137,7 @@ if show_flow_cuts:
     generate_wake_visualization(fmodel, title)
 
 # Increase the maximum deflection attained
-fmodel_dict_mod = copy.deepcopy(fmodel_dict)
-fmodel_dict_mod["wake"]["model"] = "empirical_gauss" # Override existing model instantiation
-fmodel_dict_mod["wake"]["parameters"]["horizontal_deflection_gain_D"] = 5.0
-
-fmodel = FlorisModel(fmodel_dict_mod)
-fmodel.set(
-    wind_speeds=[8.0],
-    wind_directions=[270.0],
-    yaw_angles=yaw_angles,
-)
+fmodel.set_wake_parameter("horizontal_deflection_gain_D", 5.0)
 
 fmodel.run()
 turbine_powers = fmodel.get_turbine_powers().flatten() / 1e6
@@ -163,16 +152,9 @@ if show_flow_cuts:
     generate_wake_visualization(fmodel, title)
 
 # Add (increase) influence of wake added mixing
-fmodel_dict_mod = copy.deepcopy(fmodel_dict)
-fmodel_dict_mod["wake"]["model"] = "empirical_gauss"
-fmodel_dict_mod["wake"]["parameters"]["mixing_gain_deflection"] = 100.0
-
-fmodel = FlorisModel(fmodel_dict_mod)
-fmodel.set(
-    wind_speeds=[8.0],
-    wind_directions=[270.0],
-    yaw_angles=yaw_angles,
-)
+# (reset previously modified parameter first)
+fmodel.set_wake_parameter("horizontal_deflection_gain_D", horizontal_deflection_gain_D_orig)
+fmodel.set_wake_parameter("mixing_gain_deflection", 100.0)
 
 fmodel.run()
 turbine_powers = fmodel.get_turbine_powers().flatten() / 1e6
@@ -187,18 +169,9 @@ if show_flow_cuts:
     generate_wake_visualization(fmodel, title)
 
 # Add (increase) the yaw-added mixing contribution
-fmodel_dict_mod = copy.deepcopy(fmodel_dict)
-# Include a WIM gain so that YAM is reflected in deflection as well
-# as deficit
-fmodel_dict_mod["wake"]["model"] = "empirical_gauss"
-fmodel_dict_mod["wake"]["parameters"]["mixing_gain_deflection"] = 100.0
-fmodel_dict_mod["wake"]["parameters"]["yaw_added_mixing_gain"] = 1.0
-fmodel = FlorisModel(fmodel_dict_mod)
-fmodel.set(
-    wind_speeds=[8.0],
-    wind_directions=[270.0],
-    yaw_angles=yaw_angles,
-)
+# Retain the WIM gain from above so that YAM is reflected in deflection
+# as well as deficit
+fmodel.set_wake_parameter("yaw_added_mixing_gain", 1.0)
 
 fmodel.run()
 turbine_powers = fmodel.get_turbine_powers().flatten() / 1e6

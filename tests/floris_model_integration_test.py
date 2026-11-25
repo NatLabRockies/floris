@@ -736,6 +736,19 @@ def test_get_and_set_wake_parameter():
     alpha = fmodel.get_wake_parameter("alpha")
     assert alpha == 0.1
 
+def test_set_wake_parameter_retains_control_setpoints():
+    fmodel = FlorisModel(configuration=YAML_INPUT)
+    fmodel.set(layout_x=[0, 0], layout_y=[0, 1000], wind_speeds=[8.0, 9.0],
+               wind_directions=[270.0, 270.0], turbulence_intensities=[0.06, 0.06])
+    yaw_angles = np.array([[20.0, 0.0], [10.0, -5.0]])
+    power_setpoints = np.array([[1e6, POWER_SETPOINT_DEFAULT], [2e6, 3e6]])
+    fmodel.set(yaw_angles=yaw_angles, power_setpoints=power_setpoints)
+
+    fmodel.set_wake_parameter("alpha", 0.1)
+
+    np.testing.assert_allclose(fmodel.core.farm.yaw_angles, yaw_angles)
+    np.testing.assert_allclose(fmodel.core.farm.power_setpoints, power_setpoints)
+
 def test_get_operation_model():
     fmodel = FlorisModel(configuration=YAML_INPUT)
     assert fmodel.get_operation_model()[0].__class__.__name__ == "CosineLossTurbine"
